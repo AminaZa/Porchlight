@@ -159,27 +159,48 @@ def decide(report: TriagedReport, summary: CorrelationSummary) -> EscalationDeci
         )
     else:
         message = ""
+        n = summary.distinct_reporters
+        zones = len(summary.zones_involved)
+        days = summary.time_span_hours / 24
+
+        # Name the condition that actually decided it, most decisive first.
+        # Reporting "too few reporters" for a cluster whose real problem is a
+        # three-week span explains nothing and teaches the reader the wrong
+        # rule about how the system thinks.
         if summary.cluster_size <= 1:
-            reasoning = "Nothing else describes this situation. Logged. [rule, not judgment]"
-        elif not corroborated:
+            reasoning = "Nothing else describes this situation. Logged."
+        elif n == 1:
             reasoning = (
-                f"{summary.cluster_size} similar reports but only "
-                f"{summary.distinct_reporters} reporter"
-                f"{'' if summary.distinct_reporters == 1 else 's'} — one person's "
-                f"concern is not corroboration. [rule, not judgment]"
+                f"{summary.cluster_size} similar reports, all from the same "
+                f"person. One neighbour's repeated concern is not corroboration."
             )
-        elif not local or not recent:
+        elif not recent and not local:
             reasoning = (
                 f"{summary.cluster_size} similar reports, but spread over "
-                f"{summary.time_span_hours / 24:.0f} days and "
-                f"{len(summary.zones_involved)} zones. Resemblance is not a "
-                f"pattern. [rule, not judgment]"
+                f"{days:.0f} days and {zones} zones. Things that resemble each "
+                f"other at that distance are usually separate events."
+            )
+        elif not recent:
+            reasoning = (
+                f"{summary.cluster_size} similar reports, but {days:.0f} days "
+                f"apart. Too far apart to be one ongoing situation."
+            )
+        elif not local:
+            reasoning = (
+                f"{summary.cluster_size} similar reports across {zones} "
+                f"different zones. Not one place, so not one situation."
+            )
+        elif not corroborated:
+            reasoning = (
+                f"{summary.cluster_size} similar reports but only {n} people "
+                f"reporting. Not enough independent corroboration to wake anyone."
             )
         else:
             reasoning = (
-                f"Correlated but the zone's rate is not unusual for it "
-                f"(z={summary.anomaly_score:.1f}). [rule, not judgment]"
+                f"Correlated, but this zone's rate is not unusual for it "
+                f"(z={summary.anomaly_score:.1f})."
             )
+        reasoning += " [rule, not judgment]"
 
     return EscalationDecision(
         action="alert" if alert else "silent_log",

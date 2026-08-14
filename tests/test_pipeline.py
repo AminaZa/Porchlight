@@ -276,6 +276,36 @@ def test_suppressed_report_is_covered_by_the_alert(wired):
     assert all(r["zone"] != "Parcel lockers, bldg 3" for r in genuine)
 
 
+def test_no_two_nodes_overlap(wired):
+    """Every report must be individually visible in the graph.
+
+    Caught by eye, not by the suite: cluster members were placed at random
+    angles around their centroid with no separation check, so two of the four
+    escalated nodes landed 3px apart. The page showed a four-report cluster as
+    two blobs with edges running between them, which is worse than showing
+    nothing — it silently understates the evidence the alert was based on.
+    """
+    import itertools
+    import math
+    import re
+
+    run_all()
+    html = render.build_html(storage.rendered_rows())
+
+    circles = re.findall(
+        r"<circle cx='([\d.]+)' cy='([\d.]+)' r='([\d.]+)' fill='(#\w+)'", html
+    )
+    nodes = [(float(x), float(y), float(r)) for x, y, r, _ in circles]
+    assert len(nodes) == len(ALL), "not every report got a node"
+
+    for (x1, y1, r1), (x2, y2, r2) in itertools.combinations(nodes, 2):
+        gap = math.dist((x1, y1), (x2, y2))
+        assert gap >= r1 + r2, (
+            f"two nodes overlap: centres {gap:.1f}px apart but radii sum to "
+            f"{r1 + r2:.1f}. Reports are being hidden behind each other."
+        )
+
+
 def test_layout_is_deterministic(wired, tmp_path):
     """Same data must draw the same picture, so a take can be re-shot."""
     run_all()

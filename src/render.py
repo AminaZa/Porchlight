@@ -104,9 +104,23 @@ def _layout(rows: list[dict]) -> dict[str, tuple[float, float]]:
         cx = MARGIN + CLUSTER_RADIUS + span * (i + 0.5)
         cy = H * (0.34 + 0.32 * _rand(group[0], "cy"))
         centroids.append((cx, cy))
-        for rid in group:
-            angle = _rand(rid, "a") * math.tau
-            dist = (0.45 + 0.55 * _rand(rid, "d")) * CLUSTER_RADIUS
+
+        # Members go at evenly spaced angles, not random ones. Random angles
+        # let two members land 3px apart, and a four-report cluster then
+        # renders as two blobs with edges going nowhere — which is what the
+        # first version of this did. The whole seeded rotation still varies
+        # per cluster, so the arrangement is deterministic without being rigid.
+        n = len(group)
+        rotation = _rand(group[0], "rot") * math.tau
+        step = math.tau / n
+        # Keep adjacent members at least MIN_SEP apart: chord = 2r·sin(π/n).
+        radius = max(CLUSTER_RADIUS, MIN_SEP / (2 * math.sin(math.pi / n))) if n > 1 else 0.0
+
+        for j, rid in enumerate(group):
+            # Jitter is bounded to well under the angular step so it can
+            # never close the gap to a neighbour.
+            angle = rotation + j * step + (_rand(rid, "aj") - 0.5) * step * 0.30
+            dist = radius * (0.88 + 0.24 * _rand(rid, "dj"))
             pos[rid] = (
                 min(max(cx + math.cos(angle) * dist, MARGIN), W - MARGIN),
                 min(max(cy + math.sin(angle) * dist, MARGIN), H - MARGIN),
