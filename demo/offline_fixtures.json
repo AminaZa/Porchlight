@@ -1,0 +1,52 @@
+{
+  "_about": {
+    "purpose": "Pre-written triage output for every report in data/seed_reports.json, so demo/run_demo.py --offline can run the full pipeline with no AWS account and no spend.",
+    "warning": "THIS IS NOT MODEL OUTPUT. These summaries were written by hand to approximate what the triage agent produces. Offline mode exists so the pipeline can be exercised and demonstrated locally. It must never be recorded or presented as the agent working — see demo/offline.py.",
+    "key": "reporter_id|timestamp, which is unique across the seed set.",
+    "what_is_still_real": "Everything except the three model calls. Storage, ChromaDB retrieval and embedding, the anomaly detector, evidence computation, alert suppression, and the renderer all run for real."
+  },
+
+  "summaries": {
+    "r001|2026-03-02T09:15:00-05:00": ["theft", 2, "A delivered package went missing from a porch."],
+    "r003|2026-03-03T07:40:00-05:00": ["hazard", 2, "A pothole has opened up near the pedestrian crossing."],
+    "r005|2026-03-04T20:10:00-05:00": ["vandalism", 2, "Seedlings were pulled up from a bed in the community garden."],
+    "r006|2026-03-05T12:30:00-05:00": ["other", 1, "A street light on the corner has been out for over a week."],
+    "r008|2026-03-06T17:45:00-05:00": ["suspicious", 2, "A door-to-door caller asked about roof repairs and would not name a company."],
+    "r010|2026-03-07T22:05:00-05:00": ["other", 1, "Bins have been left out blocking the alley."],
+    "r012|2026-03-08T08:20:00-05:00": ["theft", 3, "A locked bicycle was taken from the shared rack overnight."],
+    "r004|2026-03-09T11:00:00-05:00": ["other", 1, "Flattened cardboard was left beside the parcel lockers instead of taken to recycling."],
+    "r014|2026-03-10T15:00:00-05:00": ["hazard", 2, "A fallen branch is lying across the footpath."],
+    "r015|2026-03-11T19:30:00-05:00": ["other", 1, "Fireworks were set off late at night."],
+    "r017|2026-03-12T06:50:00-05:00": ["vandalism", 2, "Graffiti appeared overnight on the side of the substation box."],
+    "r018|2026-03-13T13:15:00-05:00": ["theft", 2, "A hose reel was taken from an unlocked garden shed."],
+    "r020|2026-03-14T21:40:00-05:00": ["suspicious", 2, "A vehicle drove up and down the road several times at night, slowing near driveways."],
+    "r002|2026-03-15T10:00:00-05:00": ["hazard", 2, "The pavement has lifted where tree roots are growing, causing trips."],
+    "r007|2026-03-17T08:35:00-05:00": ["theft", 2, "A parcel left by a gate overnight has gone missing."],
+    "r011|2026-03-18T20:20:00-05:00": ["vandalism", 2, "A wing mirror was snapped off a parked car overnight."],
+    "r019|2026-03-19T09:00:00-05:00": ["hazard", 2, "A blocked drain floods the corner whenever it rains."],
+    "r013|2026-03-20T16:45:00-05:00": ["other", 1, "The community garden gate has been left unlocked three days running."],
+    "r009|2026-03-22T07:25:00-05:00": ["theft", 2, "Another delivery went missing, from a different courier."],
+    "r006|2026-03-23T19:10:00-05:00": ["suspicious", 3, "A person was seen looking into parked cars along the road."],
+    "r010|2026-03-25T11:30:00-05:00": ["vandalism", 2, "A fence panel at the rear of the building was kicked in."],
+    "r003|2026-03-28T08:10:00-05:00": ["hazard", 2, "Ice on the path by the steps has not been gritted."],
+    "r018|2026-03-29T14:20:00-05:00": ["theft", 2, "A heavy planter was taken from a front step."],
+    "r011|2026-03-31T16:05:00-05:00": ["other", 1, "One of the parcel locker doors will not close properly."],
+    "r020|2026-04-02T09:40:00-05:00": ["vandalism", 3, "A lock was broken off the community garden tool store."],
+    "r012|2026-04-04T21:15:00-05:00": ["suspicious", 2, "A van sat with its engine running for about twenty minutes before leaving."],
+    "r005|2026-04-05T13:00:00-05:00": ["other", 1, "Recycling has not been collected on one side of the road for two weeks."],
+
+    "r002|2026-03-09T14:00:00-05:00": ["suspicious", 2, "An unfamiliar person walked slowly along the street looking at houses."],
+    "r013|2026-03-21T16:30:00-05:00": ["suspicious", 2, "A person moved about near residential driveways during the afternoon."],
+    "r009|2026-03-30T11:10:00-05:00": ["suspicious", 2, "A person stood at the end of the road without apparent purpose."],
+
+    "r016|2026-03-24T08:00:00-05:00": ["other", 1, "A vehicle has stayed parked in the same street position for three days."],
+    "r016|2026-03-25T19:30:00-05:00": ["other", 1, "The same vehicle remains parked in the same position and has not moved."],
+    "r016|2026-03-26T08:15:00-05:00": ["other", 1, "The vehicle is still parked in the same position and is not recognised locally."],
+    "r016|2026-03-27T21:00:00-05:00": ["other", 1, "The vehicle has not moved from its parking position all week."],
+
+    "r004|2026-04-06T18:40:00-05:00": ["suspicious", 2, "A person was seen near the building's parcel lockers over several evenings."],
+    "r011|2026-04-06T21:15:00-05:00": ["suspicious", 2, "A person was seen loitering by the parcel lockers in the evening."],
+    "r007|2026-04-07T07:50:00-05:00": ["suspicious", 2, "A person was seen interfering near the parcel lockers in the morning."],
+    "r019|2026-04-08T06:20:00-05:00": ["suspicious", 2, "A person was seen waiting by the parcel lockers early in the morning."]
+  }
+}

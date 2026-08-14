@@ -11,6 +11,50 @@ created: 2026-08-14
 
 ---
 
+## 2026-08-14 (later) — Offline mode, and the finding that justifies the whole design
+
+### A similarity threshold cannot do this job
+
+Building the offline demo forced a measurement that turned out to be the strongest evidence in the project.
+
+| | cosine similarity |
+|---|---|
+| Within the genuine cluster | 0.708 – 0.814 |
+| **Within the near-miss** | **0.436 – 0.456** |
+| **Near-miss report → an unrelated report** | **0.576** |
+
+The near-miss reports resemble each other *less* than one of them resembles a completely unrelated report about a car driving past some driveways. A threshold sweep confirms there is no escape:
+
+| threshold | correct near-miss links | wrong cross-group links |
+|---|---|---|
+| 0.40 | 6 | 60 |
+| 0.45 | 2 | 20 |
+| 0.50+ | 0 | — |
+
+> [!important] This is the argument for the product
+> Telling *"three people described loitering in three zones over three weeks"* apart from *"these two sentences both mention driveways"* requires **reading** them and weighing where, when, and who reported. That is why there is an agent here and not an `if similarity > x` branch — and now it's measured rather than asserted. It's in the README.
+
+Consequence: `--offline` **cannot** reproduce the near-miss decline, and that is correct rather than a gap to paper over. A stub with no judgment cannot demonstrate judgment. Documented loudly in `demo/offline.py` and in the banner.
+
+### Built
+
+- **`demo/offline.py` + `--offline`** — the pipeline runs with no AWS account and no spend. Only the three model calls are stubbed; retrieval, anomaly detection, evidence counting, suppression and rendering are all real.
+  Labelled on every surface: terminal banner, closing reminder, and a band across the top of the generated page. `scripts/publish.sh` **refuses** to publish an offline-generated report.
+- **`demo/offline_fixtures.json`** — hand-written triage output for all 38 seed reports.
+- **`data/holdout_reports.json`** — 20 reports, written *before* any tuning began, with two adversarial cases: a real 4-report cluster whose reporters share almost no vocabulary, and four reports about parked cars on one street that are four unrelated incidents.
+- **`scripts/publish.sh`** — S3 static publish, creates the bucket and policy on first run.
+- **`tests/test_redaction.py`** — 13 tests, skipped unless `FNA_LIVE_TESTS=1`, so the default suite stays free and offline.
+
+### Another bug the demo output caught
+
+`format_line` checked `action == "alert"` before checking `suppressed`, so report 38 printed **▲ ALERT** while the tally counted it as suppressed — the terminal contradicting itself in the same frame. Suppression is now checked first.
+
+### Architecture diagram corrected
+
+`assets/architecture.html` had drifted from the code. One item was a genuine contradiction: escalation was shown holding `draft_alert` and `send_alert`, when its only tool is `get_zone_history`. Four references to the removed `redacted_text` field also fixed, and three real behaviours added that the diagram never showed — computed-not-reported counts, repeat-alert suppression, and the measured reason for indexing the summary.
+
+---
+
 ## 2026-08-14 — Vertical slice built and green
 
 **Where it stands:** every part of the pipeline that can be built and tested without AWS credentials is done and passing. **19 tests green.** Nothing has yet been run against a real model.

@@ -109,6 +109,16 @@ python demo/run_demo.py --explain              # + the reasoning behind each dec
 python demo/run_demo.py --explain --html       # + a self-contained HTML report
 ```
 
+### Running it without an AWS account
+
+```bash
+python demo/run_demo.py --offline --html
+```
+
+Stubs the three model calls so the pipeline runs on a laptop with no credentials and no spend. Storage, embedding, retrieval, the anomaly detector, evidence counting, alert suppression, and the renderer are all still real — only the judgment is replaced, by a hard-coded rule.
+
+It is labelled everywhere it can be: a terminal banner, a note on the summary, and a band across the top of the generated page. **It is not the agent, and its output should never be recorded as though it were.** `scripts/publish.sh` refuses to publish a page generated this way.
+
 ---
 
 ## Design decisions
@@ -122,6 +132,20 @@ python demo/run_demo.py --explain --html       # + a self-contained HTML report
 **Persistence and dispatch are code, not tools.** An agent that skips a write leaves the report invisible to every later search, and nothing raises. An agent that calls `send_alert` with different values than the decision it just made has two sources of truth. The agents judge; the pipeline acts.
 
 **Model per stage.** Haiku for typed extraction, Sonnet for tool selection, Opus 5 for the judgment. With prompt caching across the run this is roughly $0.90 per full 38-report run rather than $2.20.
+
+### Why there is an agent here and not a similarity threshold
+
+The obvious cheaper design is: embed everything, and call it a cluster when similarity clears some number. That was measured against the demonstration dataset, and it does not work.
+
+| | cosine similarity |
+|---|---|
+| Within the genuine cluster | 0.708 – 0.814 |
+| **Within the near-miss** | **0.436 – 0.456** |
+| **Near-miss report → an unrelated report** | **0.576** |
+
+The three near-miss reports resemble each other *less* than one of them resembles a completely unrelated report about a car driving past some driveways. Sweeping the threshold doesn't rescue it — at 0.45 it picks up two correct near-miss links and **twenty incorrect ones**; at 0.50 and above it picks up none at all.
+
+Separating *"three people described loitering in three different zones over three weeks"* from *"these two sentences both mention driveways"* requires reading them and weighing where, when, and who reported. That is the whole reason there is an agent in the middle of this and not an `if similarity > x` branch, and it is why `--offline` cannot reproduce the near-miss decline: a stub with no judgment cannot demonstrate judgment.
 
 ---
 

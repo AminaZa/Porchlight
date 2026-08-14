@@ -1,0 +1,77 @@
+{
+  "_about": {
+    "purpose": "Twenty reports the prompts are never tuned against. Run once, at the end, and record the result in the README whatever it turns out to be.",
+    "rule": "If you look at these while tuning, they stop being a holdout and this file is worthless. Written 2026-08-14, before any prompt tuning began.",
+    "why_this_beats_data_provenance": "The obvious objection to an authored dataset is that the system was tuned until it passed its own demo. A holdout tests exactly that. It is a stronger answer than sourcing reports externally, which cannot be done anyway: no public dataset contains several free-text descriptions of one event by different reporters, because intake operators normalise that away at collection.",
+    "adversarial_cases": {
+      "no_shared_vocabulary": "A real 4-report cluster (bike stripping at the rack) where the four reporters share almost no words. Must be found. This is the premise under harder conditions than the seed set.",
+      "heavy_shared_vocabulary": "Four reports that all talk about parked cars on the same street but describe four unrelated incidents. Must NOT be escalated as one situation. This is the failure mode a keyword or threshold approach falls into."
+    },
+    "expectations": "`_expect` is 'silent', 'decline', or 'alert_window' (exactly one alert across the reports so tagged). `_group` names the designed case."
+  },
+
+  "reports": [
+    { "_expect": "silent", "reporter_id": "h01", "zone": "Sycamore Row", "timestamp": "2026-05-04T08:20:00-05:00",
+      "text": "The recycling truck clipped our wheelie bin again and the lid is hanging off." },
+
+    { "_expect": "silent", "reporter_id": "h02", "zone": "Elm St north", "timestamp": "2026-05-04T19:05:00-05:00",
+      "text": "Kids have been climbing on the substation fence after school. Somebody is going to get hurt." },
+
+    { "_expect": "silent", "reporter_id": "h03", "zone": "Community garden", "timestamp": "2026-05-05T12:40:00-05:00",
+      "text": "Water butt has sprung a leak, there is a puddle right across the path now." },
+
+    { "_expect": "silent", "reporter_id": "h04", "zone": "Willow Ct", "timestamp": "2026-05-06T07:15:00-05:00",
+      "text": "Post came for a house that was demolished two years ago. Third time this month." },
+
+    { "_expect": "silent", "reporter_id": "h05", "zone": "Maple & 3rd", "timestamp": "2026-05-06T21:50:00-05:00",
+      "text": "Someone set off a car alarm at midnight and nobody came out to it for twenty minutes." },
+
+    { "_expect": "silent", "reporter_id": "h06", "zone": "Rear alley, bldg 1", "timestamp": "2026-05-07T14:30:00-05:00",
+      "text": "The security light at the back has started coming on in broad daylight." },
+
+    { "_expect": "silent", "reporter_id": "h07", "zone": "Birch Ln", "timestamp": "2026-05-08T09:00:00-05:00",
+      "text": "There is a shopping trolley in the hedge at the bottom of the road." },
+
+    { "_expect": "silent", "reporter_id": "h08", "zone": "Elm St south", "timestamp": "2026-05-09T16:20:00-05:00",
+      "text": "Scaffolding went up next door without any notice and it is partly over the pavement." },
+
+
+    { "_expect": "alert_window", "_group": "no_shared_vocabulary", "reporter_id": "h09", "zone": "Cycle rack, bldg 2", "timestamp": "2026-05-11T18:10:00-05:00",
+      "text": "Came down to find my back wheel gone and the frame still chained up." },
+
+    { "_expect": "alert_window", "_group": "no_shared_vocabulary", "reporter_id": "h10", "zone": "Cycle rack, bldg 2", "timestamp": "2026-05-12T07:45:00-05:00",
+      "text": "Somebody has had the saddle and seatpost off mine overnight. Lock was untouched." },
+
+    { "_expect": "alert_window", "_group": "no_shared_vocabulary", "reporter_id": "h11", "zone": "Cycle rack, bldg 2", "timestamp": "2026-05-12T19:30:00-05:00",
+      "text": "There are bits of a bike left by the stands, brake cables cut and hanging." },
+
+    { "_expect": "alert_window", "_group": "no_shared_vocabulary", "reporter_id": "h12", "zone": "Cycle rack, bldg 2", "timestamp": "2026-05-13T06:55:00-05:00",
+      "text": "Mine has been stripped for parts where it stood. Only the frame is left on the rail." },
+
+
+    { "_expect": "silent", "_group": "heavy_shared_vocabulary", "reporter_id": "h13", "zone": "Sycamore Row", "timestamp": "2026-05-14T10:00:00-05:00",
+      "text": "A parked car on Sycamore Row has a flat tyre and has been sat on it for days." },
+
+    { "_expect": "silent", "_group": "heavy_shared_vocabulary", "reporter_id": "h14", "zone": "Sycamore Row", "timestamp": "2026-05-16T15:25:00-05:00",
+      "text": "Someone reversed into a parked car on Sycamore Row and drove off without leaving a note." },
+
+    { "_expect": "silent", "_group": "heavy_shared_vocabulary", "reporter_id": "h15", "zone": "Sycamore Row", "timestamp": "2026-05-19T08:40:00-05:00",
+      "text": "A parked car on Sycamore Row is blocking the dropped kerb so the pushchair cannot get past." },
+
+    { "_expect": "silent", "_group": "heavy_shared_vocabulary", "reporter_id": "h16", "zone": "Sycamore Row", "timestamp": "2026-05-22T20:15:00-05:00",
+      "text": "The parked car on Sycamore Row outside number forty has had its window left wide open all evening." },
+
+
+    { "_expect": "silent", "reporter_id": "h17", "zone": "Willow Ct", "timestamp": "2026-05-24T11:35:00-05:00",
+      "text": "Hedge on the corner has grown right out over the path, you have to step into the road." },
+
+    { "_expect": "silent", "reporter_id": "h18", "zone": "Community garden", "timestamp": "2026-05-26T17:00:00-05:00",
+      "text": "Someone has been dumping grass cuttings behind the compost bins." },
+
+    { "_expect": "silent", "reporter_id": "h19", "zone": "Maple & 3rd", "timestamp": "2026-05-28T13:10:00-05:00",
+      "text": "Delivery vans keep mounting the verge to turn and it is churned to mud." },
+
+    { "_expect": "silent", "reporter_id": "h20", "zone": "Elm St north", "timestamp": "2026-05-30T22:05:00-05:00",
+      "text": "There was a lot of shouting outside around ten but it had stopped by the time I looked." }
+  ]
+}

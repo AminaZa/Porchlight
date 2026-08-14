@@ -133,13 +133,17 @@ def format_line(
     zone = report.zone[:24].ljust(24)
     kind = report.report_type.ljust(11)
 
-    if decision.action == "alert":
-        return _paint(f"{prefix}  {zone} {kind} ▲  ALERT", _LAMP + _BOLD)
-
+    # Suppression is checked first. A suppressed report still carries
+    # action="alert" — that is the agent's decision, preserved for the audit
+    # trail — but nothing was sent, and printing ALERT next to a tally that
+    # counts it as suppressed makes the terminal contradict itself.
     if suppressed:
         return _paint(
             f"{prefix}  {zone} {kind} ·  logged (cluster already alerted)", _DIM
         )
+
+    if decision.action == "alert":
+        return _paint(f"{prefix}  {zone} {kind} ▲  ALERT", _LAMP + _BOLD)
 
     if summary.cluster_size > 1:
         n, z = summary.distinct_reporters, len(summary.zones_involved)

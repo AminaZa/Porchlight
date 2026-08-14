@@ -38,6 +38,11 @@ EMBER = "#E08A34"
 CHALK = "#E9EEF7"
 DIM = "#8FA0BC"
 
+# Set by demo/run_demo.py --offline. When true the page carries a band saying
+# the judgment was stubbed, so a screenshot of it can never be mistaken for the
+# agent working. See demo/offline.py.
+OFFLINE = False
+
 W, H = 900.0, 380.0
 MARGIN = 34.0
 MIN_SEP = 30.0          # keeps the field from collapsing into an unreadable clump
@@ -220,6 +225,17 @@ def _card(row: dict, kind: str) -> str:
     )
 
 
+def _offline_band() -> str:
+    """A band the reader cannot miss when the models were stubbed."""
+    if not OFFLINE:
+        return ""
+    return (
+        '<div class="offline">OFFLINE MODE — the escalation decision below came '
+        "from a hard-coded rule, not from a model. Retrieval, the anomaly "
+        "detector and the evidence counts are real; the judgment is not.</div>"
+    )
+
+
 def build_html(rows: list[dict]) -> str:
     """The whole page as a string."""
     total = len(rows)
@@ -278,8 +294,11 @@ def build_html(rows: list[dict]) -> str:
   .card .foot {{ font-family:ui-monospace,Consolas,monospace; font-size:.73rem;
     color:{DIM}; margin:0; }}
   footer {{ color:{DIM}; font-size:.82rem; margin-top:2.5rem; max-width:46rem; }}
+  .offline {{ background:{EMBER}; color:{DUSK}; font-weight:700; text-align:center;
+    padding:.7rem 1rem; margin:-3rem -1.5rem 2.5rem; font-size:.85rem;
+    letter-spacing:.02em; }}
 </style></head>
-<body><div class="wrap">
+<body>{_offline_band()}<div class="wrap">
   <p class="eyebrow">Run report</p>
   <h1>Porch<span class="lit">light</span></h1>
   <p class="tagline">your friendly neighborhood agent</p>

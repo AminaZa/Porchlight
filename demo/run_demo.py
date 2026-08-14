@@ -94,13 +94,23 @@ def main(argv: list[str] | None = None) -> int:
                         help="also write the run report to this path")
     parser.add_argument("--keep", action="store_true",
                         help="append to the existing database instead of starting fresh")
+    parser.add_argument("--offline", action="store_true",
+                        help="stub the three model calls so the pipeline runs with no "
+                             "AWS account. NOT the agents — see demo/offline.py.")
     args = parser.parse_args(argv)
+
+    if args.offline:
+        from demo import offline
+        offline.install()
+        render.OFFLINE = True
+        print(offline.BANNER)
 
     seed = load_seed()
     if not args.keep:
         fresh_state()
 
-    print(f"\n  Porchlight — {len(seed)} reports\n")
+    mode = "  [OFFLINE — stubbed models]" if args.offline else ""
+    print(f"\n  Porchlight — {len(seed)} reports{mode}\n")
 
     results: list[Processed] = []
     for i, (_, raw) in enumerate(seed, start=1):
@@ -135,6 +145,10 @@ def main(argv: list[str] | None = None) -> int:
     if args.html:
         path = render.write(args.html)
         print(f"  wrote {path}\n")
+
+    if args.offline:
+        print("  Reminder: the judgment above came from a hard-coded rule, not\n"
+              "  from Opus. Run without --offline before recording anything.\n")
 
     return 0
 
