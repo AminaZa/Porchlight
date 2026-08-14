@@ -195,7 +195,7 @@ demo/            the run
 tests/           19 tests, offline
 ```
 
-`PROJECT_BRIEF.md`, `IMPLEMENTATION_PLAN.md`, `BRANDING.md`, and `PROGRESS.md` are the working documents, kept in the repository because the reasoning behind the decisions is part of the submission.
+`PROJECT_BRIEF.md`, `IMPLEMENTATION_PLAN.md`, `BRANDING.md`, `PROGRESS.md`, and `CHECKLIST.md` are the working documents, kept in the repository because the reasoning behind the decisions is part of the submission.
 
 ---
 

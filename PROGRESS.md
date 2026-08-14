@@ -7,7 +7,38 @@ created: 2026-08-14
 # Progress log
 
 > Running record of what got built, what changed, and why. Newest first.
-> Companion to [[IMPLEMENTATION_PLAN]] (what we're building) and [[BRANDING]] (how it looks).
+> Companion to [[IMPLEMENTATION_PLAN]] (what we're building), [[BRANDING]] (how it looks), and [[CHECKLIST]] (what's left).
+
+---
+
+## 2026-08-14 (evening) — First full demo run
+
+Ran the whole seed set through the pipeline in offline mode. **38 reports · 31 silent · 5 declined · 1 suppressed · 1 alert.** The parcel-locker cluster escalates once; report 38 joins it and is correctly suppressed rather than re-alerting.
+
+Two defects surfaced, neither of which the test suite caught — both found by running it and looking at the output.
+
+### Four nodes were rendering as two
+
+All four escalated nodes were lit and all six edges drawn, so the *data* was right. But two pairs sat **3.35px and 7.61px apart** with radii of 6.5, so they overlapped into single blobs. The page was visually understating the evidence the alert rested on.
+
+Self-inflicted: when the layout was rewritten to fix clumping, cluster members ended up placed at random angles around their centroid with no separation check. They now sit at evenly spaced angles with bounded jitter, and the radius is derived from the chord length needed to keep neighbours `MIN_SEP` apart. Nodes are now 61–92px apart.
+
+`test_no_two_nodes_overlap` asserts it, because this is exactly the class of bug a suite should catch.
+
+### The stub explained a decline wrongly
+
+It checked corroboration before time span, so two package thefts **478 hours apart** were declined for "only 2 reporters" — and the text read *"one person's concern"* when there were two people. It now names whichever condition actually decided, most decisive first:
+
+- *"2 similar reports, but 20 days apart. Too far apart to be one ongoing situation."*
+- *"3 similar reports, all from the same person. One neighbour's repeated concern is not corroboration."*
+- *"3 reports from 3 different people, all in one zone, inside 13 hours, in a place that normally sees far less (z=6.5)."*
+
+> [!note] Both of these were found by looking, not by testing
+> The retrieval failure, the suppression coverage bug, the ALERT/suppressed contradiction, the overlapping nodes — every significant defect this session came from running the thing and reading the output, not from the suite. The suite is what stops them coming back.
+
+### Added [[CHECKLIST]]
+
+Everything outstanding, in dependency order, with the brief's §10 submission items transcribed exactly. Two of those had been slipping through unnoticed: **AWS Builder ID** and the **builder.aws.com bonus post**.
 
 ---
 
