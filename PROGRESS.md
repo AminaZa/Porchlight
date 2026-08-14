@@ -66,12 +66,16 @@ Found by screenshotting the page and looking at it. Both now have regression tes
 
 ### GitHub
 
-Repo `AminaZa/porchlight`, public, MIT. Both commits reauthored to the correct identity; branch renamed `main`. `.obsidian/` and `Notes.md` kept out of the public repo.
+**https://github.com/AminaZa/Porchlight** — public, MIT license detected by GitHub (brief §10 satisfied), 8 topics, default branch `main`.
+
+The repo already existed as an empty placeholder created 2026-08-12, so the work was pushed into it rather than creating a second one. Both early commits were reauthored from a placeholder identity to `AminaZa <za.amina2005@gmail.com>`. `.obsidian/` and `Notes.md` are kept local.
 
 ### Blocked
 
-- **`aws` CLI not installed** → Bedrock inference-profile ids unverified. `python -m src.provider --list` will check them once it is.
-- **Bedrock model access** must be granted in the console for all three models.
+Only one thing, and it is **AWS credentials, not the `aws` CLI**. `python -m src.provider --list` runs on boto3, which is already installed — it needs credentials in the environment or `~/.aws/credentials`, nothing else.
+
+- Bedrock inference-profile ids unverified.
+- Bedrock **model access** must be granted in the console for all three models (Haiku 4.5, Sonnet 5, Opus 5) in the target region.
 
 ---
 
