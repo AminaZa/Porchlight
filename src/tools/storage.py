@@ -49,6 +49,10 @@ CREATE TABLE IF NOT EXISTS decisions (
     audience           TEXT,
     message            TEXT,
     reasoning          TEXT NOT NULL,
+    -- What the agent decided vs what actually happened. An alert suppressed as
+    -- a duplicate keeps action='alert' for the audit trail, but must not be
+    -- drawn or counted as one — the picture has to agree with the terminal.
+    suppressed         INTEGER NOT NULL DEFAULT 0,
     cluster_size       INTEGER NOT NULL,
     distinct_reporters INTEGER NOT NULL,
     time_span_hours    REAL NOT NULL,
@@ -137,15 +141,20 @@ def zone_timestamps(zone: str) -> list[datetime]:
     return [datetime.fromisoformat(r["timestamp"]) for r in rows]
 
 
-def record_decision(report_id: str, decision: EscalationDecision, summary) -> None:
-    """Log what was decided and the evidence it was decided on."""
+def record_decision(
+    report_id: str,
+    decision: EscalationDecision,
+    summary,
+    suppressed: bool = False,
+) -> None:
+    """Log what was decided, whether it was acted on, and the evidence behind it."""
     with connect() as conn:
         conn.execute(
             """INSERT OR REPLACE INTO decisions
                (report_id, action, urgency, audience, message, reasoning,
-                cluster_size, distinct_reporters, time_span_hours, anomaly_score,
-                related_ids, decided_at)
-               VALUES (?,?,?,?,?,?,?,?,?,?,?,?)""",
+                suppressed, cluster_size, distinct_reporters, time_span_hours,
+                anomaly_score, related_ids, decided_at)
+               VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)""",
             (
                 report_id,
                 decision.action,
@@ -153,6 +162,7 @@ def record_decision(report_id: str, decision: EscalationDecision, summary) -> No
                 decision.audience,
                 decision.message,
                 decision.reasoning,
+                int(suppressed),
                 summary.cluster_size,
                 summary.distinct_reporters,
                 summary.time_span_hours,
@@ -205,6 +215,61 @@ def expire_raw_text(now: datetime | None = None) -> int:
             (cutoff,),
         )
         return cur.rowcount
+
+
+def rendered_rows() -> list[dict]:
+    """Every report with the decision it produced, oldest first.
+
+    The renderer's only input. Reads the same rows the terminal printed, so the
+    two cannot disagree about what happened — verification step 6 asserts they
+    don't.
+    """
+    with connect() as conn:
+        rows = conn.execute(
+            """SELECT r.report_id, r.zone, r.timestamp, r.report_type, r.severity,
+                      r.summary,
+                      d.action, d.urgency, d.audience, d.message, d.reasoning,
+                      d.suppressed,
+                      d.cluster_size, d.distinct_reporters, d.time_span_hours,
+                      d.anomaly_score, d.related_ids,
+                      (SELECT 1 FROM alert_coverage a WHERE a.report_id = r.report_id)
+                        AS covered
+               FROM reports r
+               LEFT JOIN decisions d ON d.report_id = r.report_id
+               ORDER BY r.timestamp ASC"""
+        ).fetchall()
+
+    out = []
+    for r in rows:
+        related = [x for x in (r["related_ids"] or "").split(",") if x]
+        decided = r["action"] or "silent_log"
+        suppressed = bool(r["suppressed"])
+        out.append(
+            {
+                "report_id": r["report_id"],
+                "zone": r["zone"],
+                "timestamp": r["timestamp"],
+                "report_type": r["report_type"],
+                "severity": r["severity"],
+                "summary": r["summary"],
+                # What was decided, kept for the audit trail...
+                "decided_action": decided,
+                "suppressed": suppressed,
+                # ...and what actually happened, which is what gets drawn.
+                "action": "silent_log" if suppressed else decided,
+                "urgency": r["urgency"],
+                "audience": r["audience"],
+                "message": r["message"] or "",
+                "reasoning": r["reasoning"] or "",
+                "cluster_size": r["cluster_size"] or 1,
+                "distinct_reporters": r["distinct_reporters"] or 1,
+                "time_span_hours": r["time_span_hours"] or 0.0,
+                "anomaly_score": r["anomaly_score"] or 0.0,
+                "related_ids": related,
+                "covered": bool(r["covered"]),
+            }
+        )
+    return out
 
 
 @tool

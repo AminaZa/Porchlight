@@ -55,9 +55,10 @@ def render_alert(
     decision: EscalationDecision, report: TriagedReport, summary: CorrelationSummary
 ) -> str:
     """The alert as a recipient would see it, plus the evidence line."""
+    n = summary.distinct_reporters
     evidence = (
         f"cluster {summary.cluster_size} · "
-        f"{summary.distinct_reporters} reporters · "
+        f"{n} reporter{'' if n == 1 else 's'} · "
         f"{summary.time_span_hours:.0f}h · "
         f"z={summary.anomaly_score:.1f}"
     )
@@ -141,11 +142,12 @@ def format_line(
         )
 
     if summary.cluster_size > 1:
+        n, z = summary.distinct_reporters, len(summary.zones_involved)
         detail = (
             f"{summary.cluster_size} similar · "
-            f"{summary.distinct_reporters} reporters · "
+            f"{n} reporter{'' if n == 1 else 's'} · "
             f"{summary.time_span_hours:.0f}h · "
-            f"{len(summary.zones_involved)} zone(s)"
+            f"{z} zone{'' if z == 1 else 's'}"
         )
         return _paint(f"{prefix}  {zone} {kind} ·  declined", _DIM) + "\n" + _paint(
             f"           {detail}", _QUIET

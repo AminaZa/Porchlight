@@ -130,12 +130,22 @@ def process_report(raw: RawReport) -> Processed:
             # This situation has already woken someone. Log it instead of
             # sending a second alert about the same thing.
             suppressed = True
+            # Extend the coverage to this report too. It is part of the
+            # situation the earlier alert was about, so anything reading
+            # coverage — the renderer deciding which nodes are lit, the card
+            # picker deciding which decline is worth showing — has to see it
+            # that way. Without this the graph draws a four-report cluster as
+            # three, and the suppressed duplicate masquerades as a genuine
+            # decline.
+            storage.mark_cluster_alerted(covered, alert_key=report.report_id)
         else:
             sent = _stage("dispatch", alerts.send_alert, decision, report, summary)
             if sent:
                 storage.mark_cluster_alerted(covered, alert_key=report.report_id)
 
-    _stage("record", storage.record_decision, report.report_id, decision, summary)
+    _stage(
+        "record", storage.record_decision, report.report_id, decision, summary, suppressed
+    )
 
     return Processed(
         report=report,
