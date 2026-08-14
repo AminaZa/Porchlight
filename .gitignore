@@ -20,9 +20,13 @@ env/
 .mypy_cache/
 
 # --- Obsidian ---
-.obsidian/workspace.json
-.obsidian/workspace-mobile.json
+# Editor config, like .vscode/. The notes themselves are tracked; the
+# workspace layout and plugin settings are not.
+.obsidian/
 
 # --- OS ---
 Thumbs.db
 .DS_Store
+
+# Personal scratch notes, kept local
+Notes.md
