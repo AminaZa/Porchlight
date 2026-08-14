@@ -1,0 +1,18 @@
+# Core agent framework
+strands-agents
+strands-agents-tools
+
+# Observability (brief §7 — not optional with three agents)
+strands-agents[otel]
+
+# Vector store — default embedding fn is all-MiniLM-L6-v2 via ONNX,
+# local, no API key. First run downloads ~80 MB and caches it.
+chromadb
+
+# Anomaly detection + typed contracts
+numpy
+scipy
+pydantic
+
+# Tests
+pytest

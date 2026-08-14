@@ -1,0 +1,28 @@
+# --- Porchlight ---
+.env
+*.db
+*.sqlite
+*.sqlite3
+chroma/
+out/
+alerts.log
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# --- Obsidian ---
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+
+# --- OS ---
+Thumbs.db
+.DS_Store

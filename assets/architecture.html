@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Porchlight Architecture</title>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" integrity="sha384-ZZ1pncU3bQe8y31yfZdMFdSpttDoPmOZg2wguVK9almUodir1PghgT0eY7Mrty8H" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js" integrity="sha384-en/ztfPSRkGfME4KIm05joYXynqzUgbsG5nMrj/xEFAHXkeZfO3yMK8QQ+mP7p1/" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --dusk:  #0B1120;
+      --porch: #141E33;
+      --sill:  #243352;
+      --lamp:  #FFB454;
+      --halo:  #FFE2AE;
+      --ember: #E08A34;
+      --chalk: #E9EEF7;
+      --dim:   #8FA0BC;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --mono: ui-monospace, "Cascadia Code", "SF Mono", Menlo, Consolas, monospace;
+      --serif: Georgia, "Times New Roman", serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--dusk);
+      min-height: 100vh;
+      padding: 2rem;
+      color: var(--chalk);
+    }
+
+    .container { max-width: 1240px; margin: 0 auto; }
+
+    .header { margin-bottom: 2rem; }
+
+    .header-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .pulse-dot {
+      width: 10px;
+      height: 10px;
+      background: var(--dim);
+      border-radius: 50%;
+      animation: pulse 3s infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.9; }
+      50% { opacity: 0.35; }
+    }
+
+    h1 {
+      font-family: var(--serif);
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--chalk);
+    }
+
+    .tagline {
+      font-family: var(--serif);
+      font-style: italic;
+      color: var(--dim);
+      font-size: 1rem;
+    }
+
+    .subtitle {
+      color: var(--dim);
+      font-size: 0.875rem;
+      margin-left: 1.625rem;
+      line-height: 1.5;
+    }
+
+    .diagram-container {
+      background: var(--porch);
+      border-radius: 1rem;
+      border: 1px solid var(--sill);
+      padding: 1.5rem;
+      overflow-x: auto;
+    }
+
+    svg {
+      width: 100%;
+      min-width: 980px;
+      display: block;
+      font-family: var(--sans);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .card {
+      background: var(--porch);
+      border-radius: 0.75rem;
+      border: 1px solid var(--sill);
+      border-left: 3px solid var(--sill);
+      padding: 1.25rem;
+    }
+
+    .card.escalation { border-left-color: var(--lamp); }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .card-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .card-dot.sill  { background: var(--sill); border: 1px solid var(--dim); }
+    .card-dot.dim   { background: var(--dim); }
+    .card-dot.lamp  { background: var(--lamp); }
+
+    .card h3 {
+      font-family: var(--serif);
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: var(--chalk);
+    }
+
+    .card ul {
+      list-style: none;
+      color: var(--dim);
+      font-size: 0.78rem;
+      line-height: 1.55;
+    }
+
+    .card li { margin-bottom: 0.4rem; }
+
+    .card code {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--chalk);
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 1.5rem;
+      color: var(--sill);
+      font-size: 0.75rem;
+    }
+
+    .footer .evidence {
+      font-family: var(--mono);
+      color: var(--dim);
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 0.5rem;
+      margin-left: auto;
+      flex-shrink: 0;
+      align-items: center;
+    }
+    .toolbar-toggle {
+      background: transparent;
+      border: none;
+      color: var(--sill);
+      cursor: pointer;
+      font-size: 1.25rem;
+      line-height: 1;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.375rem;
+      transition: color 0.2s, background 0.2s;
+    }
+    .toolbar-toggle:hover { color: var(--dim); background: rgba(36, 51, 82, 0.5); }
+    .toolbar-actions { display: none; gap: 0.5rem; }
+    .toolbar.expanded .toolbar-actions { display: flex; }
+    .toolbar-actions button {
+      background: var(--porch);
+      border: 1px solid var(--sill);
+      color: var(--dim);
+      padding: 0.375rem 0.75rem;
+      border-radius: 0.375rem;
+      font-family: var(--sans);
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .toolbar-actions button:hover {
+      background: var(--sill);
+      color: var(--chalk);
+      border-color: var(--dim);
+    }
+
+    @media print {
+      body { background: var(--dusk); padding: 1rem; }
+      .toolbar { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="report-container">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-row">
+        <div class="pulse-dot"></div>
+        <h1>Porchlight</h1>
+        <span class="tagline">your friendly neighborhood agent</span>
+        <div class="toolbar">
+          <div class="toolbar-actions">
+            <button onclick="copyAsImage(this)">📋 Copy</button>
+            <button onclick="downloadPNG(this)">🖼️ PNG</button>
+            <button onclick="downloadPDF(this)">📄 PDF</button>
+          </div>
+          <button class="toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')" title="Export options" aria-label="Export options">⋯</button>
+        </div>
+      </div>
+      <p class="subtitle">A background agent that correlates neighborhood safety reports and wakes a human only when a real pattern emerges.<br>Strands Agents SDK · Amazon Bedrock · AWS &ldquo;Agents for Humans&rdquo; — Good Neighbor track</p>
+    </div>
+
+    <!-- Main Diagram -->
+    <div class="diagram-container">
+      <svg viewBox="0 0 1120 1020" role="img" aria-label="Porchlight architecture: intake feeds a sequential three-agent pipeline — triage, correlation, escalation — backed by SQLite, ChromaDB and an anomaly detector, ending in a silent log or a human-approved neighborhood alert.">
+        <defs>
+          <marker id="arrowhead" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+            <polygon points="0 0, 9 3.5, 0 7" fill="#8FA0BC" />
+          </marker>
+          <marker id="arrowlamp" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
+            <polygon points="0 0, 9 3.5, 0 7" fill="#FFB454" />
+          </marker>
+          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1A2842" stroke-width="0.5"/>
+          </pattern>
+          <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stop-color="#FFB454" stop-opacity="0.22"/>
+            <stop offset="55%"  stop-color="#E08A34" stop-opacity="0.08"/>
+            <stop offset="100%" stop-color="#FFB454" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+
+        <!-- Background -->
+        <rect width="100%" height="100%" fill="url(#grid)" />
+
+        <!-- ===== Local process boundary ===== -->
+        <rect x="80" y="210" width="380" height="492" rx="12" fill="none" stroke="#8FA0BC" stroke-width="1" stroke-dasharray="8,4" opacity="0.55"/>
+        <text x="92" y="230" fill="#8FA0BC" font-size="9" font-weight="600">STRANDS AGENTS SDK · local process · models via Amazon Bedrock</text>
+
+        <!-- ===== Arrows (drawn before boxes so they sit behind) ===== -->
+
+        <!-- intake -> pipeline -->
+        <line x1="270" y1="116" x2="270" y2="152" stroke="#8FA0BC" stroke-width="1.4" marker-end="url(#arrowhead)"/>
+        <!-- pipeline -> triage -->
+        <line x1="270" y1="196" x2="270" y2="244" stroke="#8FA0BC" stroke-width="1.4" marker-end="url(#arrowhead)"/>
+        <!-- triage -> correlation -->
+        <line x1="270" y1="336" x2="270" y2="412" stroke="#8FA0BC" stroke-width="1.4" marker-end="url(#arrowhead)"/>
+        <!-- correlation -> escalation -->
+        <line x1="270" y1="504" x2="270" y2="580" stroke="#8FA0BC" stroke-width="1.4" marker-end="url(#arrowhead)"/>
+
+        <!-- triage -> SQLite -->
+        <line x1="440" y1="282" x2="514" y2="282" stroke="#8FA0BC" stroke-width="1.2" marker-end="url(#arrowhead)"/>
+        <!-- triage -> ChromaDB -->
+        <path d="M 440 306 L 470 306 L 470 384 L 514 384" fill="none" stroke="#8FA0BC" stroke-width="1.2" marker-end="url(#arrowhead)"/>
+
+        <!-- correlation -> SQLite -->
+        <path d="M 440 424 L 508 424 L 508 300 L 514 300" fill="none" stroke="#8FA0BC" stroke-width="1.2" marker-end="url(#arrowhead)"/>
+        <!-- correlation -> ChromaDB -->
+        <path d="M 440 436 L 500 436 L 500 414 L 514 414" fill="none" stroke="#8FA0BC" stroke-width="1.2" marker-end="url(#arrowhead)"/>
+        <!-- correlation -> anomaly -->
+        <path d="M 440 470 L 500 470 L 500 516 L 514 516" fill="none" stroke="#8FA0BC" stroke-width="1.2" marker-end="url(#arrowhead)"/>
+
+        <!-- escalation -> silent log -->
+        <line x1="200" y1="682" x2="200" y2="742" stroke="#8FA0BC" stroke-width="1.4" marker-end="url(#arrowhead)"/>
+        <!-- escalation -> approval gate (the alert branch) -->
+        <path d="M 350 682 L 350 712 L 525 712 L 525 742" fill="none" stroke="#FFB454" stroke-width="1.6" marker-end="url(#arrowlamp)"/>
+        <!-- approval -> alert -->
+        <line x1="650" y1="788" x2="696" y2="788" stroke="#FFB454" stroke-width="1.6" marker-end="url(#arrowlamp)"/>
+
+        <!-- stores -> render -->
+        <path d="M 860 296 L 986 296 L 986 918 L 954 918" fill="none" stroke="#8FA0BC" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrowhead)"/>
+
+        <!-- ===== Arrow labels ===== -->
+        <text x="477" y="276" fill="#8FA0BC" font-size="7" text-anchor="middle">persist</text>
+        <text x="446" y="458" fill="#8FA0BC" font-size="7">tool calls</text>
+        <text x="282" y="366" fill="#8FA0BC" font-size="7.5" font-family="ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, monospace">TriagedReport · redacted_text</text>
+        <text x="282" y="532" fill="#8FA0BC" font-size="7.5" font-family="ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, monospace">CorrelationSummary</text>
+        <text x="282" y="546" fill="#8FA0BC" font-size="7" font-family="ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, monospace">cluster · distinct_reporters · z · span</text>
+        <text x="208" y="716" fill="#8FA0BC" font-size="7.5">silent_log — the common case</text>
+        <text x="437" y="706" fill="#FFB454" font-size="7.5" text-anchor="middle">alert</text>
+        <text x="978" y="600" fill="#8FA0BC" font-size="7" text-anchor="end">render reads the same rows</text>
+        <text x="978" y="612" fill="#8FA0BC" font-size="7" text-anchor="end">the demo prints</text>
+
+        <!-- ===== INTAKE ===== -->
+        <rect x="100" y="48" width="340" height="68" rx="6" fill="#0F1729"/>
+        <rect x="100" y="48" width="340" height="68" rx="6" fill="#141E33" stroke="#243352" stroke-width="1.5"/>
+        <text x="270" y="74" fill="#E9EEF7" font-size="12" font-weight="600" text-anchor="middle">REPORT INTAKE</text>
+        <text x="270" y="91" fill="#8FA0BC" font-size="9" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, monospace">src/intake/cli.py · demo/run_demo.py</text>
+        <text x="270" y="107" fill="#8FA0BC" font-size="8" text-anchor="middle">free text · zone (not an address) · timestamp · reporter_id</text>
+
+        <!-- ===== PIPELINE ===== -->
+        <rect x="100" y="156" width="340" height="40" rx="6" fill="#0F1729"/>
+        <rect x="100" y="156" width="340" height="40" rx="6" fill="#141E33" stroke="#243352" stroke-width="1.5"/>
+        <text x="270" y="174" fill="#E9EEF7" font-size="10" font-weight="600" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, monospace">src/pipeline.py — sequential workflow</text>
+        <text x="270" y="188" fill="#8FA0BC" font-size="8" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, monospace">process_report(raw) → EscalationDecision</text>
+
+        <!-- ===== 1 TRIAGE ===== -->
+        <rect x="100" y="248" width="340" height="88" rx="6" fill="#0F1729"/>
+        <rect x="100" y="248" width="340" height="88" rx="6" fill="#141E33" stroke="#8FA0BC" stroke-width="1.5"/>
+        <text x="270" y="272" fill="#E9EEF7" font-size="12" font-weight="600" text-anchor="middle">1 · TRIAGE AGENT</text>
+        <text x="270" y="290" fill="#8FA0BC" font-size="9" text-anchor="middle">Bedrock · Haiku 4.5 · structured output</text>
+        <text x="270" y="306" fill="#8FA0BC" font-size="8" text-anchor="middle">type · severity · zone · timestamp</text>
+        <text x="270" y="324" fill="#E9EEF7" font-size="8" text-anchor="middle">strips names, plates, descriptions → redacted_text</text>
+
+        <!-- ===== 2 CORRELATION ===== -->
+        <rect x="100" y="416" width="340" height="88" rx="6" fill="#0F1729"/>
+        <rect x="100" y="416" width="340" height="88" rx="6" fill="#141E33" stroke="#8FA0BC" stroke-width="1.5"/>
+        <text x="270" y="440" fill="#E9EEF7" font-size="12" font-weight="600" text-anchor="middle">2 · CORRELATION AGENT</text>
+        <text x="270" y="458" fill="#8FA0BC" font-size="9" text-anchor="middle">Bedrock · Sonnet 5 · chooses its own lookups</text>
+        <text x="270" y="475" fill="#E9EEF7" font-size="8" text-anchor="middle">two independent signals: meaning + rate</text>
+        <text x="270" y="492" fill="#8FA0BC" font-size="8" text-anchor="middle">is this connected — and unusual for this zone?</text>
+
+        <!-- ===== 3 ESCALATION ===== -->
+        <rect x="100" y="584" width="340" height="98" rx="6" fill="#0F1729"/>
+        <rect x="100" y="584" width="340" height="98" rx="6" fill="#141E33" stroke="#8FA0BC" stroke-width="1.5"/>
+        <text x="270" y="608" fill="#E9EEF7" font-size="12" font-weight="600" text-anchor="middle">3 · ESCALATION AGENT</text>
+        <text x="270" y="626" fill="#8FA0BC" font-size="9" text-anchor="middle">Bedrock · Opus 5 · tools: draft_alert, send_alert</text>
+        <text x="270" y="642" fill="#8FA0BC" font-size="8" text-anchor="middle">sees only the summary — never the raw reports</text>
+        <text x="270" y="659" fill="#E9EEF7" font-size="8" text-anchor="middle">the judgment lives in reasoning, not in a threshold</text>
+        <text x="270" y="674" fill="#8FA0BC" font-size="7.5" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, monospace">EscalationDecision.reasoning is required</text>
+
+        <!-- ===== SQLite ===== -->
+        <rect x="520" y="248" width="340" height="76" rx="6" fill="#0F1729"/>
+        <rect x="520" y="248" width="340" height="76" rx="6" fill="#141E33" stroke="#243352" stroke-width="1.5"/>
+        <text x="690" y="272" fill="#8FA0BC" font-size="11" font-weight="600" text-anchor="middle">SQLite — report log</text>
+        <text x="690" y="290" fill="#8FA0BC" font-size="8" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, monospace">store_report() · get_zone_history()</text>
+        <text x="690" y="308" fill="#8FA0BC" font-size="8" text-anchor="middle">reporter_id · raw text expires after 90 days</text>
+
+        <!-- ===== ChromaDB ===== -->
+        <rect x="520" y="364" width="340" height="76" rx="6" fill="#0F1729"/>
+        <rect x="520" y="364" width="340" height="76" rx="6" fill="#141E33" stroke="#243352" stroke-width="1.5"/>
+        <text x="690" y="388" fill="#8FA0BC" font-size="11" font-weight="600" text-anchor="middle">ChromaDB — vector store</text>
+        <text x="690" y="406" fill="#8FA0BC" font-size="8" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, monospace">embed_and_index() · semantic_search()</text>
+        <text x="690" y="424" fill="#E9EEF7" font-size="8" text-anchor="middle">indexes redacted_text only · all-MiniLM-L6-v2, local</text>
+
+        <!-- ===== Anomaly detector ===== -->
+        <rect x="520" y="480" width="340" height="76" rx="6" fill="#0F1729"/>
+        <rect x="520" y="480" width="340" height="76" rx="6" fill="#141E33" stroke="#243352" stroke-width="1.5"/>
+        <text x="690" y="504" fill="#8FA0BC" font-size="11" font-weight="600" text-anchor="middle">Anomaly detector — numpy / scipy</text>
+        <text x="690" y="522" fill="#8FA0BC" font-size="8" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, monospace">check_baseline_deviation()</text>
+        <text x="690" y="540" fill="#8FA0BC" font-size="8" text-anchor="middle">each zone scored against its own history, not a global rule</text>
+
+        <!-- ===== Outputs ===== -->
+
+        <!-- glow behind the alert, drawn first -->
+        <ellipse cx="825" cy="788" rx="200" ry="105" fill="url(#glow)"/>
+
+        <!-- silent log -->
+        <rect x="100" y="746" width="250" height="84" rx="6" fill="#0F1729"/>
+        <rect x="100" y="746" width="250" height="84" rx="6" fill="#141E33" stroke="#243352" stroke-width="1.5"/>
+        <text x="225" y="772" fill="#8FA0BC" font-size="12" font-weight="600" text-anchor="middle">SILENT LOG</text>
+        <text x="225" y="790" fill="#8FA0BC" font-size="8" text-anchor="middle">nobody is interrupted</text>
+        <text x="225" y="806" fill="#8FA0BC" font-size="8" text-anchor="middle">one-offs · the near-miss</text>
+        <text x="225" y="822" fill="#8FA0BC" font-size="8" text-anchor="middle">the single-reporter cluster</text>
+
+        <!-- human approval -->
+        <rect x="400" y="746" width="250" height="84" rx="6" fill="#0F1729"/>
+        <rect x="400" y="746" width="250" height="84" rx="6" fill="#141E33" stroke="#8FA0BC" stroke-width="1.5"/>
+        <text x="525" y="772" fill="#E9EEF7" font-size="12" font-weight="600" text-anchor="middle">HUMAN APPROVAL</text>
+        <text x="525" y="790" fill="#8FA0BC" font-size="8" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, monospace">FNA_REQUIRE_APPROVAL=1</text>
+        <text x="525" y="806" fill="#8FA0BC" font-size="8" text-anchor="middle">send_alert blocks for confirmation</text>
+        <text x="525" y="822" fill="#E9EEF7" font-size="8" text-anchor="middle">the agent drafts · a person sends</text>
+
+        <!-- neighborhood alert -->
+        <rect x="700" y="746" width="250" height="84" rx="6" fill="#0F1729"/>
+        <rect x="700" y="746" width="250" height="84" rx="6" fill="rgba(255, 180, 84, 0.10)" stroke="#FFB454" stroke-width="1.8"/>
+        <text x="825" y="772" fill="#FFE2AE" font-size="12" font-weight="600" text-anchor="middle">NEIGHBORHOOD ALERT</text>
+        <text x="825" y="790" fill="#FFB454" font-size="8" text-anchor="middle">a place to watch, never a person to look for</text>
+        <text x="825" y="806" fill="#8FA0BC" font-size="8" text-anchor="middle">urgency · audience · drafted message</text>
+        <text x="825" y="822" fill="#FFB454" font-size="8" text-anchor="middle">the exception — the porch light came on</text>
+
+        <!-- ===== Render / publish ===== -->
+        <rect x="520" y="880" width="430" height="76" rx="6" fill="#0F1729"/>
+        <rect x="520" y="880" width="430" height="76" rx="6" fill="#141E33" stroke="#243352" stroke-width="1.5"/>
+        <text x="735" y="906" fill="#8FA0BC" font-size="11" font-weight="600" text-anchor="middle" font-family="ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, monospace">src/render.py → out/report.html → S3</text>
+        <text x="735" y="924" fill="#8FA0BC" font-size="8" text-anchor="middle">self-contained HTML + inline SVG · no build step, no CDN</text>
+        <text x="735" y="941" fill="#8FA0BC" font-size="8" text-anchor="middle">layout seeded from report_id — byte-identical across runs</text>
+
+        <!-- ===== Legend (outside every boundary) ===== -->
+        <text x="100" y="978" fill="#E9EEF7" font-size="10" font-weight="600">Legend</text>
+
+        <rect x="162" y="969" width="16" height="11" rx="2" fill="#141E33" stroke="#8FA0BC" stroke-width="1"/>
+        <text x="186" y="978" fill="#8FA0BC" font-size="8">Agent (Bedrock model)</text>
+
+        <rect x="330" y="969" width="16" height="11" rx="2" fill="#141E33" stroke="#243352" stroke-width="1"/>
+        <text x="354" y="978" fill="#8FA0BC" font-size="8">Local store / detector</text>
+
+        <rect x="500" y="969" width="16" height="11" rx="2" fill="rgba(255, 180, 84, 0.10)" stroke="#FFB454" stroke-width="1"/>
+        <text x="524" y="978" fill="#8FA0BC" font-size="8">Escalation — amber marks nothing else</text>
+
+        <line x1="790" y1="975" x2="810" y2="975" stroke="#8FA0BC" stroke-width="1.4"/>
+        <text x="818" y="978" fill="#8FA0BC" font-size="8">Silent path</text>
+
+        <line x1="900" y1="975" x2="920" y2="975" stroke="#FFB454" stroke-width="1.6"/>
+        <text x="928" y="978" fill="#8FA0BC" font-size="8">Alert path</text>
+
+        <rect x="1000" y="969" width="16" height="11" rx="2" fill="none" stroke="#8FA0BC" stroke-width="1" stroke-dasharray="3,3" opacity="0.7"/>
+        <text x="1024" y="978" fill="#8FA0BC" font-size="8">Process boundary</text>
+      </svg>
+    </div>
+
+    <!-- Info Cards -->
+    <div class="cards">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot dim"></div>
+          <h3>Three agents, three prompts</h3>
+        </div>
+        <ul>
+          <li>• Each agent gets one short system prompt and a narrow tool set — more reliable than one prompt governing classification, correlation and judgment at once.</li>
+          <li>• Sequential workflow, not handoffs: no loops to debug, one stage named in every error.</li>
+          <li>• Model matched to task — <code>Haiku 4.5</code> for typed extraction, <code>Sonnet 5</code> for tool selection, <code>Opus 5</code> for the judgment call.</li>
+          <li>• Prompt caching on the shared system-prompt and tool-schema prefix.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot sill"></div>
+          <h3>Two independent signals</h3>
+        </div>
+        <ul>
+          <li>• <strong>Meaning</strong> — &ldquo;guy hanging around the mailboxes&rdquo; and &ldquo;loitering near the parcel lockers&rdquo; are one event described twice. Keyword matching finds neither from the other.</li>
+          <li>• <strong>Rate</strong> — two reports in a day is nothing on a busy block and alarming in a quiet cul-de-sac, so each zone is scored against its own history.</li>
+          <li>• Persistence runs as plain function calls, not agent tools — a model that skips <code>embed_and_index</code> would silently break the cluster and nothing would raise.</li>
+        </ul>
+      </div>
+
+      <div class="card escalation">
+        <div class="card-header">
+          <div class="card-dot lamp"></div>
+          <h3>Built for real deployment</h3>
+        </div>
+        <ul>
+          <li>• <strong>Correlates on place and behavior, never on person descriptions</strong> — only <code>redacted_text</code> is embedded or stored.</li>
+          <li>• <strong>A cluster needs distinct reporters</strong> — four reports from one person is one anxious neighbor, not a pattern.</li>
+          <li>• <strong>A human approves before anything is sent</strong> — &ldquo;it wakes a human&rdquo; means a human decides.</li>
+          <li>• Raw text expires on a retention window; aggregate counts survive so baselines keep working.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <p class="footer">
+      Porchlight · AWS &ldquo;Agents for Humans&rdquo; — Good Neighbor track · MIT ·
+      <span class="evidence">most days it says nothing</span>
+    </p>
+  </div>
+
+  <script>
+    async function copyAsImage(btn) {
+      const orig = btn.textContent;
+      try {
+        const el = document.getElementById('report-container');
+        const r = el.getBoundingClientRect();
+        const pad = 32;
+        const canvas = await html2canvas(document.body, { backgroundColor: '#0B1120', scale: 2, useCORS: true, ignoreElements: (e) => e.classList && e.classList.contains('toolbar'), x: r.left + window.scrollX - pad, y: r.top + window.scrollY - pad, width: r.width + pad * 2, height: r.height + pad * 2 });
+        const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+        btn.textContent = '✓ Copied!';
+      } catch (e) {
+        btn.textContent = '✗ Failed';
+      }
+      setTimeout(() => btn.textContent = orig, 2000);
+    }
+
+    async function downloadPNG(btn) {
+      const orig = btn.textContent;
+      btn.textContent = '⏳ ...';
+      try {
+        const el = document.getElementById('report-container');
+        const r = el.getBoundingClientRect();
+        const pad = 32;
+        const canvas = await html2canvas(document.body, { backgroundColor: '#0B1120', scale: 3, useCORS: true, ignoreElements: (e) => e.classList && e.classList.contains('toolbar'), x: r.left + window.scrollX - pad, y: r.top + window.scrollY - pad, width: r.width + pad * 2, height: r.height + pad * 2 });
+        const link = document.createElement('a');
+        link.download = 'architecture.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        btn.textContent = '✓ Done!';
+      } catch (e) {
+        btn.textContent = '✗ Failed';
+      }
+      setTimeout(() => btn.textContent = orig, 2000);
+    }
+
+    async function downloadPDF(btn) {
+      const orig = btn.textContent;
+      btn.textContent = '⏳ ...';
+      try {
+        const el = document.getElementById('report-container');
+        const r = el.getBoundingClientRect();
+        const pad = 32;
+        const canvas = await html2canvas(document.body, { backgroundColor: '#0B1120', scale: 2, useCORS: true, ignoreElements: (e) => e.classList && e.classList.contains('toolbar'), x: r.left + window.scrollX - pad, y: r.top + window.scrollY - pad, width: r.width + pad * 2, height: r.height + pad * 2 });
+        const imgData = canvas.toDataURL('image/png');
+        const { jsPDF } = window.jspdf;
+        const orientation = canvas.width > canvas.height ? 'landscape' : 'portrait';
+        const pdf = new jsPDF({ orientation, unit: 'px', format: [canvas.width, canvas.height], hotfixes: ['px_scaling'] });
+        pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+        pdf.save('architecture.pdf');
+        btn.textContent = '✓ Done!';
+      } catch (e) {
+        btn.textContent = '✗ Failed';
+      }
+      setTimeout(() => btn.textContent = orig, 2000);
+    }
+  </script>
+</body>
+</html>

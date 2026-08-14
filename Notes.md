@@ -1,0 +1,3 @@
+- on which platform its gonna take the information from, the input (discord/channels/multiple)
+- which platform its gonna output the information to
+- 

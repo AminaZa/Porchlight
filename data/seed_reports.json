@@ -1,0 +1,136 @@
+{
+  "_about": {
+    "purpose": "Fixture for the Porchlight demo. Authored, not sampled — see IMPLEMENTATION_PLAN.md §6.7. No public dataset contains multiple free-text descriptions of the same event by different reporters, because intake operators normalize that away at collection; normalizing it is the thing Porchlight automates.",
+    "anchor": "Reports run 2026-03-02 to 2026-04-08. Fixed dates, no relative offsets, so every run is identical.",
+    "expectations": "Each report carries `_expect`. The pipeline ignores it; tests/test_pipeline.py asserts against it. Values: 'silent' (logged, no alert), 'decline' (correlated but deliberately not escalated), 'alert_window' (exactly ONE alert must fire across the reports so tagged — see below).",
+    "alert_window": "The genuine cluster's 3rd and 4th reports are both defensible alert points: by report 3 there are already 3 distinct reporters in a quiet zone inside 13 hours. Asserting 'the alert fires on report 4' would fail a model making a reasonable call. The test asserts the behavior that actually matters — exactly one alert, and it belongs to the genuine cluster. This requires the pipeline to suppress re-alerting on a cluster that has already alerted; a deployment that re-alerts on every new report spams the recipient into ignoring it.",
+    "composition": {
+      "one_offs": 25,
+      "parcel_locker_baseline": 2,
+      "genuine_cluster": 4,
+      "near_miss": 3,
+      "single_reporter_cluster": 4,
+      "total": 38
+    },
+    "zone_design": "'Parcel lockers, bldg 3' is deliberately quiet (2 mundane reports over 5 weeks) so the 4-report burst reads as a genuine anomaly. 'Elm St north' and 'Maple & 3rd' are busy, so ordinary activity there does not spike."
+  },
+
+  "reports": [
+    { "_expect": "silent", "reporter_id": "r001", "zone": "Elm St north", "timestamp": "2026-03-02T09:15:00-05:00",
+      "text": "My package was gone from the porch when I got home Friday. Tracking says it was delivered at 2pm." },
+
+    { "_expect": "silent", "reporter_id": "r003", "zone": "Maple & 3rd", "timestamp": "2026-03-03T07:40:00-05:00",
+      "text": "Big pothole has opened up near the crossing. Someone is going to bend a wheel on it." },
+
+    { "_expect": "silent", "reporter_id": "r005", "zone": "Community garden", "timestamp": "2026-03-04T20:10:00-05:00",
+      "text": "Someone has pulled up half the seedlings in the far bed. They were fine on Sunday." },
+
+    { "_expect": "silent", "reporter_id": "r006", "zone": "Birch Ln", "timestamp": "2026-03-05T12:30:00-05:00",
+      "text": "The street light on the corner has been out for over a week now." },
+
+    { "_expect": "silent", "reporter_id": "r008", "zone": "Elm St south", "timestamp": "2026-03-06T17:45:00-05:00",
+      "text": "Had a door-to-door caller asking about roof repairs who would not give me a company name." },
+
+    { "_expect": "silent", "reporter_id": "r010", "zone": "Rear alley, bldg 1", "timestamp": "2026-03-07T22:05:00-05:00",
+      "text": "Bins have been left out blocking the alley again, you cannot get a car through." },
+
+    { "_expect": "silent", "reporter_id": "r012", "zone": "Elm St north", "timestamp": "2026-03-08T08:20:00-05:00",
+      "text": "Bike gone from the shared rack overnight. It was locked to the frame." },
+
+    { "_expect": "silent", "reporter_id": "r004", "zone": "Parcel lockers, bldg 3", "timestamp": "2026-03-09T11:00:00-05:00",
+      "text": "Somebody left a stack of flattened boxes by the lockers instead of taking them round to recycling." },
+
+    { "_expect": "silent", "reporter_id": "r014", "zone": "Willow Ct", "timestamp": "2026-03-10T15:00:00-05:00",
+      "text": "A branch came down in the wind and it is lying half across the footpath." },
+
+    { "_expect": "silent", "reporter_id": "r015", "zone": "Maple & 3rd", "timestamp": "2026-03-11T19:30:00-05:00",
+      "text": "Fireworks going off late again last night. Woke the baby up twice." },
+
+    { "_expect": "silent", "reporter_id": "r017", "zone": "Elm St south", "timestamp": "2026-03-12T06:50:00-05:00",
+      "text": "There is fresh graffiti on the side of the substation box, went up overnight." },
+
+    { "_expect": "silent", "reporter_id": "r018", "zone": "Community garden", "timestamp": "2026-03-13T13:15:00-05:00",
+      "text": "The hose reel has gone from the shed. Shed was not locked, to be fair." },
+
+    { "_expect": "silent", "reporter_id": "r020", "zone": "Birch Ln", "timestamp": "2026-03-14T21:40:00-05:00",
+      "text": "A car drove up and down the road several times around ten, slowing near the driveways." },
+
+    { "_expect": "silent", "reporter_id": "r002", "zone": "Elm St north", "timestamp": "2026-03-15T10:00:00-05:00",
+      "text": "The pavement has lifted where the tree roots are. I have tripped on it twice now." },
+
+    { "_expect": "silent", "reporter_id": "r007", "zone": "Willow Ct", "timestamp": "2026-03-17T08:35:00-05:00",
+      "text": "A parcel that was left by the gate has gone. It had been sat there since yesterday." },
+
+    { "_expect": "silent", "reporter_id": "r011", "zone": "Maple & 3rd", "timestamp": "2026-03-18T20:20:00-05:00",
+      "text": "Wing mirror snapped clean off a parked car overnight. Not the first time on this street." },
+
+    { "_expect": "silent", "reporter_id": "r019", "zone": "Elm St south", "timestamp": "2026-03-19T09:00:00-05:00",
+      "text": "The drain is blocked and the whole corner floods whenever it rains properly." },
+
+    { "_expect": "silent", "reporter_id": "r013", "zone": "Community garden", "timestamp": "2026-03-20T16:45:00-05:00",
+      "text": "The gate has been left unlocked three days running now." },
+
+    { "_expect": "silent", "reporter_id": "r009", "zone": "Elm St north", "timestamp": "2026-03-22T07:25:00-05:00",
+      "text": "Another delivery has gone missing. Different courier from last time." },
+
+    { "_expect": "silent", "reporter_id": "r006", "zone": "Birch Ln", "timestamp": "2026-03-23T19:10:00-05:00",
+      "text": "Someone was looking into the parked cars along the road earlier. Might be nothing but it seemed odd." },
+
+    { "_expect": "silent", "reporter_id": "r010", "zone": "Rear alley, bldg 1", "timestamp": "2026-03-25T11:30:00-05:00",
+      "text": "Somebody has kicked in one of the fence panels round the back." },
+
+    { "_expect": "silent", "reporter_id": "r003", "zone": "Willow Ct", "timestamp": "2026-03-28T08:10:00-05:00",
+      "text": "There is ice on the path by the steps and nobody has gritted it." },
+
+    { "_expect": "silent", "reporter_id": "r018", "zone": "Maple & 3rd", "timestamp": "2026-03-29T14:20:00-05:00",
+      "text": "The planter has been taken from my front step. It was heavy, so it was not one person on their own." },
+
+    { "_expect": "silent", "reporter_id": "r011", "zone": "Parcel lockers, bldg 3", "timestamp": "2026-03-31T16:05:00-05:00",
+      "text": "One of the locker doors will not shut properly. It has been like that a while now." },
+
+    { "_expect": "silent", "reporter_id": "r020", "zone": "Community garden", "timestamp": "2026-04-02T09:40:00-05:00",
+      "text": "Someone has broken the lock off the tool store. Nothing obviously missing." },
+
+    { "_expect": "silent", "reporter_id": "r012", "zone": "Birch Ln", "timestamp": "2026-04-04T21:15:00-05:00",
+      "text": "A van sat with its engine running for about twenty minutes and then drove off." },
+
+    { "_expect": "silent", "reporter_id": "r005", "zone": "Elm St south", "timestamp": "2026-04-05T13:00:00-05:00",
+      "text": "The recycling has not been collected on our side of the road for two weeks." },
+
+
+    { "_expect": "decline", "_group": "near_miss", "reporter_id": "r002", "zone": "Elm St north", "timestamp": "2026-03-09T14:00:00-05:00",
+      "text": "Someone I did not recognise was walking slowly up the street looking at the houses. Probably nothing." },
+
+    { "_expect": "decline", "_group": "near_miss", "reporter_id": "r013", "zone": "Birch Ln", "timestamp": "2026-03-21T16:30:00-05:00",
+      "text": "There was a person wandering about near the driveways for a while this afternoon." },
+
+    { "_expect": "decline", "_group": "near_miss", "reporter_id": "r009", "zone": "Willow Ct", "timestamp": "2026-03-30T11:10:00-05:00",
+      "text": "Noticed somebody loitering at the end of the road earlier who did not seem to be going anywhere." },
+
+
+    { "_expect": "decline", "_group": "single_reporter", "reporter_id": "r016", "zone": "Maple & 3rd", "timestamp": "2026-03-24T08:00:00-05:00",
+      "text": "The same car has been parked across from my house for three days now." },
+
+    { "_expect": "decline", "_group": "single_reporter", "reporter_id": "r016", "zone": "Maple & 3rd", "timestamp": "2026-03-25T19:30:00-05:00",
+      "text": "That vehicle I mentioned is still sat there. Nobody has moved it." },
+
+    { "_expect": "decline", "_group": "single_reporter", "reporter_id": "r016", "zone": "Maple & 3rd", "timestamp": "2026-03-26T08:15:00-05:00",
+      "text": "Still there this morning. I do not recognise it and it is not one of the neighbours'." },
+
+    { "_expect": "decline", "_group": "single_reporter", "reporter_id": "r016", "zone": "Maple & 3rd", "timestamp": "2026-03-27T21:00:00-05:00",
+      "text": "Car has not moved all week. I am getting a bit fed up of it taking the space." },
+
+
+    { "_expect": "silent", "_group": "genuine_cluster", "reporter_id": "r004", "zone": "Parcel lockers, bldg 3", "timestamp": "2026-04-06T18:40:00-05:00",
+      "text": "There has been a guy hanging around the mailboxes the last couple of evenings. Does not live in our building as far as I know." },
+
+    { "_expect": "silent", "_group": "genuine_cluster", "reporter_id": "r011", "zone": "Parcel lockers, bldg 3", "timestamp": "2026-04-06T21:15:00-05:00",
+      "text": "Saw someone loitering by the post boxes again tonight when I got back from work. Just stood there on their phone." },
+
+    { "_expect": "alert_window", "_group": "genuine_cluster", "reporter_id": "r007", "zone": "Parcel lockers, bldg 3", "timestamp": "2026-04-07T07:50:00-05:00",
+      "text": "Somebody was messing about near where the packages get dropped when I left this morning. Could not tell what they were doing." },
+
+    { "_expect": "alert_window", "_group": "genuine_cluster", "reporter_id": "r019", "zone": "Parcel lockers, bldg 3", "timestamp": "2026-04-08T06:20:00-05:00",
+      "text": "Person waiting around by the delivery lockers early on again. That is the third time this week someone has brought it up." }
+  ]
+}
