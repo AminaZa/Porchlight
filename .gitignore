@@ -30,3 +30,9 @@ Thumbs.db
 
 # Personal scratch notes, kept local
 Notes.md
+
+# Hackathon paperwork, kept local. REQUIREMENTS.md is Devpost's and AWS's
+# own rules text, not ours to redistribute; HACKATHON.md is the working
+# summary of it.
+REQUIREMENTS.md
+HACKATHON.md
