@@ -49,6 +49,11 @@ First-party rates — **Bedrock is priced separately, check the Bedrock pricing 
 
 Split + caching ≈ **$0.90 per full 38-report run** → roughly **55 runs inside the $50**. The all-Opus, no-caching design this replaces was ~$2.20/run (≈20 runs).
 
+> [!warning] Two corrections to this estimate, found 2026-08-20
+> **Triage never caches.** The minimum cacheable prefix is per-model and is *not* monotonic: Opus 5 caches from 512 tokens, Sonnet 5 from 1024, Haiku 4.5 only from **4096**. Triage's prefix measures ~960 tokens, so it silently reports `cache_creation_input_tokens = 0` — no error, just no cache. Correlation (~1690) and escalation (~1240) both clear their thresholds. The dollar impact is ~$0.04 per run; the real cost is that [[CHECKLIST]] §2's "confirm cache reads are landing" check will show triage's input count staying flat, which reads as a bug and isn't one. Left unpadded deliberately — see the note in `src/provider.py`.
+>
+> **`max_tokens` now has to cover thinking.** On Sonnet 5 and Opus 5, omitting the `thinking` parameter runs *adaptive thinking* — a change from Opus 4.7/4.8, where omitting it meant none — and `max_tokens` caps thinking plus the response together. At the original 4096 the structured output can truncate, `.structured_output` returns `None`, and the stage raises "returned no structured output" on some reports and not others. Raised to 16384 for both; output tokens are billed on what is generated, so the headroom is free.
+
 > [!warning] Set an AWS Budget with a zero-spend alert before the first call
 > It's free, and it is the only thing that catches a runaway loop during prompt tuning. Do it before step 1.
 

@@ -14,5 +14,9 @@ numpy
 scipy
 pydantic
 
+# Reads .env on package import — see src/__init__.py. Without this the model
+# ids you paste into .env are silently ignored.
+python-dotenv
+
 # Tests
 pytest

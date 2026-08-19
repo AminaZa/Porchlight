@@ -94,7 +94,18 @@ def send_alert(
     body = render_alert(decision, report, summary)
 
     if requires_approval() and not _confirm(body):
-        write_log(report, decision, summary, note="alert drafted, approval declined")
+        # The decision, the evidence, and the drafted message are all persisted
+        # by storage.record_decision either way — the pipeline calls it after
+        # dispatch returns. What distinguishes this path in the record is that
+        # the row keeps action='alert' while nothing was sent, which is exactly
+        # what a reviewer auditing "what did it want to do, and did a human
+        # agree?" needs to see.
+        ALERT_LOG.parent.mkdir(parents=True, exist_ok=True)
+        with ALERT_LOG.open("a", encoding="utf-8") as fh:
+            fh.write(
+                f"--- {datetime.now().astimezone().isoformat()} "
+                f"DRAFTED, APPROVAL DECLINED ---\n{body}\n\n"
+            )
         return False
 
     print()
@@ -106,18 +117,6 @@ def send_alert(
     with ALERT_LOG.open("a", encoding="utf-8") as fh:
         fh.write(f"--- {datetime.now().astimezone().isoformat()} ---\n{body}\n\n")
     return True
-
-
-def write_log(
-    report: TriagedReport,
-    decision: EscalationDecision,
-    summary: CorrelationSummary,
-    note: str = "",
-) -> None:
-    """The silent log — the common case, and the one the product is about."""
-    del summary, note  # persisted by storage.record_decision; kept for symmetry
-    if decision.action == "silent_log":
-        return
 
 
 def format_line(

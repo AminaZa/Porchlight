@@ -14,6 +14,8 @@ import argparse
 import sys
 from datetime import datetime
 
+from src import telemetry
+from src.guards import RedactionViolation
 from src.pipeline import StageError, submit
 
 
@@ -40,11 +42,30 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
 
+    # See demo/run_demo.py — a Windows console defaults to cp1252 and cannot
+    # encode the output characters, which fails before anything runs.
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="replace")
+
     when = datetime.fromisoformat(args.at).astimezone() if args.at else None
+
+    telemetry.setup()
 
     try:
         result = submit(args.text, args.zone, args.reporter, when)
     except StageError as exc:
+        if isinstance(exc.cause, RedactionViolation):
+            # Not a crash. The guard did its job — this report described a
+            # person and the model would not stop repeating it, so nothing was
+            # stored or indexed.
+            print(
+                f"\n  Blocked: {exc.cause}\n\n"
+                "  Nothing was stored or indexed. Porchlight correlates on place and\n"
+                "  behaviour, never on descriptions of people — see src/guards.py.\n",
+                file=sys.stderr,
+            )
+            return 2
         print(f"\n  Failed in the {exc.stage} stage:\n    {exc.cause}\n", file=sys.stderr)
         if exc.stage in {"triage", "correlation", "escalation"}:
             print(

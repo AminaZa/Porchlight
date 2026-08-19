@@ -155,6 +155,18 @@ This is a system where residents report on neighbours, and where correlation *am
 
 **Correlation runs on place and behaviour, never on person descriptions.** Names, physical descriptions, vehicle details, and street numbers are stripped at triage and never reach storage or the index. Alerts describe *a place to watch*, not *a person to look for*.
 
+**That stripping is enforced, not just requested.** The triage and escalation agents run under a `RedactionGuard` — a Strands hook on `AfterModelCallEvent` that inspects what the model actually produced, including the structured-output fields. If a summary still describes a person, the guard sets the event's `retry` flag: the response is discarded and the model is asked again, before the pipeline, storage, or the index ever see it. A model that keeps leaking fails the report rather than having it stored.
+
+The three layers do different jobs and none of them is redundant:
+
+| | does what | fails how |
+|---|---|---|
+| The prompt | asks for redaction, and does the actual work | silently, if the model doesn't comply |
+| `src/guards.py` | refuses non-compliant output inside the agent loop | loudly, and only after a retry |
+| `tests/test_redaction.py` | proves both hold against a live model | after the fact, on cases we thought of |
+
+A prompt is an instruction. This is a control.
+
 **A cluster requires distinct reporters.** Counted from storage, not self-reported by the model, because a control a model reports on itself is not a control.
 
 **A human approves before anything is dispatched.** `FNA_REQUIRE_APPROVAL=1` makes the agent draft and a person decide. Off for the demo; on for any real use.
@@ -173,9 +185,25 @@ The demonstration dataset is authored, not sampled. No public dataset contains m
 python -m pytest tests/ -q
 ```
 
-19 tests, no AWS credentials required and no spend. Only the three model calls are stubbed — storage, retrieval, the anomaly detector, evidence computation, alert suppression, and the renderer all run for real.
+52 tests, no AWS credentials required and no spend. Only the three model calls are stubbed — storage, retrieval, the anomaly detector, evidence computation, the redaction guard, alert suppression, and the renderer all run for real.
 
 The one to read first is `tests/test_vectors.py`. It asserts that the four differently-worded cluster reports outrank everything else, that a keyword search would fail on them, and that the near-miss stays separable from the genuine cluster. If that suite goes red, the project's premise is broken and nothing downstream matters.
+
+`tests/test_guards.py` is the other half of the safety story: it checks that the guard catches the constructions a neighbour actually types, *and* that it stays silent on the output the system produces on an ordinary day. Precision matters as much as recall here — a guard that fires on normal reports is one that gets switched off.
+
+A further 13 tests in `tests/test_redaction.py` call Bedrock and are skipped unless you ask for them:
+
+```bash
+FNA_LIVE_TESTS=1 python -m pytest tests/test_redaction.py -v
+```
+
+### Tracing
+
+```bash
+FNA_TRACE=1 python demo/run_demo.py
+```
+
+Emits OpenTelemetry spans to the console — one agent span per stage with token counts, tool spans nested under correlation. With three agents in a chain this is how you tell *which* stage produced a surprising result. Set `OTEL_EXPORTER_OTLP_ENDPOINT` to send them to a collector instead.
 
 ---
 
@@ -186,13 +214,15 @@ src/
   models.py      the data contract; model-generated fields split from computed ones
   provider.py    model per role, prompt caching, `--list` to verify Bedrock ids
   prompts.py     the three system prompts, together, because they tune together
+  guards.py      the redaction control — a Strands hook, not a prompt
+  telemetry.py   OpenTelemetry, behind FNA_TRACE
   agents/        triage · correlation · escalation
   tools/         storage · vectors · anomaly · alerts
   pipeline.py    the workflow, and where evidence is counted
   render.py      SQLite → one self-contained HTML file
 data/            the demonstration dataset
 demo/            the run
-tests/           19 tests, offline
+tests/           52 tests, offline
 ```
 
 `PROJECT_BRIEF.md`, `IMPLEMENTATION_PLAN.md`, `BRANDING.md`, `PROGRESS.md`, and `CHECKLIST.md` are the working documents, kept in the repository because the reasoning behind the decisions is part of the submission.

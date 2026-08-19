@@ -13,19 +13,26 @@ from __future__ import annotations
 
 from strands import Agent
 
+from src.guards import RedactionGuard
 from src.models import CorrelationSummary, EscalationDecision, TriagedReport
 from src.prompts import ESCALATION
 from src.provider import get_model
 from src.tools.storage import get_zone_history
 
 
-def _agent() -> Agent:
+def _agent(guard: RedactionGuard) -> Agent:
+    # Guarded as well as triage. Everything reaching this stage has already
+    # been redacted once, so there should be nothing left to leak — but this is
+    # the stage that writes the text sent to a whole street, and "should be" is
+    # not the standard that surface deserves. The prompt says place-not-person;
+    # this makes it so.
     return Agent(
         model=get_model("escalation"),
         system_prompt=ESCALATION,
         tools=[get_zone_history],
         structured_output_model=EscalationDecision,
         callback_handler=None,
+        hooks=[guard],
         name="porchlight-escalation",
     )
 
@@ -58,8 +65,13 @@ def _evidence(report: TriagedReport, summary: CorrelationSummary) -> str:
 
 
 def decide(report: TriagedReport, summary: CorrelationSummary) -> EscalationDecision:
-    """Decide whether this report warrants waking a person."""
-    result = _agent()(_evidence(report, summary)).structured_output
+    """Decide whether this report warrants waking a person.
+
+    Raises ``guards.RedactionViolation`` if the drafted alert keeps naming a
+    person rather than a place.
+    """
+    guard = RedactionGuard(label="escalation")
+    result = _agent(guard)(_evidence(report, summary)).structured_output
     if result is None:
         raise RuntimeError("escalation returned no structured output")
 

@@ -21,7 +21,27 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from src import render  # noqa: E402
+
+def _utf8_stdout() -> None:
+    """Make the box-drawing characters survive a Windows console.
+
+    Python picks the console's code page for stdout, and on a default Windows
+    install that is cp1252, which cannot encode ─ │ ▲ or any of the banner. The
+    failure is a UnicodeEncodeError before the first report is processed, and
+    it appears the moment output is piped or redirected — including when a
+    screen recorder or a CI job captures it. Reconfiguring here rather than
+    asking everyone to set PYTHONIOENCODING keeps the clean-clone instructions
+    honest.
+    """
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="replace")
+
+
+_utf8_stdout()
+
+from src import render, telemetry  # noqa: E402
+from src.guards import RedactionViolation  # noqa: E402
 from src.models import RawReport  # noqa: E402
 from src.pipeline import Processed, StageError, process_report  # noqa: E402
 from src.tools import alerts, storage, vectors  # noqa: E402
@@ -99,6 +119,9 @@ def main(argv: list[str] | None = None) -> int:
                              "AWS account. NOT the agents — see demo/offline.py.")
     args = parser.parse_args(argv)
 
+    if telemetry.setup():
+        print("\n  [FNA_TRACE=1 — OpenTelemetry spans to console]")
+
     if args.offline:
         from demo import offline
         offline.install()
@@ -113,10 +136,19 @@ def main(argv: list[str] | None = None) -> int:
     print(f"\n  Porchlight — {len(seed)} reports{mode}\n")
 
     results: list[Processed] = []
+    blocked = 0
     for i, (_, raw) in enumerate(seed, start=1):
         try:
             res = process_report(raw)
         except StageError as exc:
+            if isinstance(exc.cause, RedactionViolation):
+                # The guard refused this report's output. That is a working
+                # control, not a broken run — log it and keep going, because
+                # one blocked report should not cost the other thirty-seven.
+                blocked += 1
+                print(f"  [{i:02d}/{len(seed)}]  blocked by the redaction guard "
+                      f"— {exc.cause.findings[0][0]}")
+                continue
             print(f"\n  Failed on report {i} in the {exc.stage} stage:\n    {exc.cause}\n",
                   file=sys.stderr)
             if exc.stage in {"triage", "correlation", "escalation"}:
@@ -136,6 +168,7 @@ def main(argv: list[str] | None = None) -> int:
 
     print("\n  " + "─" * 58)
     tail = f" · {suppressed} suppressed" if suppressed else ""
+    tail += f" · {blocked} blocked" if blocked else ""
     print(f"  {len(results)} reports · {silent} silent · {declined} declined{tail} "
           f"· {sent} alert{'' if sent == 1 else 's'}\n")
 

@@ -43,7 +43,7 @@ created: 2026-08-14
     - [ ] the parcel-locker cluster **alerts**, exactly once
 - [ ] `python -m pytest tests/` still green against real model output
 - [ ] **Redaction tests** — `FNA_LIVE_TESTS=1 python -m pytest tests/test_redaction.py -v` (13 tests, ~12 Haiku calls, a fraction of a cent)
-- [ ] Check cache reads are landing: `FNA_TRACE=1 python demo/run_demo.py` — input token counts should drop sharply after report 1
+- [ ] Check cache reads are landing: `FNA_TRACE=1 python demo/run_demo.py` — correlation and escalation input token counts should drop sharply after report 1. **Triage will not drop, and that is expected** — its prefix is ~960 tokens against Haiku 4.5's 4096-token minimum, so it never caches. See `src/provider.py` → `MIN_CACHEABLE_TOKENS`
 
 ---
 
