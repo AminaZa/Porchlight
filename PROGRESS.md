@@ -43,6 +43,32 @@ Checked the request configuration against current model behaviour rather than as
 
 **52 tests green** (was 20), 13 live redaction tests still waiting on credentials. Offline demo unchanged at 38 · 31 silent · 5 declined · 1 suppressed · 1 alert.
 
+### The deadline, finally
+
+**14 September 2026, 5:00pm PT.** [[CHECKLIST]] §5 had it as an open question and [[PROJECT_BRIEF]] §18 guessed "six weeks from project start"; it was in the official rules the whole time. From 2026-08-20 that is **25 days**, not six weeks. The AWS credits form closes earlier, 11 September at 12pm PT.
+
+Also from the rules: the `#AgentsforHumans` hashtag requirement was **removed** in the 2026-08-12 update. The title should still use the phrase; the hashtag is no longer required. [[PROJECT_BRIEF]] §10 is out of date on this.
+
+### Submission copy drafted
+
+Both of the text deliverables are written and neither needed AWS:
+
+- **[[VIDEO_SCRIPT]]** — beat sheet, narration budgeted at ~630 words, on-screen direction. The demo section gets 2:15 of the 5:00 and is built around the two *declines* rather than the alert. §1, §2 and §4 are recordable with no live run; only the pipeline footage isn't.
+- **[[DEVPOST]]** — elevator pitch, the standard form sections, tag list. Three claims that depend on the first real run are marked `⟨PENDING⟩` rather than written speculatively: the holdout result, the live demo URL, the video link.
+
+### Blocked, and on what
+
+AWS account verification is running, roughly 72 hours, so credentials land around **23 August**. Everything in [[CHECKLIST]] §1–§3 waits on it.
+
+Worth recording that the credits are **not critical**, since it would be easy to treat them as a blocker: without them the entire remaining project is on the order of $20–50 of Bedrock usage. `provider.py` also still supports `FNA_PROVIDER=anthropic` as a fallback, though using it would throw away the AWS-native architecture points this hackathon explicitly rewards.
+
+**4 commits unpushed** at end of session: `fbf9c1b` `312ff0e` `b8a3334` `cd1311a`.
+
+> [!note] What next session should pick up
+> If verification has cleared: [[CHECKLIST]] §1 → §2, in order, one report before the full set.
+>
+> If it hasn't: AWS Builder ID (five minutes, needs no AWS account), record [[VIDEO_SCRIPT]] §1/§2/§4, and the first builder.aws post. That bonus is worth up to +0.6 on a 5-point scale and the retrieval-failure story is already written up in three places.
+
 ---
 
 ## 2026-08-14 (evening) — First full demo run
