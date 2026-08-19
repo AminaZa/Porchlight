@@ -15,7 +15,7 @@ A submission for the **AWS "Agents for Humans" hackathon** (Devpost), built with
 
 **Working name:** Friendly Neighborhood Agent
 
-**Deadline:** 6 weeks from project start.
+**Deadline:** **Monday 14 September 2026, 5:00pm PT** — the submission close in the official rules. (This originally read "6 weeks from project start", which was a guess and was wrong. The AWS credits request form closes earlier, 11 September at 12pm PT.)
 
 ---
 
@@ -221,7 +221,7 @@ friendly-neighborhood-agent/
 - [ ] Demo video, max 5 minutes, covering (1) the problem (2) who it's for (3) why it matters
 - [ ] AWS Builder ID
 - [ ] Optional but scores higher: live demo link
-- [ ] Bonus: post on builder.aws.com with `#AgentsforHumans`, published before the deadline
+- [ ] Bonus: post on builder.aws.com, published before the deadline. Use the phrase "Agents for Humans" in the title — the `#AgentsforHumans` **hashtag requirement was removed** in the 2026-08-12 rules update. Up to +0.6 total, 0.2 per post, maximum three
 
 ### Demo video structure (5 min)
 
