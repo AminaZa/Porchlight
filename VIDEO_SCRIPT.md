@@ -132,19 +132,26 @@ Hold the muted state for a beat before cutting. The fade is the argument — the
 narration says people mute these channels, and the screen shows it happening
 rather than asserting it.
 
-**Narration** *(~80 words)*
+**Narration** *(79 words — see the timing note below)*
 
 > Porchlight is for everyone on the street — and what makes it worth having is
 > what it doesn't send.
 >
 > Most neighbourhood apps buzz for everything, so people mute them. Then the one
-> report that actually mattered lands in a channel nobody is reading any more.
+> that mattered lands in a channel nobody reads.
 >
 > Porchlight goes straight to the residents of a zone, and most weeks it says
 > nothing at all. The silence is what makes the rare message worth opening.
 >
-> A volunteer still approves every alert before it goes out. The agent drafts.
-> A person sends.
+> A volunteer still approves every alert. The agent drafts. A person sends.
+
+> [!note] This beat runs about 2 seconds long
+> 79 words at a calm 150 wpm is ~32s against a 30s slot. Either cut two more
+> clauses or let §2 run to 1:17 and take it out of §3a's scroll, which has slack.
+> **Don't solve it by reading faster** — the calm is the argument.
+>
+> Two words carry a cut: *"mute"* at 0:56 and the pause before *"nothing at
+> all."* [[MOTION_REFS]] Part 2 has the full frame-level sync table.
 
 > [!note] The audience changed on 2026-08-21 and this beat changed with it
 > Alerts used to go to a single block captain, which made *them* the customer.
