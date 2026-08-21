@@ -2,7 +2,7 @@
 
 Person-identifying detail must not survive triage into the summary, because
 the summary is the only long-lived version of a report — it is what gets
-embedded, searched, shown to a block captain, and published to a static page.
+embedded, searched, broadcast to a zone's residents, and published to a static page.
 
 **These tests call Bedrock and cost money.** They are skipped unless
 `FNA_LIVE_TESTS=1` is set, so `pytest tests/` stays free and offline. Run them

@@ -96,7 +96,7 @@ def wired(tmp_path, monkeypatch):
         return EscalationDecision(
             action="alert" if alert else "silent_log",
             urgency="medium",
-            audience="block_captain",
+            audience="zone_residents",
             message="Worth a look at the parcel lockers this week." if alert else "",
             reasoning=(
                 f"{summary.cluster_size} reports from {summary.distinct_reporters} "

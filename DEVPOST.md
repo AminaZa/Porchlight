@@ -3,7 +3,7 @@ tags: [submission, devpost, hackathon, porchlight]
 status: draft
 created: 2026-08-20
 ---
-
+i 
 # Devpost submission copy
 
 > Paste-ready text for the Devpost form. Field names below match the form's own
@@ -228,7 +228,7 @@ strands-agents, amazon-bedrock, claude, python, chromadb, sqlite, numpy, scipy, 
 
 **Video** — ⟨PENDING — public YouTube or Vimeo URL⟩
 
-**AWS Builder ID** — ⟨PENDING — free, no AWS account verification needed, do this now⟩
+**AWS Builder ID** — ⟨PENDING — account created 2026-08-21; paste the ID itself here⟩
 
 ---
 

@@ -37,7 +37,11 @@ from pydantic import BaseModel, Field
 ReportType = Literal["theft", "suspicious", "vandalism", "hazard", "other"]
 Action = Literal["silent_log", "alert"]
 Urgency = Literal["low", "medium", "high"]
-Audience = Literal["block_captain", "zone_residents", "all_residents"]
+# Decided 2026-08-21: alerts broadcast to the residents of the affected zone.
+# Single-valued deliberately — the escalation agent does not choose a recipient,
+# so an alert cannot be quietly narrowed or widened by a model. Widening the
+# blast radius should be a code change someone reviews, not a token it emits.
+Audience = Literal["zone_residents"]
 
 
 def make_report_id(zone: str, timestamp: datetime, reporter_id: str, text: str) -> str:
@@ -218,8 +222,10 @@ class EscalationDecision(BaseModel):
         description="How soon a human should look. Ignored when action is 'silent_log'."
     )
     audience: Audience = Field(
-        description="Who should receive this. Prefer the narrowest audience that "
-        "can act on it. Ignored when action is 'silent_log'."
+        default="zone_residents",
+        description="Always 'zone_residents'. Alerts go to the residents of the "
+        "zone the pattern is in; this is not a choice you make. Ignored when "
+        "action is 'silent_log'."
     )
     message: str = Field(
         description=(

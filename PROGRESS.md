@@ -11,6 +11,74 @@ created: 2026-08-14
 
 ---
 
+## 2026-08-21 — The alert recipient, decided; two builder posts drafted
+
+### Alerts broadcast to the zone's residents
+
+[[CHECKLIST]] §5 had carried this as an open question since 2026-08-14, framed as
+*"single block captain vs channel broadcast"*. Reading the code first changed the
+question: `Audience` was already a three-value `Literal` — `block_captain`,
+`zone_residents`, `all_residents` — and the `ESCALATION` prompt said **nothing**
+about it. The model was choosing among three recipients on the strength of one line
+of field description, and `demo/offline.py` hard-coded `block_captain` anyway, so
+the tier visible on camera was fixed regardless of what the model picked.
+
+**Decided: broadcast to `zone_residents`.** Not `all_residents` — the alert names a
+place, and sending "watch the Elm St lockers" to the whole neighbourhood is broadcast
+past the point where any recipient can act on it.
+
+`Audience` is now **single-valued**. That is the part worth keeping: the escalation
+agent decides *whether* to alert and writes the message, but it cannot decide who
+hears it. Widening the blast radius is a code change someone reviews, not a token a
+model emits. The field also carries a default now, so the model never has to produce
+it at all.
+
+Broadcasting is the higher-risk option and was taken with that understood. Under a
+single named recipient, that person is themselves a human check standing between the
+model and the neighbourhood; broadcasting removes it. Three changes follow from that:
+
+- **`ESCALATION` rewritten around the reader.** The prompt now states that the message
+  goes to everyone in the zone, that **the person who was reported is likely among the
+  people reading it**, and that no recipient has seen the underlying reports or the
+  reasoning — the message is all they get. It forbids any wording that reads as an
+  instruction to *confront, follow, record, or identify* somebody, and names the
+  reasonable action instead: be aware, secure your own property, report what you see.
+- **`requires_approval()` matters more, not less.** `FNA_REQUIRE_APPROVAL` is now the
+  *only* human check on the path. Documented in the docstring so a future reader does
+  not switch it off as ceremony.
+- **The redaction guarantee gets harder, not softer.** `tests/test_redaction.py`'s
+  docstring updated: the redacted sentence is now broadcast to a zone, not shown to one
+  volunteer.
+
+`render_alert` prints `· to {zone} residents` instead of the audience token, which
+also reads better in the demo than `to block captain` did.
+
+**52 tests still green**, 13 live redaction tests still skipped pending credentials.
+
+### Builder posts 1 and 2 drafted
+
+Both in `posts/`, neither needed AWS. The bonus is 0.2 each, up to +0.6, and scores
+only when **published** on builder.aws.com before the deadline — so both checklist
+boxes stay unticked.
+
+- **Post 1** (~950 words) — the retrieval failure. Premise check failing on the first
+  run, −0.03 to −0.16 separation, and redaction turning out to be *what makes retrieval
+  work* rather than a tax paid against it.
+- **Post 2** (~800 words) — why a similarity threshold can't do this. Built on the fact
+  that the **ordering is inverted**: the near-miss reports resemble each other (0.436–0.456)
+  *less* than one of them resembles an unrelated report about a car (0.576), so no cut
+  point exists anywhere on the sorted list. Carries the sweep table and answers the fair
+  counter-argument ("add rules on top of the threshold") rather than strawmanning it.
+  One `⟨PENDING⟩`: the back-link to post 1's URL.
+
+### Housekeeping
+
+Three stale lines cut from [[CHECKLIST]] — the "4 commits unpushed" callout, "nothing is
+on GitHub yet", and the `Push the 4 local commits` task. All three were false as of the
+2026-08-20 push; `main` is level with `origin/main`. Day counts rolled 25 → 24.
+
+---
+
 ## 2026-08-20 — Redaction guard, four defects, and two model-behaviour corrections
 
 ### The redaction guard (`src/guards.py`)

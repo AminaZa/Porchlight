@@ -2,7 +2,7 @@
 tags: [checklist, hackathon, porchlight]
 status: active
 created: 2026-08-14
-updated: 2026-08-20
+updated: 2026-08-21
 ---
 
 # Checklist
@@ -12,7 +12,7 @@ updated: 2026-08-20
 
 > [!danger] Deadline: **Monday 14 September 2026, 5:00pm PT**
 > Confirmed from the official rules — this was previously unknown and the brief's
-> "six weeks from project start" was wrong. As of 2026-08-20 that is **25 days**.
+> "six weeks from project start" was wrong. As of 2026-08-21 that is **24 days**.
 > The AWS credits request form closes earlier, **11 September, 12pm PT**.
 
 > [!warning] Currently blocked on AWS account verification (~72h, to about 23 Aug)
@@ -23,9 +23,9 @@ updated: 2026-08-20
 > remaining project is roughly $20–50 of Bedrock usage out of pocket. Do not
 > reshape the submission around them.
 
-> [!note] 4 commits unpushed as of 2026-08-20
-> `fbf9c1b` `312ff0e` `b8a3334` `cd1311a` — the guard, the defect fixes, the
-> video script, the Devpost copy. Push when ready; nothing is on GitHub yet.
+> [!note] Everything is pushed as of 2026-08-21
+> `main` is level with `origin/main` — the guard, the defect fixes, the video
+> script and the Devpost copy are all on GitHub.
 
 ---
 
@@ -125,15 +125,20 @@ Straight from [[PROJECT_BRIEF]] §10, cross-checked against the official rules.
 
 **Not blocked by AWS — do these during the verification wait**
 
-- [ ] **AWS Builder ID** — required field, free, *separate from the AWS account and
-      needs no verification*. Five minutes. Easy to forget until the last day
+- [x] **AWS Builder ID** — created 2026-08-21. The Devpost field still needs the
+      actual ID pasted in; see the `⟨PENDING⟩` in [[DEVPOST]]
 - [ ] Record [[VIDEO_SCRIPT]] §1, §2 and §4 — the problem, the audience, and the
       architecture walkthrough need no live run. That is ~2 of the 5 minutes
 - [ ] **Bonus: builder.aws.com posts** — up to **+0.6** on a 5-point scale, 0.2 each,
       max three, published *before* the deadline. Use "Agents for Humans" in the title
-    - [ ] Post 1 — the retrieval failure: premise check failing on the first run,
-          −0.16 separation, and redaction turning out to be what *makes* retrieval work
-    - [ ] Post 2 — why a similarity threshold can't do this (the sweep)
+    - [ ] Post 1 — **drafted 2026-08-21** in `posts/builder-post-1.md` (~950 words).
+          The retrieval failure: premise check failing on the first run, −0.16
+          separation, redaction turning out to be what *makes* retrieval work.
+          Still unticked because the bonus requires it **published**, not written
+    - [ ] Post 2 — **drafted 2026-08-21** in `posts/builder-post-2.md` (~800 words).
+          Why a similarity threshold can't do this: the ordering is inverted, the
+          sweep is 10:1 against at every setting, and the deciding evidence is
+          metadata. Carries one `⟨PENDING⟩` — the back-link to post 1's URL
     - [ ] Post 3 — enforcing a safety guarantee with a Strands hook rather than a prompt
 
 > [!note] The hashtag requirement was removed
@@ -152,7 +157,6 @@ Straight from [[PROJECT_BRIEF]] §10, cross-checked against the official rules.
 - [ ] **Live demo link** — optional but scores higher: `./scripts/publish.sh <bucket>`
       after a real (non-offline) run
 - [ ] Resolve the three `⟨PENDING⟩` items in [[DEVPOST]]
-- [ ] Push the 4 local commits
 - [ ] Submit on Devpost
 
 > [!important] Two things that will bite during recording
@@ -167,10 +171,16 @@ Straight from [[PROJECT_BRIEF]] §10, cross-checked against the official rules.
 ## 5 · Open decisions
 
 - [x] ~~Confirm the actual Devpost deadline~~ — **14 Sep 2026, 5pm PT**. Resolved 2026-08-20
-- [ ] **Alert recipient** — single block captain vs channel broadcast. Currently
-      modelled as `EscalationDecision.audience`, so deciding late costs nothing
+- [x] ~~**Alert recipient**~~ — **broadcast to the residents of the affected zone.**
+      Resolved 2026-08-21. `Audience` collapsed to a single value `zone_residents`,
+      so the agent no longer picks a recipient — widening the blast radius is a code
+      change someone reviews, not a token a model emits. `ESCALATION` now tells the
+      model the message is read zone-wide, that the reported person is likely among
+      the readers, and bans anything that reads as *confront / follow / record /
+      identify*. Human approval (`FNA_REQUIRE_APPROVAL`) matters more now, not less —
+      the block captain used to be a second human check and broadcasting removes it
 - [ ] **AgentCore / Lambda deployment** — brief §12 calls it a week-5 stretch, not a
-      requirement. On 25 days, with the video unshot, this is the first thing to cut
+      requirement. On 24 days, with the video unshot, this is the first thing to cut
 - [ ] **Discord intake** — brief §12 week-5 stretch. The CLI is what the pipeline is
       built on
 

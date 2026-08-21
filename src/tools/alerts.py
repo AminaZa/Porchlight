@@ -47,6 +47,11 @@ def requires_approval() -> bool:
     Off for the demo so a 38-report run isn't 38 prompts. **On for any real
     deployment** — see IMPLEMENTATION_PLAN.md §4.3. The agent's job is to
     notice and draft; a person decides to send.
+
+    This matters more since alerts became a zone-wide broadcast (2026-08-21).
+    When a single block captain received the alert, that person was themselves
+    a human check standing between the model and the neighbourhood. Broadcasting
+    removes that check, so this one is the only one left.
     """
     return os.environ.get("FNA_REQUIRE_APPROVAL", "").strip() in {"1", "true", "yes"}
 
@@ -65,7 +70,7 @@ def render_alert(
     return (
         f"▲ Pattern — {report.zone}\n"
         f"{decision.message}\n"
-        f"{evidence} · to {decision.audience.replace('_', ' ')}"
+        f"{evidence} · to {report.zone} residents"
     )
 
 

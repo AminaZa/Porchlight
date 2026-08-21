@@ -169,7 +169,11 @@ A prompt is an instruction. This is a control.
 
 **A cluster requires distinct reporters.** Counted from storage, not self-reported by the model, because a control a model reports on itself is not a control.
 
-**A human approves before anything is dispatched.** `FNA_REQUIRE_APPROVAL=1` makes the agent draft and a person decide. Off for the demo; on for any real use.
+**Alerts go to the residents of the affected zone, and the agent does not get to choose that.** `Audience` is a single-valued type. The escalation agent decides *whether* to alert and writes the message; it cannot decide who hears it, so widening the blast radius is a code change someone reviews rather than a token a model emits.
+
+Broadcasting is the higher-risk option and it is taken deliberately: the people who can actually act on "watch the parcel lockers this week" are the people who walk past them. The cost is that no individual reads the alert before the neighbourhood does, which shapes the two controls above and below it — the escalation prompt is written on the assumption that *the person who was reported is among the readers*, and it forbids any wording that reads as an instruction to confront, follow, record, or identify somebody.
+
+**A human approves before anything is dispatched.** `FNA_REQUIRE_APPROVAL=1` makes the agent draft and a person decide. Off for the demo; on for any real use. This carries more weight under a broadcast model than it would under a single-recipient one — a named recipient is themselves a human check between the model and the neighbourhood, and broadcasting removes that check, leaving this as the only one.
 
 **Raw report text expires.** Aggregates and the redacted sentence survive so the baselines keep working; the original words don't.
 

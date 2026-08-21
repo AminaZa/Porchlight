@@ -63,7 +63,7 @@ Escalation agent
   act or stay silent
         │
         ├──────────────► Silent log        (no human needed — the common case)
-        └──────────────► Neighborhood alert (block captain or channel)
+        └──────────────► Neighborhood alert (broadcast to the zone's residents)
 ```
 
 ### Mermaid version (for the README / submission diagram)
@@ -77,7 +77,7 @@ flowchart TD
     C <--> G[Anomaly detector<br/>statistical baseline]
     C --> D[Escalation agent<br/>act or stay silent]
     D --> H[Silent log<br/>no human needed]
-    D --> I[Neighborhood alert<br/>block captain or channel]
+    D --> I[Neighborhood alert<br/>broadcast to zone residents]
 ```
 
 ### The three agents
@@ -255,7 +255,7 @@ This is a real asset, not just a joke — "your friendly neighborhood agent" des
 These need answers before or during week 1:
 
 1. **Intake channel** — Discord bot (most impressive, most build time), web form, or CLI (fastest, least impressive)? Recommendation: build CLI first so the pipeline is testable, add Discord in week 5 if time allows.
-2. **Alert recipient** — single block captain, or broadcast to a channel? Affects the escalation agent's tool design and its notion of audience.
+2. ~~**Alert recipient**~~ — **Resolved 2026-08-21: broadcast to the residents of the affected zone.** `Audience` is single-valued (`zone_residents`); the escalation agent does not choose a recipient. See [[CHECKLIST]] §5 for the reasoning and the prompt changes that came with it.
 3. **Scope width** — package theft only, or general neighborhood safety reports (theft, suspicious activity, hazards, lost pets)? Recommendation: widen it. Same architecture, same effort, substantially more substantial demo. Package theft stays the headline example.
 4. **Model provider** — Bedrock (AWS-native, uses the credits, better fit for the hackathon's judging) or Anthropic API direct (simpler local dev). Can start on Anthropic direct and switch — Strands is model-agnostic, so this is a config change.
 5. **AgentCore deployment** — attempt it or not? It strengthens Technical Implementation but is a week-5 stretch goal, not a requirement.

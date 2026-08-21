@@ -205,7 +205,7 @@ def decide(report: TriagedReport, summary: CorrelationSummary) -> EscalationDeci
     return EscalationDecision(
         action="alert" if alert else "silent_log",
         urgency="medium" if alert else "low",
-        audience="block_captain",
+        audience="zone_residents",
         message=message,
         reasoning=reasoning,
     )

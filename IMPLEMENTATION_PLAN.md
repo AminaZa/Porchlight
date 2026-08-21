@@ -347,6 +347,6 @@ The structural safety work (§4.1–4.3) lands in *this* pass, so phase 2 is add
 - **Deadline undated.** Brief says "6 weeks from project start"; today is **2026-08-14**. Confirm the Devpost deadline and back-date the week-6 video work from it.
 - **Repo name** — folder is `friendly-neigh-agent`, brief §8 says `friendly-neighborhood-agent`, `porchlight` is the strongest candidate. `git init` doesn't record a name; settle it before `gh repo create`.
 - **Bedrock model access** — all three models need access granted in the console; profile IDs verified, not guessed.
-- **Alert recipient** — modelled as `EscalationDecision.audience`, so deciding later costs nothing.
+- ~~**Alert recipient**~~ — **decided 2026-08-21: zone-wide broadcast.** `Audience` collapsed to `zone_residents`; the model no longer selects an audience, and `ESCALATION` was rewritten to account for the reported person being among the readers.
 - **Trademark constraint** — settled in [[BRANDING]] § *Trademark scope*, which supersedes the internal contradiction in [[PROJECT_BRIEF]] §11.
 - **Live web app** — considered and deferred. A chatbot's synchronous, user-initiated interaction model works against the "most days it says nothing" pitch, and unauthenticated inference has no spend ceiling. Revisit post-hackathon.
