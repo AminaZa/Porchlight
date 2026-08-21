@@ -54,6 +54,13 @@ if you overrun, cut from §4, never from §3.
 
 ## 1 · The problem — 0:00–0:45
 
+> [!tip] Detailed motion direction for this beat lives in [[MOTION_REFS]]
+> Cut-by-cut: reports drop in as Chalk and downshift to Dim as the next arrives,
+> hand-drawn circles on the differing nouns, strike-through on all four to land
+> the "no shared words" point, hard cuts only, ~8–10s per report. **No amber in
+> this beat** — it is reserved for the single alert in §3c, and the restraint
+> only reads as restraint if it stays dormant until then.
+
 **On screen:** the four cluster reports appearing one at a time, as plain text,
 the way they'd arrive in a group chat. Highlight the four different phrases for
 the same place as each lands.
@@ -94,9 +101,20 @@ the same place as each lands.
 ## 2 · Who it's for — 0:45–1:15
 
 **On screen:** plain text on the dusk background, same treatment as §1 — no
-b-roll, no phone mockup. Six ordinary neighbourhood-channel messages stack up
-one at a time, then all six fade back to ~40% opacity and a **MUTED** label
-drops on.
+b-roll, no phone mockup. Six ordinary neighbourhood-channel messages arrive,
+**accelerating** — the first two land at a readable pace, then they come faster
+and start overlapping and pushing off the top of the frame. Hard cut on the
+crowd to a near-empty dusk frame with one word: **MUTED**.
+
+> [!warning] Do not fade these to Dim — that move is taken
+> [[MOTION_REFS]] gives §1 a Chalk→Dim downshift meaning *"read and banked."*
+> Reusing the same fade here for *"a human stopped reading"* gives one visual
+> two opposite meanings forty-five seconds apart. Volume is the argument in this
+> beat, so let velocity and crowding carry it and keep the fade out of it.
+>
+> **No amber**, same rule as §1 — nothing here is an escalation.
+
+The hard cut into an almost-empty frame also sets up §3a, which opens on quiet.
 
 > Anyone else hear that around 2am?
 >

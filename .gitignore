@@ -31,6 +31,12 @@ Thumbs.db
 # Personal scratch notes, kept local
 Notes.md
 
+# Video reference clips and scratch frame exports. Reference material only —
+# 52MB of third-party footage that must never enter the repo, and MOTION_REFS.md
+# says to delete it before submission. A `git add -A` swept these in once.
+refs/
+*.mp4
+
 # Hackathon paperwork, kept local. REQUIREMENTS.md is Devpost's and AWS's
 # own rules text, not ours to redistribute; HACKATHON.md is the working
 # summary of it.
