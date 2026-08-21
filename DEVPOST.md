@@ -96,10 +96,18 @@ against somebody.
 
 ### Who it's for
 
-The person who runs a neighborhood's communication channel — a block captain, an
-HOA coordinator, a moderator for a local server, a building's residents' rep.
-Unpaid, volunteer, already stretched. Secondarily the residents who receive the
-alerts and currently get too many of them.
+Everyone on the street. Alerts go to the residents of the affected zone, so the
+people the product is for are the neighbours who currently get pinged for every
+raccoon and every strange car, and who have quietly muted the channel because of
+it. The thing Porchlight gives them is the silence — thirty-four of thirty-eight
+reports never reach them at all, which is what makes the thirty-fifth worth
+opening.
+
+The volunteer who runs the channel — a block captain, an HOA coordinator, a
+moderator for a local server — is still in this, but not as the customer. They
+are the human in the loop: the agent reads everything and drafts, and a person
+approves before anything is broadcast. Unpaid and already stretched, which is
+exactly why the reading is the part worth automating.
 
 Small-scale community safety is almost entirely volunteer-run and unsupported by
 tooling. The realistic alternative to "someone reads every message" is nothing at

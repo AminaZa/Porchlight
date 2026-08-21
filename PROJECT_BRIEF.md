@@ -33,7 +33,11 @@ The result: real patterns get noticed late, and the channel becomes noise everyo
 
 ## 3. Who it's for
 
-The person who runs a neighborhood's communication channel — a block captain, HOA coordinator, Discord mod for a local server, a building's residents' rep. Unpaid, volunteer, already overwhelmed. Secondarily, the residents who receive alerts and currently get too many of them.
+**Updated 2026-08-21, following the alert-recipient decision (§18).** Alerts now broadcast to the residents of the affected zone rather than to a single named recipient, which inverts this section.
+
+**Primarily: the residents of a neighbourhood.** They receive the alerts, and what the product gives them is how rarely it sends one — they are the people who muted their neighbourhood app because everything in it arrived looking equally urgent.
+
+**Secondarily, and in a different role: the volunteer who runs the channel** — a block captain, HOA coordinator, Discord mod, a building's residents' rep. Unpaid, already overwhelmed. They are no longer the beneficiary; they are the **control**, the human who approves before anything is broadcast (`FNA_REQUIRE_APPROVAL`). The reading is what gets automated; the sending decision does not.
 
 ## 4. Why it matters
 

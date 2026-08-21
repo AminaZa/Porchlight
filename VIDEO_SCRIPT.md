@@ -3,7 +3,7 @@ tags: [video, submission, hackathon, porchlight]
 status: draft
 created: 2026-08-20
 ---
-
+ 
 # Demo video — shooting script
 
 > Five minutes maximum, public on YouTube or Vimeo. Must demonstrate the working
@@ -93,18 +93,50 @@ the same place as each lands.
 
 ## 2 · Who it's for — 0:45–1:15
 
-**On screen:** something plain — a phone showing an over-full neighbourhood
-channel, or just the words on the dusk background. Don't over-produce this beat.
+**On screen:** plain text on the dusk background, same treatment as §1 — no
+b-roll, no phone mockup. Six ordinary neighbourhood-channel messages stack up
+one at a time, then all six fade back to ~40% opacity and a **MUTED** label
+drops on.
 
-**Narration** *(~70 words)*
-
-> This is built for the person who runs a neighbourhood's channel. A block
-> captain, an HOA coordinator, a moderator for a local server. Unpaid,
-> volunteer, already stretched.
+> Anyone else hear that around 2am?
 >
-> Their problem isn't a lack of information. It's that every report arrives
-> looking exactly as urgent as every other one — so people mute the channel,
-> and then the one that mattered gets missed too.
+> Raccoon in the bins again
+>
+> Strange car parked on Oak all day
+>
+> Has anyone seen a grey cat?
+>
+> Fireworks? or something else??
+>
+> Bins didn't get collected
+
+Hold the muted state for a beat before cutting. The fade is the argument — the
+narration says people mute these channels, and the screen shows it happening
+rather than asserting it.
+
+**Narration** *(~80 words)*
+
+> Porchlight is for everyone on the street — and what makes it worth having is
+> what it doesn't send.
+>
+> Most neighbourhood apps buzz for everything, so people mute them. Then the one
+> report that actually mattered lands in a channel nobody is reading any more.
+>
+> Porchlight goes straight to the residents of a zone, and most weeks it says
+> nothing at all. The silence is what makes the rare message worth opening.
+>
+> A volunteer still approves every alert before it goes out. The agent drafts.
+> A person sends.
+
+> [!note] The audience changed on 2026-08-21 and this beat changed with it
+> Alerts used to go to a single block captain, which made *them* the customer.
+> They now broadcast to a zone's residents, so the volunteer is no longer the
+> beneficiary — they are the **control**, the human in the loop. The people the
+> product is for are the residents who muted their neighbourhood app.
+>
+> Don't reintroduce "this is built for the person who runs the channel." It
+> contradicts `Audience = Literal["zone_residents"]` and the README's safety
+> section, and a judge who reads the repo will notice.
 
 ---
 
@@ -230,9 +262,9 @@ cluster lit amber and linked.
 >
 > Telling those apart takes reading them. That's why there's an agent here.
 >
-> Small-scale community safety runs on volunteers with no tooling at all. This
-> gives one of them the attention budget of a full-time analyst — and stays
-> quiet the rest of the time.
+> Small-scale community safety runs on volunteers with no tooling at all.
+> Porchlight reads every report so nobody has to, and tells a street the one
+> thing worth knowing — most weeks, that's nothing at all.
 
 **Final frame:** the Porchlight mark. *your friendly neighborhood agent.*
 Repo URL on screen.
