@@ -135,7 +135,11 @@ Straight from [[PROJECT_BRIEF]] §10, cross-checked against the official rules.
 - [x] Public repo URL — https://github.com/AminaZa/Porchlight
 - [x] MIT license **visible in the About section** (GitHub detects it; confirmed via API)
 - [x] README
-- [x] Architecture diagram — `assets/architecture.html`, corrected against the built system
+- [x] Architecture diagram — `assets/architecture.html`. **Refreshed 2026-08-21:**
+      it predated `src/guards.py` (diagram 14 Aug, guard 20 Aug) and did not show the
+      `RedactionGuard` at all. Added the guard band spanning triage→escalation, a
+      fourth info card, and corrected the alert box now that `audience` is not a
+      model choice
 - [x] **Video script drafted** — [[VIDEO_SCRIPT]], beat sheet + narration
 - [x] **Devpost text description drafted** — [[DEVPOST]], 3 items marked `⟨PENDING⟩`
 
@@ -155,7 +159,10 @@ Straight from [[PROJECT_BRIEF]] §10, cross-checked against the official rules.
           Why a similarity threshold can't do this: the ordering is inverted, the
           sweep is 10:1 against at every setting, and the deciding evidence is
           metadata. Carries one `⟨PENDING⟩` — the back-link to post 1's URL
-    - [ ] Post 3 — enforcing a safety guarantee with a Strands hook rather than a prompt
+    - [ ] Post 3 — **drafted 2026-08-21** in `posts/builder-post-3.md` (~1030 words).
+          A prompt is not a control: the `AfterModelCallEvent` hook, why `event.retry`
+          is the point, the `toolUse`-block bug that made the guard a no-op, and the
+          precision-over-recall argument. All three posts now drafted and unpublished
 
 > [!note] The hashtag requirement was removed
 > Rules updated 2026-08-12: `#AgentsforHumans` is **no longer required**. The title

@@ -229,7 +229,7 @@
 
     <!-- Main Diagram -->
     <div class="diagram-container">
-      <svg viewBox="0 0 1120 1020" role="img" aria-label="Porchlight architecture: intake feeds a sequential three-agent pipeline — triage, correlation, escalation — backed by SQLite, ChromaDB and an anomaly detector, ending in a silent log or a human-approved neighborhood alert.">
+      <svg viewBox="0 0 1120 1020" role="img" aria-label="Porchlight architecture: intake feeds a sequential three-agent pipeline — triage, correlation, escalation — backed by SQLite, ChromaDB and an anomaly detector, wrapped by a RedactionGuard hook that re-invokes the model if person-identifying detail survives, ending in a silent log or a human-approved alert broadcast to the zone’s residents.">
         <defs>
           <marker id="arrowhead" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto">
             <polygon points="0 0, 9 3.5, 0 7" fill="#8FA0BC" />
@@ -253,6 +253,20 @@
         <!-- ===== Local process boundary ===== -->
         <rect x="80" y="210" width="380" height="492" rx="12" fill="none" stroke="#8FA0BC" stroke-width="1" stroke-dasharray="8,4" opacity="0.55"/>
         <text x="92" y="230" fill="#8FA0BC" font-size="9" font-weight="600">STRANDS AGENTS SDK · local process · models via Amazon Bedrock</text>
+
+        <!-- ===== RedactionGuard — a Strands hook spanning triage and escalation ===== -->
+        <rect x="14" y="248" width="52" height="434" rx="6" fill="#0F1729"/>
+        <rect x="14" y="248" width="52" height="434" rx="6" fill="#141E33" stroke="#E9EEF7" stroke-width="1.4" stroke-dasharray="6,3" opacity="0.9"/>
+        <text x="34" y="465" fill="#E9EEF7" font-size="11" font-weight="600" text-anchor="middle" transform="rotate(-90 34 465)">REDACTION GUARD</text>
+        <text x="50" y="465" fill="#8FA0BC" font-size="7.5" text-anchor="middle" transform="rotate(-90 50 465)" font-family="ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, monospace">src/guards.py · AfterModelCallEvent</text>
+        <!-- brackets tying the guard to the two agents it wraps -->
+        <path d="M 66 282 L 84 282" fill="none" stroke="#E9EEF7" stroke-width="1.2" stroke-dasharray="4,3" opacity="0.85"/>
+        <path d="M 66 626 L 84 626" fill="none" stroke="#E9EEF7" stroke-width="1.2" stroke-dasharray="4,3" opacity="0.85"/>
+        <text x="75" y="272" fill="#8FA0BC" font-size="6.5" text-anchor="middle">wraps</text>
+        <text x="75" y="616" fill="#8FA0BC" font-size="6.5" text-anchor="middle">wraps</text>
+        <text x="34" y="708" fill="#8FA0BC" font-size="7" text-anchor="middle">inspects what the</text>
+        <text x="34" y="718" fill="#8FA0BC" font-size="7" text-anchor="middle">model produced</text>
+        <text x="34" y="728" fill="#E9EEF7" font-size="7" text-anchor="middle">retry → fail closed</text>
 
         <!-- ===== Arrows (drawn before boxes so they sit behind) ===== -->
 
@@ -384,7 +398,7 @@
         <rect x="700" y="746" width="250" height="84" rx="6" fill="rgba(255, 180, 84, 0.10)" stroke="#FFB454" stroke-width="1.8"/>
         <text x="825" y="772" fill="#FFE2AE" font-size="12" font-weight="600" text-anchor="middle">NEIGHBORHOOD ALERT</text>
         <text x="825" y="790" fill="#FFB454" font-size="8" text-anchor="middle">a place to watch, never a person to look for</text>
-        <text x="825" y="806" fill="#8FA0BC" font-size="8" text-anchor="middle">urgency · audience · drafted message</text>
+        <text x="825" y="806" fill="#8FA0BC" font-size="8" text-anchor="middle">urgency · drafted message → the zone’s residents</text>
         <text x="825" y="822" fill="#FFB454" font-size="8" text-anchor="middle">the exception — the porch light came on</text>
 
         <!-- ===== Render / publish ===== -->
@@ -441,6 +455,19 @@
           <li>• <strong>Meaning</strong> — &ldquo;guy hanging around the mailboxes&rdquo; and &ldquo;loitering near the parcel lockers&rdquo; are one event described twice. Keyword matching finds neither from the other.</li>
           <li>• <strong>Rate</strong> — two reports in a day is nothing on a busy block and alarming in a quiet cul-de-sac, so each zone is scored against its own history.</li>
           <li>• Persistence runs as plain function calls, not agent tools — a model that skips <code>embed_and_index</code> would silently break the cluster and nothing would raise.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot dim"></div>
+          <h3>The redaction guarantee is a control, not a prompt</h3>
+        </div>
+        <ul>
+          <li>• <code>src/guards.py</code> registers a Strands <code>HookProvider</code> on <code>AfterModelCallEvent</code>, wrapping the triage and escalation agents.</li>
+          <li>• It inspects what the model <em>actually produced</em> — walking <code>toolUse</code> inputs, not just text blocks, because with <code>structured_output_model</code> that is where the summary lives.</li>
+          <li>• On a hit it sets <code>event.retry</code>: the response is discarded and the model re-invoked <strong>before</strong> the pipeline, storage or the index sees it. Two retries, then the report fails closed.</li>
+          <li>• A pipeline check could only reject a finished result, turning a leak into a lost report. Here it costs one Haiku call.</li>
         </ul>
       </div>
 
