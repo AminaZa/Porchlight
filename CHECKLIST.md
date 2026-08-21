@@ -15,13 +15,23 @@ updated: 2026-08-21
 > "six weeks from project start" was wrong. As of 2026-08-21 that is **24 days**.
 > The AWS credits request form closes earlier, **11 September, 12pm PT**.
 
-> [!warning] Currently blocked on AWS account verification (~72h, to about 23 Aug)
-> Everything in §1–§3 sits behind it. Nothing in §4 or §5 does — that is where
-> the next session's time should go if verification hasn't cleared.
+> [!warning] Blocked on AWS **signup**, not on verification — corrected 2026-08-21
+> The account never finished registering. It is stuck at **step 4 of 5, phone
+> verification**, failing with a generic "error processing your request".
 >
-> Credits are **not critical**. They cover build costs; without them the whole
-> remaining project is roughly $20–50 of Bedrock usage out of pocket. Do not
-> reshape the submission around them.
+> **Diagnosed cause: a country mismatch.** The card is Malaysian (Maybank) and
+> was accepted at step 3; the phone is Tunisian (+216) and the IP is Tunisian.
+> AWS's fraud screen compares those three and flags the disagreement. Nothing is
+> wrong with the card.
+>
+> Fix path, in order: retry on a Malaysian `+60` number (voice call, not SMS) ·
+> check the step-2 address matches the card's registered Malaysian address ·
+> **open an Account activation support case** at aws.amazon.com/contact-us,
+> naming the mismatch explicitly. Filed in parallel, not after the retries.
+> Note the step rate-limits after repeated failures — retries stop working for
+> a few hours regardless of what has been fixed.
+>
+> Everything in §1–§3 sits behind this. Nothing in §4 or §5 does.
 
 > [!note] Everything is pushed as of 2026-08-21
 > `main` is level with `origin/main` — the guard, the defect fixes, the video
@@ -31,7 +41,8 @@ updated: 2026-08-21
 
 ## 1 · Unblock Bedrock
 
-- [ ] **AWS account verification clears** (~23 Aug)
+- [ ] **AWS signup completes** — blocked at step 4 of 5, see the callout above.
+      Support case is the reliable path; the SIM swap is the fast one
 - [ ] Create an IAM user, attach `AmazonBedrockFullAccess`, create an access key
       (*Application running outside AWS*)
 - [ ] Write it to `C:\Users\RAZER\.aws\credentials` under `[default]` — boto3
@@ -47,7 +58,12 @@ updated: 2026-08-21
 - [ ] Paste the real profile ids into `.env` if they differ from the defaults
 - [ ] Set an **AWS Budget with a zero-spend alert** — free, and the only thing
       that catches a runaway loop during tuning
-- [ ] **Request the $50 credits** — form closes 11 Sep 12pm PT
+- [ ] **Request the $50 credits** — form closes 11 Sep 12pm PT. **No longer
+      load-bearing:** since Jul 2025 a new account gets **$100 on activation**
+      plus up to $100 more for five onboarding tasks — one of which is testing a
+      Bedrock prompt. Against a $20–50 project that is full coverage, so the
+      hackathon credits are now a bonus, not a dependency. The Free Plan expires
+      after six months or when credits run out; we need three weeks
 
 ---
 
