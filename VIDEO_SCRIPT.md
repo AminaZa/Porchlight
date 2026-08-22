@@ -251,8 +251,23 @@ evidence line, and the escalation agent's reasoning.
 
 ## 4 · Architecture — 3:30–4:30
 
-**On screen:** `assets/architecture.html`, then cut to `out/report.html` for the
-last fifteen seconds.
+**On screen:** `assets/architecture.html` for the full minute.
+
+> [!danger] Do not shoot `out/report.html` yet — shoot the diagram for all 60s
+> This beat used to end on a fifteen-second cut to the run report. That cut is
+> **deferred until after the first live run**, for two reasons:
+>
+> 1. The page on disk was generated **2026-08-19 from an offline run**. Its
+>    escalation is the hard-coded stub, so putting it on camera is recording
+>    `--offline` by the back door.
+> 2. It predates the tally fix. It reads `31 logged silently · 6 correlated and
+>    declined`, while the terminal for that same run printed `5 declined ·
+>    1 suppressed`. Both surfaces now share `models.outcome_of`, but **this file
+>    was rendered before that** and still shows the old split.
+>
+> Regenerate it from the live run, then shoot the cut as a pickup and drop it in.
+> The narration below already works without it — nothing in the words refers to
+> the graph.
 
 **Narration** *(~140 words)*
 
