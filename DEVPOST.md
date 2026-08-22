@@ -3,7 +3,7 @@ tags: [submission, devpost, hackathon, porchlight]
 status: draft
 created: 2026-08-20
 ---
-i 
+
 # Devpost submission copy
 
 > Paste-ready text for the Devpost form. Field names below match the form's own
@@ -238,11 +238,21 @@ strands-agents, amazon-bedrock, claude, python, chromadb, sqlite, numpy, scipy, 
 
 **AWS Builder ID** — ⟨PENDING — account created 2026-08-21; paste the ID itself here⟩
 
+**Bonus: builder.aws.com posts** — all three published 2026-08-22, 0.2 each.
+The rules require these to be *submitted*, not merely published: "Submitting the
+following optional builder.aws Blog Post will positively impact the score"
+(§ Project Requirements). Paste all three URLs wherever the Devpost form asks
+for them.
+
+1. https://builder.aws.com/content/3IH3FtgK3xtZL4ft7oUrPtvLPpu/redaction-made-my-retrieval-work-a-measurement-from-an-agents-for-humans-build
+2. ⟨PENDING — post 2 URL, "The Wrong Pair Ranks Higher Than the Right Pair"⟩
+3. ⟨PENDING — post 3 URL, "A Prompt Is Not a Control"⟩
+
 ---
 
 ## Pre-submit checks
 
-- [ ] Three `⟨PENDING⟩` items above resolved or removed
+- [ ] Every `⟨PENDING⟩` above resolved or removed (two are builder-post URLs)
 - [ ] Demo numbers re-checked against the first real run, not the offline one
 - [x] No Marvel references anywhere — see [[BRANDING]] § *Trademark scope* ✅ 2026-08-22
 - [ ] Repo public, MIT license visible in the About section

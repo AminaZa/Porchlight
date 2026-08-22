@@ -1,13 +1,20 @@
 ---
-tags: [hackathon, porchlight, builder-post]
-status: draft
+tags:
+  - hackathon
+  - porchlight
+  - builder-post
+status: published
 created: 2026-08-21
 target: builder.aws.com
+published: 2026-08-22
+url: ⟨PENDING⟩
+url: |
+  https://builder.aws.com/content/3IH3gxMX7EiBVvcj8LNeOrinhXc/the-wrong-pair-ranks-higher-than-the-right-pair-why-my-agents-for-humans-build-needed-an-agent
 ---
 
 # Post 2 — why a threshold can't do this
 
-> Draft. Bonus scoring: 0.2 of a possible 0.6, and it only counts if it is
+> **PUBLISHED 2026-08-22.** Bonus scoring: 0.2 of a possible 0.6, and it only counts if it is
 > **published** on builder.aws.com before 14 Sep 2026, 5pm PT.
 > Title must contain the phrase *Agents for Humans*.
 >
@@ -56,3 +63,5 @@ I swept it anyway. To assemble the near-miss group at all you have to drop to 0.
 You could bolt on `if same_zone and span < 48h and reporters >= 3`. It gets both my cases right; I ran it. But every constant there is a guess dressed as a policy, and — more importantly — it cannot explain itself. When my agent declines it says *why*, in a sentence a neighbour can read and argue with. `span < 48` returning False is not a reason. For a system whose whole value is staying quiet, the account of why it stayed quiet is what earns it the right to keep running.
 
 Open source, MIT: **https://github.com/AminaZa/Porchlight**
+
+

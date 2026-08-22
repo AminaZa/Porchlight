@@ -150,7 +150,7 @@ Straight from [[PROJECT_BRIEF]] §10, cross-checked against the official rules.
 - [ ] Record [[VIDEO_SCRIPT]] §4 — **§1 and §2 are shot as of 2026-08-21**, about
       1:15 of the 5:00 in the can. Only the architecture walkthrough is left of the
       no-live-run material; it can work from `assets/architecture.html`
-- [ ] **Bonus: builder.aws.com posts** — up to **+0.6** on a 5-point scale, 0.2 each,
+- [x] **Bonus: builder.aws.com posts** — up to **+0.6** on a 5-point scale, 0.2 each,
       max three, published *before* the deadline. Use "Agents for Humans" in the title.
       **The platform caps a post at 3000 characters.** All three drafts were cut to
       fit on 2026-08-22; `python scripts/postlen.py` checks the pasteable body of
@@ -158,14 +158,13 @@ Straight from [[PROJECT_BRIEF]] §10, cross-checked against the official rules.
     - [x] Post 1 — **PUBLISHED 2026-08-22.** The retrieval failure: −0.16 separation,
           redaction turning out to be what *makes* retrieval work. URL is in the
           file's frontmatter. **+0.2 banked**
-    - [ ] Post 2 — drafted, not published. `posts/builder-post-2.md`. Why a
-          similarity threshold can't do this: the ordering is inverted, the sweep
-          is 10:1 against at every setting, and the deciding evidence is metadata.
-          Back-link to post 1 is filled in — ready to paste
-    - [ ] Post 3 — **drafted 2026-08-21** in `posts/builder-post-3.md` (~1030 words).
-          A prompt is not a control: the `AfterModelCallEvent` hook, why `event.retry`
-          is the point, the `toolUse`-block bug that made the guard a no-op, and the
-          precision-over-recall argument. All three posts now drafted and unpublished
+    - [x] Post 2 — **PUBLISHED 2026-08-22.** Why a similarity threshold can't do
+          this: the ordering is inverted and the deciding evidence is metadata.
+          **+0.2 banked.** URL still needed for the Devpost form
+    - [x] Post 3 — **PUBLISHED 2026-08-22.** A prompt is not a control: the
+          `AfterModelCallEvent` hook, why `event.retry` is the point, and the
+          `toolUse` bug that made the guard a no-op. **+0.2 banked.** URL still
+          needed for the Devpost form
 
 > [!note] The hashtag requirement was removed
 > Rules updated 2026-08-12: `#AgentsforHumans` is **no longer required**. The title

@@ -1,13 +1,20 @@
 ---
-tags: [hackathon, porchlight, builder-post]
-status: draft
+tags:
+  - hackathon
+  - porchlight
+  - builder-post
+status: published
 created: 2026-08-21
 target: builder.aws.com
+published: 2026-08-22
+url: ⟨PENDING⟩
+url: |
+  https://builder.aws.com/content/3IH4JGX8muNHBXdCNGDDRgpAbeu/a-prompt-is-not-a-control-enforcing-a-safety-guarantee-with-a-strands-hook-in-an-agents-for-humans-build
 ---
 
 # Post 3 — the guarantee as a hook, not a prompt
 
-> Draft. Bonus scoring: 0.2 of a possible 0.6, and it only counts if it is
+> **PUBLISHED 2026-08-22.** Bonus scoring: 0.2 of a possible 0.6, and it only counts if it is
 > **published** on builder.aws.com before 14 Sep 2026, 5pm PT.
 > Title must contain the phrase *Agents for Humans*.
 >
@@ -59,3 +66,4 @@ Inside the hook, the leaked version never reaches the pipeline, storage, or the 
 A guard that inspects the wrong field is worse than no guard: it converts an open question into false confidence. If you build one, feed it a known-bad *structured* output and assert the guard fires. Testing that clean input passes proves nothing.
 
 Open source, MIT: **https://github.com/AminaZa/Porchlight** — the guard is `src/guards.py`.
+
