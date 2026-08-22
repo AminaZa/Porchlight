@@ -17,6 +17,10 @@ target: builder.aws.com
 
 **Title:** A Prompt Is Not a Control: Enforcing a Safety Guarantee With a Strands Hook in an Agents for Humans Build
 
+**Summary** *(article description field, 295 chars)*: The triage prompt asked for redaction and a test checked it. Neither was a control: a prompt's compliance is a probability and its failure is silent. A Strands AfterModelCallEvent hook with event.retry enforces it for one extra Haiku call — plus the toolUse bug that made my first guard a no-op.
+
+**Summary, short** *(if the field is tighter, 153 chars)*: A prompt asking for redaction is not a control — compliance is a probability and failure is silent. A Strands hook with event.retry makes it a guarantee.
+
 **Tags:** `agents-for-humans` `strands-agents` `amazon-bedrock` `ai-safety` `guardrails`
 
 ---

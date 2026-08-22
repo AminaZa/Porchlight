@@ -14,16 +14,18 @@ target: builder.aws.com
 > **builder.aws.com caps a post at 3000 characters.** Everything below the rule
 > is the post; keep it under the cap. Run `python scripts/postlen.py` to check.
 > The longer draft this was cut from is in git history at commit `ba17e4f`.
->
-> **Publish post 1 first**, then paste its real URL into the back-link below.
 
 **Title:** The Wrong Pair Ranks Higher Than the Right Pair: Why My Agents for Humans Build Needed an Agent
+
+**Summary** *(article description field, 288 chars)*: Why my neighbourhood safety agent needs an agent. The near-miss reports in my dataset resemble each other less than one of them resembles a completely unrelated report — the ordering is inverted, so no cosine threshold separates them at any value. The deciding evidence isn't in the text.
+
+**Summary, short** *(if the field is tighter, 155 chars)*: The near-miss reports resemble each other less than one resembles an unrelated report. The ordering is inverted, so no cosine threshold works at any value.
 
 **Tags:** `agents-for-humans` `strands-agents` `amazon-bedrock` `rag` `embeddings`
 
 ---
 
-In [my last post](⟨PENDING — URL of post 1, after it is published⟩) I fixed retrieval in a neighbourhood safety agent by indexing a normalised summary instead of raw report text: group separation went from −0.16 to +0.52.
+In [my last post](https://builder.aws.com/content/3IH3FtgK3xtZL4ft7oUrPtvLPpu/redaction-made-my-retrieval-work-a-measurement-from-an-agents-for-humans-build) I fixed retrieval in a neighbourhood safety agent by indexing a normalised summary instead of raw report text: group separation went from −0.16 to +0.52.
 
 That invites an obvious question, and I spent a day trying to make the answer be yes.
 

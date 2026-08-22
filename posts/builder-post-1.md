@@ -1,13 +1,15 @@
 ---
 tags: [hackathon, porchlight, builder-post]
-status: draft
+status: published
 created: 2026-08-21
 target: builder.aws.com
+published: 2026-08-22
+url: https://builder.aws.com/content/3IH3FtgK3xtZL4ft7oUrPtvLPpu/redaction-made-my-retrieval-work-a-measurement-from-an-agents-for-humans-build
 ---
 
 # Post 1 — the retrieval failure
 
-> Draft. Bonus scoring: 0.2 of a possible 0.6, and it only counts if it is
+> **PUBLISHED 2026-08-22.** Bonus scoring: 0.2 of a possible 0.6, and it only counts if it is
 > **published** on builder.aws.com before 14 Sep 2026, 5pm PT.
 > Title must contain the phrase *Agents for Humans*.
 >
@@ -16,6 +18,10 @@ target: builder.aws.com
 > The longer draft this was cut from is in git history at commit `ba17e4f`.
 
 **Title:** Redaction Made My Retrieval Work: A Measurement From an Agents for Humans Build
+
+**Summary** *(article description field, 284 chars)*: I assumed stripping person-identifying detail was a privacy tax on accuracy. I measured it: indexing the redacted summary instead of the raw report text moved group separation from −0.16 to +0.52, with no change of embedding model. For short texts, what you index is the bigger lever.
+
+**Summary, short** *(if the field is tighter, 154 chars)*: Redaction turned out to be what makes retrieval work: indexing the redacted summary rather than raw text moved separation from −0.16 to +0.52, same model.
 
 **Tags:** `agents-for-humans` `strands-agents` `amazon-bedrock` `rag` `privacy`
 
