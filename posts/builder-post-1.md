@@ -1,6 +1,6 @@
 ---
 tags: [hackathon, porchlight, builder-post]
-status: draft
+status: published
 created: 2026-08-21
 target: builder.aws.com
 ---
@@ -17,7 +17,7 @@ target: builder.aws.com
 
 ---
 
-I am building a neighbourhood safety agent for the AWS *Agents for Humans* hackathon. It reads incident reports from neighbours and wakes a human only when several different people have independently described the same situation in the same place over a short window. On the demo dataset, thirty-four of thirty-eight reports are logged silently and never surface to anyone.
+I am building a neighbourhood safety agent for the AWS *Agents for Humans* hackathon. It reads incident reports from neighbours and wakes a human only when several different people have independently described the same situation in the same place over a short window. On the demo dataset, thirty-seven of thirty-eight reports never surface to anyone. One alert fires.
 
 The whole system rests on one premise: that four people describing the same thing in completely different words will still land near each other in embedding space. So before building anything on top of it, I wrote a check for exactly that.
 

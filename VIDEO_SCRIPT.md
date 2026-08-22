@@ -184,10 +184,19 @@ Let thirty-odd reports scroll past. Don't narrate over all of it.
 >
 > Nothing.
 >
-> Thirty-one of them are read, classified, and logged silently. No alert, no
-> notification, nobody woken. That's not the system failing to act — that's the
-> product. Most days, a neighbourhood is fine, and a service that says so is
-> worth more than one that doesn't.
+> Thirty-seven of them never surface to anyone. No alert, no notification,
+> nobody woken. That's not the system failing to act — that's the product. Most
+> days, a neighbourhood is fine, and a service that says so is worth more than
+> one that doesn't.
+
+> [!warning] Only two numbers in this video are fixed: **38 in, 1 alert out**
+> The split between *silent* and *correlated-but-declined* depends on the calls
+> the model makes on the day, and it has already been written down three
+> different ways across this repo (34/3, 31/5, 29/7). All three agree on 37
+> never surfacing, because a decline reaches nobody either — so say **37 of 38**
+> and never quote the split in narration. `tests/test_pipeline.py` asserts
+> exactly one alert; nothing asserts the split. If you want the breakdown on
+> screen, let the terminal's own summary line show it and don't read it aloud.
 
 ### 3b · The declines — 1:45–2:35
 

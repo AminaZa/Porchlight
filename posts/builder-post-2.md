@@ -1,6 +1,6 @@
 ---
 tags: [hackathon, porchlight, builder-post]
-status: draft
+status: published
 created: 2026-08-21
 target: builder.aws.com
 ---

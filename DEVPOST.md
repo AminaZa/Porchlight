@@ -36,7 +36,7 @@ A neighborhood safety agent defined by how often it stays quiet. It reads every 
 Alternates, if the field runs short:
 
 ```
-Reads every neighborhood safety report, correlates them by meaning, and wakes a human only for the ones that turn out to be a real pattern. On the demo set, 34 of 38 never surface.
+Reads every neighborhood safety report, correlates them by meaning, and wakes a human only for the ones that turn out to be a real pattern. On the demo set, 37 of 38 never surface; one alert fires.
 ```
 
 ```
@@ -66,8 +66,8 @@ by how often it *doesn't* interrupt you?
 
 Porchlight reads every report a neighborhood submits, works out which ones
 describe the same ongoing situation, and wakes a human only when the evidence
-supports it. On the demonstration dataset, **thirty-four of thirty-eight reports
-are logged silently and never surface to anyone.**
+supports it. On the demonstration dataset, **thirty-seven of thirty-eight reports
+never surface to anyone. One alert fires.**
 
 The problem it's built around looks like this. Four neighbors notice the same
 person near the same parcel lockers over a day and a half, and report it as:
@@ -99,8 +99,8 @@ against somebody.
 Everyone on the street. Alerts go to the residents of the affected zone, so the
 people the product is for are the neighbours who currently get pinged for every
 raccoon and every strange car, and who have quietly muted the channel because of
-it. The thing Porchlight gives them is the silence — thirty-four of thirty-eight
-reports never reach them at all, which is what makes the thirty-fifth worth
+it. The thing Porchlight gives them is the silence — thirty-seven of thirty-eight
+reports never reach them at all, which is what makes the thirty-eighth worth
 opening.
 
 The volunteer who runs the channel — a block captain, an HOA coordinator, a
@@ -244,7 +244,7 @@ strands-agents, amazon-bedrock, claude, python, chromadb, sqlite, numpy, scipy, 
 
 - [ ] Three `⟨PENDING⟩` items above resolved or removed
 - [ ] Demo numbers re-checked against the first real run, not the offline one
-- [ ] No Marvel references anywhere — see [[BRANDING]] § *Trademark scope*
+- [x] No Marvel references anywhere — see [[BRANDING]] § *Trademark scope* ✅ 2026-08-22
 - [ ] Repo public, MIT license visible in the About section
 - [ ] Video public on YouTube or Vimeo, under 5:00
 - [ ] Submitted before **Sep 14, 2026 5:00pm PT**

@@ -4,7 +4,7 @@
 
 A neighbourhood safety agent defined by how often it stays quiet.
 
-Most services in this category alert on everything, and people learn to ignore them. Porchlight reads every report, correlates them by meaning rather than by keyword, and wakes a human only when several different neighbours have independently described the same situation in the same place over a short window. On the demonstration dataset, **thirty-four of thirty-eight reports are logged silently and never surface to anyone.**
+Most services in this category alert on everything, and people learn to ignore them. Porchlight reads every report, correlates them by meaning rather than by keyword, and wakes a human only when several different neighbours have independently described the same situation in the same place over a short window. On the demonstration dataset, **thirty-seven of thirty-eight reports never surface to anyone. One alert fires.**
 
 ![The correlation graph: most reports dim and unconnected, one cluster lit and linked](assets/branding/02-graph-motif.png)
 

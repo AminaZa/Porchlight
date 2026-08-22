@@ -24,7 +24,7 @@ Every product in this category brands on vigilance — red badges, alarm states,
 
 So the accent color is semantic, not paint:
 
-- **Dim = silently logged.** The common case — roughly 34 of 38 reports in the seed set.
+- **Dim = silently logged.** The common case — the large majority of the 38-report seed set.
 - **Lit = the porch light came on.** The exception, and it should feel like one.
 
 ![Correlation graph: eighteen dim unconnected nodes, three mid-tone near-miss nodes left deliberately unlinked, four amber nodes linked inside a glow](assets/branding/02-graph-motif.png)
@@ -87,7 +87,7 @@ CSS custom properties, ready to paste:
 
 Two surfaces carry the whole demo, and they use the same rule:
 
-1. **Terminal output.** Silent logs in `--dim`'s quieter cousin, declines in `--dim`, the single alert in `--lamp`. The summary line (`38 reports · 34 silent · 3 declined · 1 alert`) is the shot that makes the argument without narration.
+1. **Terminal output.** Silent logs in `--dim`'s quieter cousin, declines in `--dim`, the single alert in `--lamp`. The summary line (`38 reports · N silent · N declined · 1 alert`) is the shot that makes the argument without narration. **Shoot whatever the run prints — the split between silent and declined depends on the model's calls and is not a fixed figure. Only the totals are: 38 in, exactly one alert out.**
 2. **Alert and silent-log cards.** *Same component*, only the border and kicker color change. Amber left-border for a pattern, `--sill` for a log. Building them as one component with a variant — rather than two components — is what makes the restraint visible in the code as well as the UI.
 
 Evidence strings (`cluster 4 · 31h · z=3.1`) are always monospace, always in the footer position.
