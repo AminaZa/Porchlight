@@ -246,3 +246,33 @@ class EscalationDecision(BaseModel):
             "for a neighbor reading over your shoulder, not for a log file."
         )
     )
+
+
+# One definition of what happened to a report, shared by every surface that
+# counts them.
+#
+# This used to be written twice: pipeline.Processed.outcome bucketed by the
+# live objects, and render.build_html re-derived its own buckets from stored
+# rows with a different rule (`action != "alert" and cluster_size > 1`). That
+# put a suppressed duplicate in "suppressed" in the terminal and in "declined"
+# on the page, so the same run printed two different tallies — on camera,
+# forty seconds apart, in VIDEO_SCRIPT §4. storage.rendered_rows() already
+# promised in its docstring that the two "cannot disagree"; nothing enforced
+# it. tests/test_pipeline.py::test_page_tally_matches_outcomes now does.
+def outcome_of(
+    *, action: str, sent: bool, suppressed: bool, cluster_size: int
+) -> str:
+    """One of: alert, suppressed, declined, silent.
+
+    Order matters. A suppressed duplicate decided "alert" and is not a
+    decline — the pipeline held it back because an alert already covers that
+    cluster, which is a different fact about the system than the escalation
+    agent choosing not to escalate.
+    """
+    if action == "alert" and sent:
+        return "alert"
+    if action == "alert" and suppressed:
+        return "suppressed"
+    if cluster_size > 1:
+        return "declined"
+    return "silent"

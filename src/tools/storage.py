@@ -18,7 +18,7 @@ from pathlib import Path
 
 from strands import tool
 
-from src.models import EscalationDecision, TriagedReport
+from src.models import EscalationDecision, TriagedReport, outcome_of
 
 DB_PATH = Path(os.environ.get("FNA_DB_PATH", "porchlight.db"))
 RETENTION_DAYS = int(os.environ.get("FNA_RETENTION_DAYS", "90"))
@@ -267,6 +267,15 @@ def rendered_rows() -> list[dict]:
                 "anomaly_score": r["anomaly_score"] or 0.0,
                 "related_ids": related,
                 "covered": bool(r["covered"]),
+                # The single bucketing rule, so the page cannot tally this
+                # run differently from the terminal. A decision of "alert"
+                # that was not suppressed is one that went out.
+                "outcome": outcome_of(
+                    action=decided,
+                    sent=decided == "alert" and not suppressed,
+                    suppressed=suppressed,
+                    cluster_size=r["cluster_size"] or 1,
+                ),
             }
         )
     return out

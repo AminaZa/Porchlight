@@ -18,6 +18,7 @@ run by hand — see IMPLEMENTATION_PLAN.md §7.
 
 from __future__ import annotations
 
+import collections
 from datetime import datetime, timedelta, timezone
 
 import pytest
@@ -312,3 +313,36 @@ def test_layout_is_deterministic(wired, tmp_path):
     first = render.build_html(storage.rendered_rows())
     second = render.build_html(storage.rendered_rows())
     assert first == second
+
+
+def test_page_tally_matches_outcomes(wired):
+    """The page and the terminal must bucket one run identically.
+
+    storage.rendered_rows() has always claimed in its docstring that the two
+    "cannot disagree". Nothing checked it, and they did: the page re-derived
+    its own buckets as `action != "alert" and cluster_size > 1`, which files a
+    suppressed duplicate under "declined" while the terminal files it under
+    "suppressed". VIDEO_SCRIPT §4 cuts from the terminal to this page inside
+    forty seconds, so the discrepancy was pointed at a camera.
+    """
+    import re
+
+    results = run_all()
+    rows = storage.rendered_rows()
+
+    terminal = collections.Counter(r.outcome for r in results)
+    page = collections.Counter(r["outcome"] for r in rows)
+    assert terminal == page, (
+        f"terminal tallied {dict(terminal)} but the page tallied {dict(page)} "
+        f"for the same run"
+    )
+
+    # And the rendered headline must report those same numbers, not recount.
+    html = render.build_html(rows)
+    tally = re.search(r'<p class="tally">(.*?)</p>', html, re.S).group(1)
+    numbers = [int(n) for n in re.findall(r"\d+", tally)]
+    expected = [len(results), terminal["silent"], terminal["declined"]]
+    if terminal["suppressed"]:
+        expected.append(terminal["suppressed"])
+    expected.append(terminal["alert"])
+    assert numbers == expected, f"headline reads {numbers}, run was {expected}"

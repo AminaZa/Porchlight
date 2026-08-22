@@ -29,6 +29,7 @@ from src.models import (
     EscalationDecision,
     RawReport,
     TriagedReport,
+    outcome_of,
 )
 from src.tools import alerts, anomaly, storage, vectors
 
@@ -55,14 +56,17 @@ class Processed:
 
     @property
     def outcome(self) -> str:
-        """One of: alert, suppressed, declined, silent."""
-        if self.decision.action == "alert" and self.sent:
-            return "alert"
-        if self.decision.action == "alert" and self.suppressed:
-            return "suppressed"
-        if self.summary.cluster_size > 1:
-            return "declined"
-        return "silent"
+        """One of: alert, suppressed, declined, silent.
+
+        Delegates to models.outcome_of so the terminal tally and the HTML
+        page bucket a run identically. See the note there.
+        """
+        return outcome_of(
+            action=self.decision.action,
+            sent=self.sent,
+            suppressed=self.suppressed,
+            cluster_size=self.summary.cluster_size,
+        )
 
 
 def _stage(name: str, fn, *args, **kwargs):

@@ -250,12 +250,26 @@ def _offline_band() -> str:
     )
 
 
+def _suppressed_clause(n: int) -> str:
+    """The terminal prints suppressed only when there are any. Match it."""
+    return f" · {n} suppressed as duplicates" if n else ""
+
+
 def build_html(rows: list[dict]) -> str:
     """The whole page as a string."""
     total = len(rows)
-    alerts = [r for r in rows if r["action"] == "alert"]
-    declined = [r for r in rows if r["action"] != "alert" and r["cluster_size"] > 1]
-    silent = total - len(alerts) - len(declined)
+    alerts = [r for r in rows if r["outcome"] == "alert"]
+
+    # Bucket by the stored outcome, never by re-deriving it here. Deriving it
+    # a second way is what made this page and the terminal print two different
+    # tallies for one run — see models.outcome_of.
+    declined = [r for r in rows if r["outcome"] == "declined"]
+    suppressed = [r for r in rows if r["outcome"] == "suppressed"]
+    silent = sum(r["outcome"] == "silent" for r in rows)
+
+    # Cards still draw from anything correlated, suppressed duplicates
+    # included, because _card's filter below excludes covered rows anyway.
+    correlated = declined + suppressed
 
     # One card per alert, plus the strongest genuine decline.
     #
@@ -265,7 +279,7 @@ def build_html(rows: list[dict]) -> str:
     # showing the thing the product is actually about — a situation that looked
     # alarming and was deliberately not escalated.
     cards = [_card(r, "alert") for r in alerts]
-    genuine = [r for r in declined if not r["covered"]]
+    genuine = [r for r in correlated if not r["covered"]]
     if genuine:
         best = max(genuine, key=lambda r: (r["cluster_size"], r["distinct_reporters"]))
         cards.append(_card(best, "decline"))
@@ -318,7 +332,8 @@ def build_html(rows: list[dict]) -> str:
   <p class="tagline">your friendly neighborhood agent</p>
 
   <p class="tally">{total} reports · {silent} logged silently · {len(declined)}
-     correlated and declined · <b>{len(alerts)} alert{'' if len(alerts) == 1 else 's'}</b></p>
+     correlated and declined{_suppressed_clause(len(suppressed))} ·
+     <b>{len(alerts)} alert{'' if len(alerts) == 1 else 's'}</b></p>
 
   <div class="panel">
     {_svg(rows)}
