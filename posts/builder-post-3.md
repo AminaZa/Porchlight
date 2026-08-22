@@ -10,6 +10,10 @@ target: builder.aws.com
 > Draft. Bonus scoring: 0.2 of a possible 0.6, and it only counts if it is
 > **published** on builder.aws.com before 14 Sep 2026, 5pm PT.
 > Title must contain the phrase *Agents for Humans*.
+>
+> **builder.aws.com caps a post at 3000 characters.** Everything below the rule
+> is the post; keep it under the cap. Run `python scripts/postlen.py` to check.
+> The longer draft this was cut from is in git history at commit `ba17e4f`.
 
 **Title:** A Prompt Is Not a Control: Enforcing a Safety Guarantee With a Strands Hook in an Agents for Humans Build
 
@@ -17,99 +21,37 @@ target: builder.aws.com
 
 ---
 
-My neighbourhood safety agent makes one promise that actually matters: **no stored record and no alert ever describes a person.** Places, times, behaviour — never a height, a jacket, an ethnicity, a plate, a name.
+My neighbourhood safety agent makes one promise that matters: **no stored record and no alert ever describes a person.** Places, times, behaviour — never a height, a jacket, an ethnicity, a plate, a name.
 
-That promise is not decoration. This is a system where residents report on neighbours, and where correlation *amplifies* what they report. "Suspicious person" reports are the ones most prone to bias, and a correlation engine can launder that bias into something that looks official. If the promise fails, the product is worse than not existing.
+This is a system where residents report on neighbours and correlation *amplifies* what they report. A correlation engine can launder bias into something that looks official. If the promise fails, the product is worse than not existing.
 
-For most of the build I had that promise implemented twice, and neither one was a control.
+For most of the build I had that promise implemented twice, and neither was a control.
 
-## What I actually had
+**The prompt asked for it.** Triage strips names, descriptions, vehicles, house numbers. It does the real work — nothing else can rewrite "tall guy in a red jacket" into "a person was reported near the lockers" — but compliance is a probability, and the failure is *silent*.
 
-**The prompt asked for it.** The triage prompt says: strip names, physical descriptions, vehicles, house numbers.
+**A test checked it.** Twelve reports with person detail, through a live model, asserting none survives. That tells me about cases I thought of, on my machine. It says nothing about report thirteen at 2am.
 
-**A test checked it.** `tests/test_redaction.py` runs reports containing person detail through a live model and asserts none of it survives.
+Between "usually complies" and "guaranteed" there was nothing.
 
-Both are necessary. Neither is a control, and the distinction took me longer to see than it should have:
-
-- **A prompt is an instruction a model may choose not to follow.** It does the actual work — nothing else in the system is capable of rewriting "tall guy in a red jacket" into "a person was reported near the lockers" — but compliance is a probability, not a guarantee, and the failure is *silent*.
-- **A test tells you about the cases you thought of, after the fact, on your machine.** Twelve of them, in my case. It says nothing about report thirteen at 2am in production.
-
-Between "usually complies" and "guaranteed", there was nothing.
-
-## The hook
-
-Strands fires `AfterModelCallEvent` after the model responds and before the agent loop continues. A `HookProvider` can subscribe to it — and crucially, the event carries a **`retry` flag**.
+**The hook.** Strands fires `AfterModelCallEvent` after the model responds and before the agent loop continues, and the event carries a `retry` flag:
 
 ```python
-class RedactionGuard(HookProvider):
-    def register_hooks(self, registry: HookRegistry, **kwargs) -> None:
-        registry.add_callback(AfterModelCallEvent, self.inspect)
-
-    def inspect(self, event: AfterModelCallEvent) -> None:
-        if event.exception is not None or event.stop_response is None:
-            return
-
-        findings = []
-        for text in _texts(event.stop_response.message.get("content", [])):
-            findings.extend(scan(text))
-
-        if not findings:
-            return
-
-        if self.attempts >= self.max_retries:
-            raise RedactionViolation(findings, self.attempts + 1)
-
-        # Discard this response and make the model produce another one.
-        self.attempts += 1
-        event.retry = True
+def inspect(self, event: AfterModelCallEvent) -> None:
+    findings = [f for t in _texts(event.stop_response) for f in scan(t)]
+    if not findings:
+        return
+    if self.attempts >= self.max_retries:
+        raise RedactionViolation(findings)
+    self.attempts += 1
+    event.retry = True      # discard it, make the model answer again
 ```
 
-That's the whole mechanism. It inspects what the model *actually produced*, and if person detail survived, it throws the response away and asks again.
+**The retry flag is the entire point.** I could have put this scan in the pipeline after the triage call — same leaks caught. But a pipeline check can only reject a *finished* result: the model has already spoken, so my options are drop the report or crash the run. A control that turns every leak into lost data is one that gets an exception carved into it the first time it costs somebody something.
 
-## Why the retry flag is the entire point
+Inside the hook, the leaked version never reaches the pipeline, storage, or the vector index. Enforcement costs one extra Haiku call. Cheap enforcement is enforcement that survives contact with a deadline.
 
-This is the part I want to make the case for, because it is the difference between a hook and a check you could have written anywhere.
+**The bug that made it real.** My first version scanned `text` blocks and passed every test. It was inspecting nothing. With `structured_output_model`, generated fields arrive inside a **`toolUse` block's `input`** — so the redacted summary and the alert message, the only two fields the guarantee is about, were the one place I wasn't looking.
 
-I could have put this scan in the pipeline, right after the triage call. It would catch the same leaks. But a pipeline check can only ever **reject a finished result** — the model has already spoken, so my options are to drop the report or crash the run. A safety control that turns every leak into a lost report is one that gets an exception carved into it the first time it costs somebody real data.
+A guard that inspects the wrong field is worse than no guard: it converts an open question into false confidence. If you build one, feed it a known-bad *structured* output and assert the guard fires. Testing that clean input passes proves nothing.
 
-Inside the hook, before the response is returned to the agent loop, `event.retry = True` discards it and re-invokes the model. The leaked version never reaches the pipeline, never reaches storage, never reaches the vector index. And the cost of enforcement is **one extra Haiku call**.
-
-Cheap enforcement is enforcement that survives contact with a deadline. That is not a small property.
-
-Two retries, then it raises. Failing the report is the correct end state for a model that keeps leaking — and it fails *loudly*, which is the opposite of how the prompt fails.
-
-## The bug that made it real
-
-My first version scanned `text` blocks and passed every test I threw at it. It was also inspecting nothing.
-
-Structured output on Bedrock doesn't come back as text. With `structured_output_model`, the generated fields arrive inside a **`toolUse` block's `input`** — so the redacted summary and the alert message, the only two fields the guarantee is actually about, were in the one place I wasn't looking. The guard was a no-op that reported success.
-
-```python
-for block in content or []:
-    if "text" in block:
-        walk(block["text"])
-    if "toolUse" in block:               # <- where structured output lives
-        walk(block["toolUse"].get("input"))
-```
-
-Worth stating plainly: **a guard that inspects the wrong field is worse than no guard**, because it converts an open question into false confidence. If you build one of these, write a test that feeds it a known-bad structured output and asserts the guard *fires*. Testing that clean input passes proves nothing at all.
-
-## Tuned for precision, on purpose
-
-The patterns match constructions that are unambiguously person-identifying — `black man`, `named Dave`, `silver van`, `number 42` — and deliberately let borderline phrasing through to the prompt.
-
-That asymmetry is a product decision, not laziness. A false positive costs a retry, real money, and can abort a demo run; more importantly, **a guard that fires on ordinary reports is a guard somebody switches off.** So the guard is a net *under* the prompt, not a replacement for it. Recall is the prompt's job and the live tests measure it; precision is the guard's job, and `tests/test_guards.py` asserts it against the offline fixtures and the untouched holdout set — 32 tests, none of which need an AWS account, because `scan()` is a pure function.
-
-## The shape worth stealing
-
-Three layers, doing three different jobs, failing three different ways:
-
-| | does what | fails how |
-|---|---|---|
-| The prompt | asks for redaction, and does the actual work | **silently**, if the model doesn't comply |
-| The hook | refuses non-compliant output inside the agent loop | **loudly**, and only after a retry |
-| The tests | prove both hold against a live model | after the fact, on cases you thought of |
-
-None is redundant and none can be dropped. If your agent has a property that must hold rather than usually hold, the prompt is where you ask for it and the hook is where you *require* it.
-
-The build is open source under MIT: **https://github.com/AminaZa/Porchlight** — the guard is `src/guards.py`, in about 240 lines including the reasoning.
+Open source, MIT: **https://github.com/AminaZa/Porchlight** — the guard is `src/guards.py`.

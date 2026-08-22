@@ -10,6 +10,12 @@ target: builder.aws.com
 > Draft. Bonus scoring: 0.2 of a possible 0.6, and it only counts if it is
 > **published** on builder.aws.com before 14 Sep 2026, 5pm PT.
 > Title must contain the phrase *Agents for Humans*.
+>
+> **builder.aws.com caps a post at 3000 characters.** Everything below the rule
+> is the post; keep it under the cap. Run `python scripts/postlen.py` to check.
+> The longer draft this was cut from is in git history at commit `ba17e4f`.
+>
+> **Publish post 1 first**, then paste its real URL into the back-link below.
 
 **Title:** The Wrong Pair Ranks Higher Than the Right Pair: Why My Agents for Humans Build Needed an Agent
 
@@ -17,87 +23,34 @@ target: builder.aws.com
 
 ---
 
-In [my last post](⟨PENDING — URL of post 1, after it is published⟩) I wrote about fixing retrieval in a neighbourhood safety agent — indexing a normalised summary instead of raw report text, which took group separation from −0.16 to +0.52.
+In [my last post](⟨PENDING — URL of post 1, after it is published⟩) I fixed retrieval in a neighbourhood safety agent by indexing a normalised summary instead of raw report text: group separation went from −0.16 to +0.52.
 
-That fix invites an obvious question, and I want to answer it honestly, because I asked it myself and spent a day trying to make the answer be yes.
+That invites an obvious question, and I spent a day trying to make the answer be yes.
 
-If retrieval separates the groups that cleanly now, why is there an agent here at all? Cluster on cosine similarity, pick a threshold, alert above it. That is an afternoon of work, it costs nothing to run, and it has no prompt to tune and no model to pay for.
+If retrieval separates the groups that cleanly, why is there an agent here at all? Cluster on cosine similarity, pick a threshold, alert above it. An afternoon of work, nothing to tune, no model to pay for.
 
-I measured it. It does not work, and the way it fails is more interesting than the fact that it fails.
+I measured it. It does not work, and *how* it fails is the interesting part.
 
-## The case that decides it
+**The case that decides it.** My dataset contains a deliberate near-miss: three reports of someone loitering, in **three different zones**, spread over **three weeks**. It should not alert — that is roughly the base rate of living somewhere, and broadcasting it is what teaches people to mute the service.
 
-My dataset contains a deliberate trap I call the near-miss. Three reports of someone loitering — in **three different zones**, spread over **three weeks**, from three different neighbours.
+Next to it sits a genuine cluster: four reports, one parcel locker, 36 hours, four separate reporters. That one should alert.
 
-It should not alert. Nothing is happening. Three people in three parts of a neighbourhood noticed something vaguely unsettling over most of a month, which is roughly the base rate of living somewhere. Broadcasting that to a neighbourhood is exactly the behaviour that teaches people to mute the service.
-
-It sits in the data next to a genuine cluster: four reports, one parcel locker, thirty-six hours, four separate reporters. That one should alert.
-
-Both groups are, in plain language, "several people reported someone hanging around." A system that cannot tell them apart is either useless or harmful, depending on which way it errs.
-
-## The numbers
+In plain language both are "several people reported someone hanging around."
 
 | | cosine similarity |
 |---|---|
 | Within the genuine cluster | 0.708 – 0.814 |
 | **Within the near-miss** | **0.436 – 0.456** |
-| **A near-miss report → an unrelated report** | **0.576** |
+| **Near-miss report → an unrelated report** | **0.576** |
 
-Read the last two rows again, because that is the whole post.
+Read the last two rows again. The near-miss reports resemble **each other less** than one of them resembles an unrelated report about a car driving past some driveways.
 
-The near-miss reports resemble **each other less** than one of them resembles a completely unrelated report about a car driving past some driveways.
+This is not a threshold that needs tuning. The **ordering is inverted**. Sort every pair by similarity and the wrong pair sits above the right pair. No cut point puts one on the correct side without putting the other on the wrong side. Tuning changes which mistakes you make, not whether you make them.
 
-This is not a threshold that needs tuning. The *ordering is inverted*. Sort every pair in my dataset by similarity and the wrong pair appears above the right pair. There is no cut point anywhere on that sorted list that puts one on the correct side without putting the other on the wrong side, because they are in the wrong order to begin with. Tuning changes which mistakes you make, not whether you make them.
+I swept it anyway. To assemble the near-miss group at all you have to drop to 0.45, and you buy that with 20 wrong cross-group links; 0.40 catches it properly and costs 60. At 0.50 and up the noise clears and the near-miss group is simply invisible — never assembled, so never declined. Ten to one against, at every setting.
 
-## The sweep, for completeness
+**What actually separates them is not in the text.** One place versus three zones. 36 hours versus three weeks. Four independent reporters versus three strangers. Similarity cannot see any of it.
 
-I did not want to argue this from three numbers, so I swept the threshold across the full dataset and counted what any similarity-clustering approach would actually link:
+You could bolt on `if same_zone and span < 48h and reporters >= 3`. It gets both my cases right; I ran it. But every constant there is a guess dressed as a policy, and — more importantly — it cannot explain itself. When my agent declines it says *why*, in a sentence a neighbour can read and argue with. `span < 48` returning False is not a reason. For a system whose whole value is staying quiet, the account of why it stayed quiet is what earns it the right to keep running.
 
-| threshold | correct near-miss links | wrong cross-group links |
-|---|---|---|
-| 0.40 | 6 | 60 |
-| 0.45 | 2 | 20 |
-| 0.50+ | 0 | — |
-
-To retrieve the near-miss group as a group at all — which you must do before you can decide it is not worth alerting on — you have to drop to 0.45, and you buy that with twenty wrong links. Drop to 0.40 to catch it properly and you are carrying sixty. Go to 0.50 and up, where the cross-group noise finally clears, and the near-miss group is simply invisible: the system never assembles it, so it never gets the chance to decline it.
-
-Ten to one against, at every setting. There is no window.
-
-## So what actually separates them?
-
-Nothing in the text. The distinguishing evidence is entirely outside it:
-
-- **Where** — one place, versus three zones spread across the neighbourhood
-- **When** — thirty-six hours, versus three weeks
-- **Who** — four independent reporters, versus three people who have never encountered each other
-
-Similarity cannot see any of that. It is metadata, and it is the whole case.
-
-## "Then add rules on top of the threshold"
-
-This is the fair counter-argument and it deserves a real answer, not a strawman. You could write:
-
-```python
-if same_zone and span_hours < 48 and distinct_reporters >= 3:
-    alert()
-```
-
-That rule gets both of my cases right. I ran it.
-
-Two problems, and the second one is why I stopped.
-
-**It is brittle in the way hand-tuned constants always are.** Why 48 hours? Because it fits the case in front of me. A genuine pattern spread over sixty hours falls out. Two zones that happen to share a boundary — a parcel locker on the line between them — falls out. Every one of those constants is a guess dressed up as a policy, and each new case adds another clause.
-
-**It cannot explain itself, and explanation is the product.** When Porchlight declines, it says why: *"three reports, but in three different zones over three weeks — the resemblance between them is not evidence that they are connected."* A neighbour can read that, disagree with it, and tell me it is wrong. `span_hours < 48` returning `False` is not a reason anyone can argue with. In a system whose entire value proposition is that it stays quiet, the account of *why* it stayed quiet is the thing that earns it the right to keep running.
-
-So the escalation stage is a model that reads the evidence — the cluster, the reporter count, the time span, the zone spread, the anomaly score — and weighs them against each other for the specific case, then writes its reasoning in plain language. Not because agents are fashionable. Because the decision genuinely requires reading, and because the output has to be a sentence a human can push back on.
-
-## One consequence worth flagging
-
-My demo has an `--offline` mode so it can run with no AWS account and no spend — the three model calls are stubbed, everything else is real.
-
-Offline mode **cannot** reproduce the near-miss decline. I documented that loudly rather than papering over it, because it follows directly from everything above: the judgment is the part that was stubbed, and a stub with no judgment cannot demonstrate judgment. If I could fake that decline with a hard-coded rule, the argument in this post would be wrong.
-
-The build is open source under MIT: **https://github.com/AminaZa/Porchlight**
-
-Post 3 will be about enforcing a safety guarantee — "no alert ever describes a person" — with a Strands hook on the model call, rather than asking the prompt nicely and hoping.
+Open source, MIT: **https://github.com/AminaZa/Porchlight**

@@ -151,7 +151,10 @@ Straight from [[PROJECT_BRIEF]] §10, cross-checked against the official rules.
       1:15 of the 5:00 in the can. Only the architecture walkthrough is left of the
       no-live-run material; it can work from `assets/architecture.html`
 - [ ] **Bonus: builder.aws.com posts** — up to **+0.6** on a 5-point scale, 0.2 each,
-      max three, published *before* the deadline. Use "Agents for Humans" in the title
+      max three, published *before* the deadline. Use "Agents for Humans" in the title.
+      **The platform caps a post at 3000 characters.** All three drafts were cut to
+      fit on 2026-08-22; `python scripts/postlen.py` checks the pasteable body of
+      each and exits non-zero if any is over
     - [ ] Post 1 — **drafted 2026-08-21**, not published. `posts/builder-post-1.md`
           (~950 words). The retrieval failure: premise check failing on the first
           run, −0.16 separation, redaction turning out to be what *makes*
