@@ -261,10 +261,11 @@ Same restraint rules as Part 1: dusk background, **no amber**, hard cuts only.
 
 ## Housekeeping
 
-- Source clips live in `refs/` — **reference only, never committed.** Now
-  enforced by `.gitignore` (`refs/`, `*.mp4`) after a `git add -A` swept all 698
+- Source clips live in `refs/` — **reference only, never committed. They stay
+  on the local machine permanently.** They are style references used to brief
+  the motion work, not project assets, so there is nothing to hand over and
+  nothing to clean up before submission.
+- Enforced by `.gitignore` (`refs/`, `*.mp4`) after a `git add -A` swept all 698
   files into a commit on 2026-08-21. Caught before it was pushed.
-- `refs/_to_delete/` holds scratch frame exports from this analysis pass; safe to
-  delete.
-- **Deleting `refs/` before submission is now a real [[CHECKLIST]] §4 item.** It
-  was referenced here before it existed.
+- `refs/_to_delete/` holds scratch frame exports from this analysis pass; delete
+  them whenever the disk space is wanted. Nothing depends on them.

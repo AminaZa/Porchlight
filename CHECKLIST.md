@@ -178,9 +178,6 @@ Straight from [[PROJECT_BRIEF]] §10, cross-checked against the official rules.
       would have caught it)*
 - [ ] **Demo video, max 5 minutes**, public on YouTube or Vimeo — [[VIDEO_SCRIPT]] §3
       needs live footage. Motion direction for §1 and §2 is in [[MOTION_REFS]]
-- [ ] **Delete `refs/` before submission** — 52MB of third-party reference clips
-      plus `refs/_to_delete/` scratch frames. Now gitignored, but they still sit in
-      the working tree. [[MOTION_REFS]] assumed this item already existed; it did not
 - [ ] **Live demo link** — optional but scores higher: `./scripts/publish.sh <bucket>`
       after a real (non-offline) run
 - [ ] Resolve the three `⟨PENDING⟩` items in [[DEVPOST]]
