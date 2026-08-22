@@ -147,15 +147,16 @@ Straight from [[PROJECT_BRIEF]] §10, cross-checked against the official rules.
 
 - [x] **AWS Builder ID** — created 2026-08-21. The Devpost field still needs the
       actual ID pasted in; see the `⟨PENDING⟩` in [[DEVPOST]]
-- [ ] Record [[VIDEO_SCRIPT]] §1, §2 and §4 — the problem, the audience, and the
-      architecture walkthrough need no live run. That is ~2 of the 5 minutes
+- [ ] Record [[VIDEO_SCRIPT]] §4 — **§1 and §2 are shot as of 2026-08-21**, about
+      1:15 of the 5:00 in the can. Only the architecture walkthrough is left of the
+      no-live-run material; it can work from `assets/architecture.html`
 - [ ] **Bonus: builder.aws.com posts** — up to **+0.6** on a 5-point scale, 0.2 each,
       max three, published *before* the deadline. Use "Agents for Humans" in the title
-    - [ ] Post 1 — **drafted 2026-08-21** in `posts/builder-post-1.md` (~950 words).
+    - [x] Post 1 — **PUBLISHED 2026-08-21.** Draft in `posts/builder-post-1.md` (~950 words).
           The retrieval failure: premise check failing on the first run, −0.16
           separation, redaction turning out to be what *makes* retrieval work.
           Still unticked because the bonus requires it **published**, not written
-    - [ ] Post 2 — **drafted 2026-08-21** in `posts/builder-post-2.md` (~800 words).
+    - [x] Post 2 — **PUBLISHED 2026-08-21.** Draft in `posts/builder-post-2.md` (~800 words).
           Why a similarity threshold can't do this: the ordering is inverted, the
           sweep is 10:1 against at every setting, and the deciding evidence is
           metadata. Carries one `⟨PENDING⟩` — the back-link to post 1's URL
