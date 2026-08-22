@@ -152,14 +152,15 @@ Straight from [[PROJECT_BRIEF]] §10, cross-checked against the official rules.
       no-live-run material; it can work from `assets/architecture.html`
 - [ ] **Bonus: builder.aws.com posts** — up to **+0.6** on a 5-point scale, 0.2 each,
       max three, published *before* the deadline. Use "Agents for Humans" in the title
-    - [x] Post 1 — **PUBLISHED 2026-08-21.** Draft in `posts/builder-post-1.md` (~950 words).
-          The retrieval failure: premise check failing on the first run, −0.16
-          separation, redaction turning out to be what *makes* retrieval work.
-          Still unticked because the bonus requires it **published**, not written
-    - [x] Post 2 — **PUBLISHED 2026-08-21.** Draft in `posts/builder-post-2.md` (~800 words).
-          Why a similarity threshold can't do this: the ordering is inverted, the
-          sweep is 10:1 against at every setting, and the deciding evidence is
-          metadata. Carries one `⟨PENDING⟩` — the back-link to post 1's URL
+    - [ ] Post 1 — **drafted 2026-08-21**, not published. `posts/builder-post-1.md`
+          (~950 words). The retrieval failure: premise check failing on the first
+          run, −0.16 separation, redaction turning out to be what *makes*
+          retrieval work. The bonus requires it **published**, not written
+    - [ ] Post 2 — **drafted 2026-08-21**, not published. `posts/builder-post-2.md`
+          (~800 words). Why a similarity threshold can't do this: the ordering is
+          inverted, the sweep is 10:1 against at every setting, and the deciding
+          evidence is metadata. Fill the `⟨PENDING⟩` back-link with post 1's real
+          URL **at publish time** — publish post 1 first, then paste it in
     - [ ] Post 3 — **drafted 2026-08-21** in `posts/builder-post-3.md` (~1030 words).
           A prompt is not a control: the `AfterModelCallEvent` hook, why `event.retry`
           is the point, the `toolUse`-block bug that made the guard a no-op, and the
