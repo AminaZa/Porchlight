@@ -7,9 +7,7 @@ status: published
 created: 2026-08-21
 target: builder.aws.com
 published: 2026-08-22
-url: ⟨PENDING⟩
-url: |
-  https://builder.aws.com/content/3IH3gxMX7EiBVvcj8LNeOrinhXc/the-wrong-pair-ranks-higher-than-the-right-pair-why-my-agents-for-humans-build-needed-an-agent
+url: https://builder.aws.com/content/3IH3gxMX7EiBVvcj8LNeOrinhXc/the-wrong-pair-ranks-higher-than-the-right-pair-why-my-agents-for-humans-build-needed-an-agent
 ---
 
 # Post 2 — why a threshold can't do this

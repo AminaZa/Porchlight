@@ -245,14 +245,14 @@ following optional builder.aws Blog Post will positively impact the score"
 for them.
 
 1. https://builder.aws.com/content/3IH3FtgK3xtZL4ft7oUrPtvLPpu/redaction-made-my-retrieval-work-a-measurement-from-an-agents-for-humans-build
-2. ⟨PENDING — post 2 URL, "The Wrong Pair Ranks Higher Than the Right Pair"⟩
-3. ⟨PENDING — post 3 URL, "A Prompt Is Not a Control"⟩
+2. https://builder.aws.com/content/3IH3gxMX7EiBVvcj8LNeOrinhXc/the-wrong-pair-ranks-higher-than-the-right-pair-why-my-agents-for-humans-build-needed-an-agent
+3. https://builder.aws.com/content/3IH4JGX8muNHBXdCNGDDRgpAbeu/a-prompt-is-not-a-control-enforcing-a-safety-guarantee-with-a-strands-hook-in-an-agents-for-humans-build
 
 ---
 
 ## Pre-submit checks
 
-- [ ] Every `⟨PENDING⟩` above resolved or removed (two are builder-post URLs)
+- [ ] Every `⟨PENDING⟩` above resolved or removed
 - [ ] Demo numbers re-checked against the first real run, not the offline one
 - [x] No Marvel references anywhere — see [[BRANDING]] § *Trademark scope* ✅ 2026-08-22
 - [ ] Repo public, MIT license visible in the About section

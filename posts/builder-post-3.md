@@ -7,9 +7,7 @@ status: published
 created: 2026-08-21
 target: builder.aws.com
 published: 2026-08-22
-url: ⟨PENDING⟩
-url: |
-  https://builder.aws.com/content/3IH4JGX8muNHBXdCNGDDRgpAbeu/a-prompt-is-not-a-control-enforcing-a-safety-guarantee-with-a-strands-hook-in-an-agents-for-humans-build
+url: https://builder.aws.com/content/3IH4JGX8muNHBXdCNGDDRgpAbeu/a-prompt-is-not-a-control-enforcing-a-safety-guarantee-with-a-strands-hook-in-an-agents-for-humans-build
 ---
 
 # Post 3 — the guarantee as a hook, not a prompt
