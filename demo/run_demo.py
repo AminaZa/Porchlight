@@ -47,10 +47,11 @@ from src.pipeline import Processed, StageError, process_report  # noqa: E402
 from src.tools import alerts, storage, vectors  # noqa: E402
 
 SEED = ROOT / "data" / "seed_reports.json"
+HOLDOUT = ROOT / "data" / "holdout_reports.json"
 
 
-def load_seed() -> list[tuple[dict, RawReport]]:
-    data = json.loads(SEED.read_text(encoding="utf-8"))
+def load_seed(path: Path = SEED) -> list[tuple[dict, RawReport]]:
+    data = json.loads(Path(path).read_text(encoding="utf-8"))
     rows = sorted(data["reports"], key=lambda r: r["timestamp"])
     return [
         (
@@ -112,6 +113,15 @@ def main(argv: list[str] | None = None) -> int:
                         help="print correlation and escalation reasoning for the key cases")
     parser.add_argument("--html", nargs="?", const="out/report.html", default=None,
                         help="also write the run report to this path")
+    parser.add_argument("--seed", default=None, metavar="PATH",
+                        help="dataset to run (default data/seed_reports.json). Use "
+                             "--holdout for the never-tuned-against set.")
+    parser.add_argument("--holdout", action="store_true",
+                        help="run data/holdout_reports.json. Twenty reports the prompts "
+                             "were never tuned against; meant to be run once, with the "
+                             "result recorded whatever it is. Isolates its own database "
+                             "and vector store so a demo run's zone baselines cannot "
+                             "leak into it.")
     parser.add_argument("--keep", action="store_true",
                         help="append to the existing database instead of starting fresh")
     parser.add_argument("--offline", action="store_true",
@@ -128,7 +138,29 @@ def main(argv: list[str] | None = None) -> int:
         render.OFFLINE = True
         print(offline.BANNER)
 
-    seed = load_seed()
+    if args.holdout and args.seed:
+        parser.error("--holdout and --seed are mutually exclusive")
+
+    dataset = Path(args.seed) if args.seed else (HOLDOUT if args.holdout else SEED)
+
+    # A holdout run must not inherit the demo's zone baselines: the anomaly check
+    # scores a zone against its own history, so 38 seed reports sitting in the
+    # store would silently change what "unusual" means here. Separate stores also
+    # mean running the holdout does not destroy the demo state behind out/report.html.
+    #
+    # storage.DB_PATH is bound at import time, so setting the environment here is
+    # too late on its own -- the module attribute has to be rebound as well, or
+    # the run appends straight into the demo database. vectors reads its path per
+    # call and keys its collection cache on it, so the env var alone is enough there.
+    # Assignment, not setdefault: .env ships FNA_DB_PATH=porchlight.db and
+    # FNA_CHROMA_PATH=chroma, so deferring to the ambient value means --holdout
+    # silently runs against the demo store and deletes it on the way in.
+    if args.holdout:
+        os.environ["FNA_DB_PATH"] = "holdout.db"
+        os.environ["FNA_CHROMA_PATH"] = "chroma-holdout"
+        storage.DB_PATH = Path(os.environ["FNA_DB_PATH"])
+
+    seed = load_seed(dataset)
     if not args.keep:
         fresh_state()
 

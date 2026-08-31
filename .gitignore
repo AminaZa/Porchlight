@@ -3,7 +3,7 @@
 *.db
 *.sqlite
 *.sqlite3
-chroma/
+chroma*/
 out/
 alerts.log
 
