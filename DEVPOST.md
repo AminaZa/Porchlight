@@ -86,8 +86,8 @@ Three behaviors are worth watching:
 
 | | Evidence | Outcome |
 |---|---|---|
-| The real cluster | 4 reports · **4 different reporters** · one zone · 36 hours | **Alert** |
-| The near-miss | 3 similar reports · 3 reporters · **three zones** · **21 days** | Declined |
+| The real cluster | 3 reports · **3 different reporters** · one zone · 13 hours · z = 6.5 | **Alert** (4th suppressed) |
+| The near-miss | 3 similar reports · 3 reporters · **three zones** · **21 days** | No alert — never correlated |
 | The single reporter | 4 similar reports · one zone · 3.5 days · **1 reporter** | Declined |
 
 The second and third rows are the point. A system that only ever fires isn't
@@ -95,6 +95,22 @@ exercising judgment — the declines are what make the alert worth reading. The
 third is also a safety control: four reports from one person isn't corroboration,
 and treating it as a neighborhood pattern is how a service like this gets used
 against somebody.
+
+The near-miss is the row that didn't go how we designed it, and it's worth being
+precise about. We wrote those three reports — "walking slowly up the street
+looking at the houses", "wandering about near the driveways", "loitering at the
+end of the road" — as three people, three zones, twenty-one days. The intent was
+that the agent would assemble them and then decline on the spread.
+
+It never assembles them. Retrieval doesn't link the three to each other: they sit
+at 0.436–0.456 cosine similarity, lower than one of them scores against an
+unrelated report about a car passing driveways (0.576). Two are logged silently
+with nothing correlated at all. The third links to two unrelated reports on its
+own street and is declined there, on the anomaly score.
+
+None of the three ever reaches anyone, which is the outcome we wanted — but it
+happens for a different reason than we intended. That is the same measurement
+below that makes the case for an agent, pointed back at us.
 
 ### Who it's for
 
@@ -184,6 +200,13 @@ incorrect ones; at 0.50 and above, none at all. Separating "three people
 described loitering in three zones over three weeks" from "these two sentences
 both mention driveways" requires reading them. That is the argument for putting
 an agent here, and it's measured rather than asserted.
+
+The honest coda: retrieval doesn't clear this bar either. On a live run the three
+near-miss reports are never linked to one another at all, for exactly the reason
+the table gives, so the agent declines them locally rather than weighing them as
+one three-zone situation. The threshold fails, retrieval also fails, and the
+outcome is still correct — we'd rather say which of those we get to take credit
+for than round it up.
 
 **Redaction is enforced, not requested.** A Strands `AfterModelCallEvent` hook
 inspects what the model actually produced — including the structured-output

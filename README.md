@@ -56,11 +56,17 @@ report ─→ triage ──────────→ correlate ─────
 
 | | Evidence | Outcome |
 |---|---|---|
-| **The real cluster** | 4 reports · **4 different reporters** · one zone · 36 hours · z = 5.0 | **Alert** |
-| **The near-miss** | 3 similar reports · 3 reporters · **three zones** · **21 days** | Declined |
+| **The real cluster** | 3 reports · **3 different reporters** · one zone · 13 hours · z = 6.5 | **Alert** (4th report suppressed) |
+| **The near-miss** | 3 similar reports · 3 reporters · **three zones** · **21 days** | No alert — never correlated |
 | **The single reporter** | 4 similar reports · one zone · 3.5 days · **1 reporter** | Declined |
 
 The second and third rows are the point. A system that only ever fires is not exercising judgment, and the declines are what make the alert worth reading.
+
+The first row fires earlier than you might expect. By the third report there are already three distinct reporters in a deliberately quiet zone inside thirteen hours, and the agent alerts there rather than waiting for a fourth. The fourth arrives and is suppressed, because the cluster it joins has already woken the neighbourhood once. Both the third and fourth reports are defensible alert points, so the test asserts what actually matters — exactly one alert, belonging to the genuine cluster — rather than pinning the model to one of them.
+
+The near-miss did not go how we designed it, and it is worth being precise about. We wrote three reports — *"walking slowly up the street looking at the houses"*, *"wandering about near the driveways"*, *"loitering at the end of the road"* — as three people, three zones, twenty-one days, expecting the agent to assemble them and then decline on the spread.
+
+It never assembles them. Retrieval does not link the three to each other: they sit at 0.436–0.456 cosine similarity, lower than one of them scores against an unrelated report about a car passing driveways (0.576). Two are logged silently with nothing correlated at all. The third links to two unrelated reports on its own street and is declined there, on the anomaly score. None of the three ever reaches anyone, which is the outcome we wanted — but it happens for a different reason than we intended. That is the same measurement in [Why there is an agent here and not a similarity threshold](#why-there-is-an-agent-here-and-not-a-similarity-threshold) that makes the case for an agent, pointed back at us.
 
 The third row is also a safety control. Four reports from one person is not corroboration — it is one person's concern, and treating it as a neighbourhood pattern is how a service like this gets used against somebody.
 
@@ -147,7 +153,9 @@ The obvious cheaper design is: embed everything, and call it a cluster when simi
 
 The three near-miss reports resemble each other *less* than one of them resembles a completely unrelated report about a car driving past some driveways. Sweeping the threshold doesn't rescue it — at 0.45 it picks up two correct near-miss links and **twenty incorrect ones**; at 0.50 and above it picks up none at all.
 
-Separating *"three people described loitering in three different zones over three weeks"* from *"these two sentences both mention driveways"* requires reading them and weighing where, when, and who reported. That is the whole reason there is an agent in the middle of this and not an `if similarity > x` branch, and it is why `--offline` cannot reproduce the near-miss decline: a stub with no judgment cannot demonstrate judgment.
+Separating *"three people described loitering in three different zones over three weeks"* from *"these two sentences both mention driveways"* requires reading them and weighing where, when, and who reported. That is the whole reason there is an agent in the middle of this and not an `if similarity > x` branch, and it is why `--offline` cannot stand in for a real run: a stub with no judgment cannot demonstrate judgment.
+
+The honest coda is that retrieval does not clear this bar either. On a live run the three near-miss reports are never linked to one another at all — the numbers above are exactly why — so the agent declines them locally instead of weighing them as one three-zone situation. The threshold fails; retrieval also fails; the outcome is still correct. Which of those three sentences we get to claim credit for is worth stating plainly rather than rounding up.
 
 ---
 
