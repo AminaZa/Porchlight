@@ -3,16 +3,21 @@
 Each stage gets the smallest model that can do its job:
 
     triage       Haiku 4.5   typed extraction from one short report
-    correlation  Sonnet 5    deciding which lookups to make and reading results
-    escalation   Opus 5      the judgment call, and the only one worth Opus
+    correlation  Sonnet 4.6  deciding which lookups to make and reading results
+    escalation   Opus 4.6    the judgment call, and the only one worth Opus
 
 Prompt caching is on for all three. A demo run makes 38 calls per agent with a
 byte-identical system-prompt and tool-schema prefix, so the prefix is written
 once and read 37 times at roughly a tenth of the input price. Together with the
 split this is the difference between ~20 and ~55 full runs inside the credits.
 
-Sampling parameters are deliberately absent. Opus 5 and Sonnet 5 reject
-`temperature`, `top_p`, and `top_k` outright — steer with the prompt instead.
+The pipeline was designed for Sonnet 5 / Opus 5. A new AWS account is not
+entitled to that tier, so the shipped defaults are the newest models this
+account can actually invoke. Moving back up is one edit per role in .env.
+
+Sampling parameters are deliberately absent. They are accepted on the 4.6 pair
+but rejected outright on Sonnet 5 / Opus 5, so leaving them unset is what keeps
+the two configurations interchangeable — steer with the prompt instead.
 """
 
 from __future__ import annotations
@@ -45,20 +50,26 @@ DEFAULT_REGION = "us-east-1"
 # user for use-case details, and a brand-new account returns AccessDenied with
 # "your account is currently being verified" for up to a couple of hours.
 # Note the asymmetry: Haiku 4.5 is only published as a dated, versioned profile,
-# while Sonnet 5 and Opus 5 carry bare aliases. The unversioned
+# while the Sonnet and Opus lines carry bare aliases. The unversioned
 # "global.anthropic.claude-haiku-4-5" does not resolve.
+#
+# A profile listing as ACTIVE is NOT an entitlement check — Sonnet 5 and Opus 5
+# both list here and both return AccessDenied on invocation for a new account.
+# Only a real call proves access; see scripts in the checklist §2b.
 DEFAULT_MODELS: dict[Role, str] = {
     "triage": "global.anthropic.claude-haiku-4-5-20251001-v1:0",
-    "correlation": "global.anthropic.claude-sonnet-5",
-    "escalation": "global.anthropic.claude-opus-5",
+    "correlation": "global.anthropic.claude-sonnet-4-6",
+    "escalation": "global.anthropic.claude-opus-4-6-v1",
 }
 
 # Triage emits one small structured object. Correlation and escalation write
 # prose reasoning that the demo puts on screen, so they get room.
 #
-# ⚠️ These are sized for thinking, not just for the answer. On Sonnet 5 and
-# Opus 5, adaptive thinking runs when the `thinking` parameter is omitted — a
-# change from Opus 4.7/4.8, where omitting it meant no thinking — and
+# ⚠️ These are sized for thinking, not just for the answer. The headroom was
+# added for Sonnet 5 / Opus 5, where adaptive thinking runs when the `thinking`
+# parameter is omitted. On the 4.6 pair actually in use, omitting it means no
+# thinking, so the ceiling is not load-bearing today — it is kept so that
+# switching back up a tier needs no code change. Where thinking does run,
 # max_tokens caps thinking *plus* the response together. The failure mode is
 # specific and ugly: thinking eats the budget, the structured output truncates,
 # `.structured_output` comes back None, and the stage raises "returned no
@@ -77,14 +88,14 @@ MAX_TOKENS: dict[Role, int] = {
 CACHE_TTL = os.environ.get("FNA_CACHE_TTL", "5m")
 
 # The minimum cacheable prefix is per-model, and it is not monotonic across
-# generations — Opus 5 caches from 512 tokens, Sonnet 5 from 1024, and
+# generations — the Opus line caches from 512 tokens, Sonnet from 1024, and
 # Haiku 4.5 only from 4096. A prefix below the threshold does not error; it
 # silently reports cache_creation_input_tokens = 0.
 #
 # Measured against the current prompts:
 #
-#   escalation   Opus 5      ~1240 tok prefix vs 512  → caches
-#   correlation  Sonnet 5    ~1690 tok prefix vs 1024 → caches
+#   escalation   Opus 4.6    ~1240 tok prefix vs 512  → caches
+#   correlation  Sonnet 4.6  ~1690 tok prefix vs 1024 → caches
 #   triage       Haiku 4.5    ~960 tok prefix vs 4096 → NEVER caches
 #
 # Triage is left as-is deliberately. Padding the prompt to clear 4096 tokens

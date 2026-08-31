@@ -72,9 +72,11 @@ updated: 2026-08-31
 
 ## 2 · First real runs
 
-- [ ] **One report through the CLI** — do this *before* the full set; it is where
-      credential and model-id problems surface, and far easier to read there than
-      on report 1 of 38
+- [x] **One report through the CLI** ✅ 2026-08-31 — and it earned its place:
+      this is exactly where the Sonnet 5 entitlement problem surfaced, at the
+      correlation stage, instead of on report 1 of 38. Ran clean on 4.6 and
+      **declined correctly** (2 reports, 1 reporter, z=7.85 called out as an
+      artifact of a thin baseline)
   ```
   python -m src.intake.cli "someone took my package from the porch" --zone "Elm St north"
   ```
@@ -109,15 +111,67 @@ updated: 2026-08-31
 
 ---
 
+## 2b · Models actually available — the docs must follow the code
+
+> [!warning] This account cannot use Sonnet 5 or Opus 5 — resolved to 4.6 on 2026-08-31
+> Probed every Anthropic profile in `us-east-1` by invoking each one directly.
+> **`--list` shows a profile as ACTIVE whether or not the account is entitled to
+> it**, so listing is not an entitlement check — only a real call is. That is why
+> this surfaced at the correlation stage of the first run rather than at `--list`.
+>
+> | Model | This account |
+> |---|---|
+> | Haiku 4.5 | ✅ |
+> | Sonnet 4.6 · Sonnet 4.5 · Opus 4.6 · Opus 4.5 | ✅ |
+> | **Sonnet 5 · Opus 5** · Opus 4.7 · Opus 4.8 · Fable 5 | ❌ AccessDenied |
+>
+> A new AWS account does not get the newest tier, and the error points at AWS
+> Sales — an enterprise process, not a form. **Decision 2026-08-31: run on
+> Sonnet 4.6 + Opus 4.6** rather than spend the remaining days chasing access.
+> `.env` now pins triage Haiku 4.5 · correlation Sonnet 4.6 · escalation Opus 4.6.
+
+Every surface below still claims Sonnet 5 / Opus 5. The submission has to name
+the models that actually produced the demo — a judge who reads the README and
+then watches the video should see the same thing in both.
+
+- [ ] `assets/architecture.html` — three places (~344, ~355, ~450). **Blocks
+      video §4**, which is shot from this file, so do this one first
+- [ ] `README.md` — the pipeline diagram (~36) and the cost paragraph (~134)
+- [ ] `DEVPOST.md` — ~128, ~137, and the "Built with" list (~146)
+- [ ] `IMPLEMENTATION_PLAN.md` — the model row (~31), the price table (~46–47),
+      the tree diagram (~72, ~75). Per-token prices differ per model, so the
+      per-run cost estimate needs recomputing against the measured figure
+- [ ] `src/provider.py` — module docstring, `DEFAULT_MODELS`, and the three
+      comment blocks that reason about Sonnet 5 / Opus 5 behaviour
+- [ ] `PROGRESS.md` — **append, do not rewrite.** It is a log of what happened,
+      and the Sonnet 5 / Opus 5 entries were true when they were written
+- [ ] `src/prompts.py` — **not a find-and-replace.** The prompts were written
+      against documented Opus 5 behaviour (*"writes long by default"*, *"verifies
+      its own work unprompted"*, *"will otherwise widen a task"*). Whether those
+      hold on Opus 4.6 is a §3 tuning question, not a rename
+- [ ] Re-check the two §2 predictions against 4.6. Adaptive-thinking-by-default
+      is an Opus 5 / Sonnet 5 behaviour, so on 4.6 `max_tokens` may not be eaten
+      by thinking at all — which would make the run *cheaper* than the $1.20–1.50
+      budgeted, not dearer. Likewise `MIN_CACHEABLE_TOKENS` was measured for the
+      5-series and may differ
+
+---
+
 ## 3 · Prompt tuning
 
 > [!warning] The brief names this as a real schedule risk (§13), not a formality
 > Budget genuine time. It is prompt engineering, not code, and it is where the
 > demo goes from "runs" to "persuasive".
 
-- [ ] Tune until the four behaviours above are stable across repeated runs
-- [ ] Re-check verbosity — Opus 5 writes long by default; the alert message should
-      stay 2–3 sentences
+- [ ] Tune until the four behaviours above are stable across repeated runs.
+      **First live run: 2 of 4 pass.** The near-miss alerted and the community
+      garden alerted; the single-reporter decline and the alert-exactly-once
+      suppression both worked. The lever is the anomaly score — false alerts sat
+      at z=0.9 and z=1.4, the true one at z=6.5, so the signal to separate them
+      is already in the evidence the escalation agent receives
+- [ ] Re-check verbosity — this was written for Opus 5, which writes long by
+      default. Re-measure on Opus 4.6 rather than assuming it inherits the trait.
+      The alert message should stay 2–3 sentences
 - [ ] Confirm alerts never contain a person description, even when the raw report
       had one — and that the new `RedactionGuard` isn't firing on ordinary reports
       (precision is asserted offline in `tests/test_guards.py`; live is the real test)

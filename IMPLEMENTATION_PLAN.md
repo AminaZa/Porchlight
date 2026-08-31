@@ -28,7 +28,7 @@ This pass builds the **full vertical slice** — intake → triage → correlate
 |---|---|---|
 | **Orchestration** | Sequential workflow in `pipeline.py` | Strands' documented *Workflow* pattern. Three agents, three prompts, no handoff loops. The brief names multi-agent debugging as the #1 schedule risk (§13). |
 | **Provider** | Amazon Bedrock (Strands default) | Uses the $50 credits; AWS-native for judging. |
-| **Models** | Haiku 4.5 triage · Sonnet 5 correlation · **Opus 5** escalation | Matched to task: typed extraction / tool selection / judgment. Supersedes the earlier `claude-opus-4-8` pin — Opus 5 costs the same and is stronger at the escalation call. |
+| **Models** | Haiku 4.5 triage · Sonnet 4.6 correlation · **Opus 4.6** escalation | Matched to task: typed extraction / tool selection / judgment. **Revised 2026-08-31:** the pin was Sonnet 5 / Opus 5, but a new AWS account is not entitled to that tier — the profiles list as `ACTIVE` and invoking one returns `AccessDenied`. 4.6 is the newest tier this account can actually call. |
 | **Prompt caching** | On, all three agents | The 38 demo calls share an identical system-prompt + tool-schema prefix. Cache reads ≈0.1× input. |
 | **Embeddings** | ChromaDB default (`all-MiniLM-L6-v2`, ONNX, local) | 384-dim, local, no API key, no per-embedding cost, deterministic. |
 | **Persistence** | Plain function calls in `pipeline.py`, not agent tools | Deviates from brief §5 — see [§3](#deviation-from-brief-5--confirmed). |
@@ -43,9 +43,11 @@ First-party rates — **Bedrock is priced separately, check the Bedrock pricing 
 
 | Model | Input / Output per Mtok |
 |---|---|
-| Opus 5 | $5 / $25 |
-| Sonnet 5 | $3 / $15 |
+| Opus 4.6 | $5 / $25 |
+| Sonnet 4.6 | $3 / $15 |
 | Haiku 4.5 | $1 / $5 |
+
+*(The previous table listed Sonnet 5 at $3 / $15. That is Sonnet 4.6's rate — Sonnet 5 is $2 / $10 — so the figure was wrong then and is right now, for a different reason. Replace all of this with the measured cost from AWS Cost Explorer once the first full run has settled in billing.)*
 
 Split + caching ≈ **$0.90 per full 38-report run** → roughly **55 runs inside the $50**. The all-Opus, no-caching design this replaces was ~$2.20/run (≈20 runs).
 
@@ -69,10 +71,10 @@ src/intake/cli.py ┴→ src/pipeline.py
                         │                    (produces redacted_text — see §4)
                         │     └─ pipeline persists: store_report + embed_and_index
                         │
-                        ├─ correlation_agent Sonnet 5 · tools: semantic_search,
+                        ├─ correlation_agent Sonnet 4.6 · tools: semantic_search,
                         │                    check_baseline_deviation, get_zone_history
                         │
-                        └─ escalation_agent  Opus 5 · tools: draft_alert, send_alert
+                        └─ escalation_agent  Opus 4.6 · tools: draft_alert, send_alert
                                              (else writes silent log)
                                  │
                     SQLite + Chroma → src/render.py → out/report.html → S3

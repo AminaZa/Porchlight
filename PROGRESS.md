@@ -223,7 +223,7 @@ Consequence: `--offline` **cannot** reproduce the near-miss decline, and that is
 | | |
 |---|---|
 | `src/models.py` | The contract. Result models (model-generated) split from record models (code-assembled). |
-| `src/provider.py` | `get_model(role)` — Haiku 4.5 / Sonnet 5 / Opus 5, prompt caching on all three. `--list` verifies Bedrock profile ids. |
+| `src/provider.py` | `get_model(role)` — Haiku 4.5 / Sonnet 4.6 / Opus 4.6, prompt caching on all three. `--list` lists Bedrock profile ids (but see 2026-08-31: listing is not an entitlement check). |
 | `src/prompts.py` | The three system prompts, together, for tuning. |
 | `src/agents/*.py` | triage · correlation · escalation. |
 | `src/tools/*.py` | storage (SQLite) · vectors (ChromaDB) · anomaly (per-zone z) · alerts (dispatch + demo output). |
@@ -277,8 +277,8 @@ The repo already existed as an empty placeholder created 2026-08-12, so the work
 
 Only one thing, and it is **AWS credentials, not the `aws` CLI**. `python -m src.provider --list` runs on boto3, which is already installed — it needs credentials in the environment or `~/.aws/credentials`, nothing else.
 
-- Bedrock inference-profile ids unverified.
-- Bedrock **model access** must be granted in the console for all three models (Haiku 4.5, Sonnet 5, Opus 5) in the target region.
+- ~~Bedrock inference-profile ids unverified.~~ Verified 2026-08-31; the triage id was wrong and is fixed.
+- ~~Bedrock **model access** must be granted in the console.~~ **No longer true** — that console page has been retired and serverless models auto-enable on first invocation. What does gate a new account: the Anthropic use-case form, and tier entitlement (Sonnet 5 / Opus 5 are denied). See the 2026-08-31 entry.
 
 ---
 
@@ -289,3 +289,58 @@ Only one thing, and it is **AWS credentials, not the `aws` CLI**. `python -m src
 - [[IMPLEMENTATION_PLAN]] approved: sequential workflow, Bedrock, ChromaDB local embeddings, CLI intake, static S3 dashboard.
 - **Real deployment confirmed as a goal**, which pulled the safety architecture (§4) forward into this pass rather than leaving it to phase 2.
 - Model split (Haiku/Sonnet/Opus 5) + prompt caching adopted: ~$0.90 per 38-report run instead of ~$2.20, so ~55 runs inside the $50 rather than ~20.
+
+---
+
+## 2026-08-31 — first live run
+
+Bedrock credentials worked end to end for the first time. Three gates in
+sequence, each one only visible after the previous cleared:
+
+1. **AWS account verification.** `ConverseStream` returned `AccessDenied`
+   ("your account is currently being verified"). Listing inference profiles is a
+   read and succeeded throughout, which made this look like a model-id fault.
+2. **Anthropic use-case form.** Bedrock's *Model access* console page has been
+   retired — serverless models auto-enable on first invocation — but Anthropic
+   models still require a one-time use-case submission per account.
+3. **Tier entitlement.** Sonnet 5 and Opus 5 return `AccessDenied` on a new
+   account. **A profile listing as `ACTIVE` is not an entitlement check**; only
+   an invocation is. Available: Haiku 4.5, Sonnet 4.6, Sonnet 4.5, Opus 4.6,
+   Opus 4.5. Denied: Sonnet 5, Opus 5, Opus 4.7, Opus 4.8, Fable 5.
+
+**Defect found and fixed.** `DEFAULT_MODELS["triage"]` was
+`global.anthropic.claude-haiku-4-5`, which does not resolve — Haiku 4.5 is
+published only as a dated profile. Sonnet and Opus carry bare aliases; Haiku
+does not. Anyone cloning the repo would have failed on report 1.
+
+**Decision: run on Sonnet 4.6 + Opus 4.6** rather than spend the remaining two
+weeks pursuing tier access. Docs updated to name the models that actually
+produced the demo. Entries above naming Sonnet 5 / Opus 5 were true when
+written and are left as they were.
+
+### Full 38-report run — two of four behaviours pass
+
+| Behaviour | Expected | Result |
+|---|---|---|
+| ~29 one-offs logged silently | 29 | **28** — the community-garden reports correlated and alerted |
+| Near-miss declined (3 zones, 3 weeks) | decline | ❌ **alerted** |
+| Single-reporter cluster declined (4 reports, 1 reporter) | decline | ✅ declined |
+| Genuine cluster alerts exactly once | 1 alert | ✅ declined → alert → suppressed |
+
+Three alerts fired where the design calls for one. The suppression logic works:
+the parcel-locker cluster alerted on its third report and was suppressed on the
+fourth, which is the behaviour `seed_reports.json` `_about.alert_window`
+describes.
+
+**The failure is calibration, not incoherence.** The escalation reasoning is
+sound throughout — it correctly identifies thin baselines, distinguishes
+corroboration from repeat-reporting by one person, and argues against alerting
+on ordinary behaviour. But it is weighting `distinct_reporters` above the
+anomaly score, and the anomaly score separates the cases cleanly:
+
+    Birch Ln          false alert    z=0.9
+    Community garden  false alert    z=1.4
+    Parcel lockers    correct        z=6.5
+
+That separation is the lever for §3 tuning. Note the prompts were written
+against documented Opus 5 behaviour and have never been tuned for 4.6.

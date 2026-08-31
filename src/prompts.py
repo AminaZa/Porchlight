@@ -1,7 +1,20 @@
 """The three system prompts, kept together because they are tuned together.
 
 Written for Opus 5 / Sonnet 5 / Haiku 4.5 behaviour, which differs from older
-models in ways that matter here:
+models in ways that matter here.
+
+.. warning::
+   **These prompts have not been re-tuned for the models actually in use.**
+   Since 2026-08-31 the pipeline runs on Sonnet 4.6 and Opus 4.6, because a new
+   AWS account cannot invoke the 5 tier. The behavioural claims below are
+   documented Opus 5 traits; whether they hold on 4.6 is an open question, and
+   the first live run suggests at least one does not — escalation over-alerted,
+   firing on two clusters (z=0.9, z=1.4) that should have been declined while
+   correctly alerting the genuine one (z=6.5). It is leaning on reporter count
+   and under-weighting the baseline departure. Re-tuning is CHECKLIST §3, and
+   this docstring is the record of what the prompts were originally aimed at.
+
+The original notes, written against Opus 5:
 
 * These models follow instructions closely and literally. Prompts written to
   overcome an older model's reluctance ("CRITICAL: you MUST...") now cause

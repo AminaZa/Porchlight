@@ -33,7 +33,7 @@ Three agents, run as a sequential workflow.
 
 ```
 report ─→ triage ──────────→ correlate ─────────────→ escalate ─→ alert
-          Haiku 4.5          Sonnet 5                 Opus 5      or silent log
+          Haiku 4.5          Sonnet 4.6               Opus 4.6    or silent log
           classify           semantic_search               │
           redact             check_baseline_deviation      │
           normalise          get_zone_history              │
@@ -131,7 +131,9 @@ It is labelled everywhere it can be: a terminal banner, a note on the summary, a
 
 **Persistence and dispatch are code, not tools.** An agent that skips a write leaves the report invisible to every later search, and nothing raises. An agent that calls `send_alert` with different values than the decision it just made has two sources of truth. The agents judge; the pipeline acts.
 
-**Model per stage.** Haiku for typed extraction, Sonnet for tool selection, Opus 5 for the judgment. With prompt caching across the run this is roughly $0.90 per full 38-report run rather than $2.20.
+**Model per stage.** Haiku 4.5 for typed extraction, Sonnet 4.6 for tool selection, Opus 4.6 for the judgment. Prompt caching runs on all three.
+
+*A note on model choice:* the pipeline was designed against Sonnet 5 and Opus 5. A new AWS account is not entitled to that tier — `--list` shows the profiles, but invoking one returns `AccessDenied` — so the demo, and every number quoted here, runs on Sonnet 4.6 and Opus 4.6. The stage-to-model mapping is unchanged and the model ids are one edit each in `.env`.
 
 ### Why there is an agent here and not a similarity threshold
 

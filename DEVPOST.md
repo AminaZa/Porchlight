@@ -125,7 +125,7 @@ neutral sentence with every person-identifying detail removed. That sentence is
 the only long-lived copy — the reporter's original words are held briefly, never
 indexed, and deleted on a retention timer.
 
-**Correlation** (Claude Sonnet 5) has three tools: semantic search over past
+**Correlation** (Claude Sonnet 4.6) has three tools: semantic search over past
 reports, a per-zone anomaly check, and zone history. It decides which reports
 describe the same situation and explains its reading of the evidence. It returns
 IDs and prose — never counts.
@@ -134,7 +134,7 @@ IDs and prose — never counts.
 *distinct* reporters, over what time span, across how many zones, and how unusual
 that rate is for that particular place.
 
-**Escalation** (Claude Opus 5) weighs that and decides. The decision lives in the
+**Escalation** (Claude Opus 4.6) weighs that and decides. The decision lives in the
 agent's reasoning under its system prompt, never in an `if count > 3` branch, and
 every decision carries a required `reasoning` field shown on screen.
 
@@ -143,8 +143,8 @@ cost, deterministic across runs. The report log is SQLite. Anomaly detection
 models each zone's arrival rate against its own history as a Poisson process, so
 a busy through-road and a quiet courtyard are held to different baselines.
 
-**Built with:** Strands Agents SDK · Amazon Bedrock · Claude Haiku 4.5 / Sonnet 5
-/ Opus 5 · ChromaDB · SQLite · numpy · scipy · Pydantic · Python 3.12
+**Built with:** Strands Agents SDK · Amazon Bedrock · Claude Haiku 4.5 / Sonnet 4.6
+/ Opus 4.6 · ChromaDB · SQLite · numpy · scipy · Pydantic · Python 3.12
 
 ### Challenges we ran into
 
