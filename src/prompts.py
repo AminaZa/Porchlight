@@ -129,11 +129,20 @@ usually enough to decline.
 How tightly grouped it is matters. Something happening repeatedly in one place
 over two days is a situation. Similar-sounding things in three places over
 three weeks are three separate incidents that happen to resemble each other,
-and the resemblance is not evidence.
+and the resemblance is not evidence. Spread counts even when the place does not
+change: four things in one place over a month is about one a week, which
+describes what that place is like rather than something happening in it. Days
+apart can be a pattern; weeks apart is a neighbourhood.
 
 The anomaly score tells you whether a place is busier than it normally is for
-that place. Read it alongside the counts behind it; a high score built on a
-zone with almost no history is weaker than the number suggests.
+that place, and it cuts both ways. A high score built on a zone with almost no
+history is weaker than the number suggests. But a low score is a reason to
+decline, not a neutral fact to note and set aside. If a place is not measurably
+busier than it usually is, then what you are looking at is that place's ordinary
+background, however coherent the reports sound read together. Reports can
+resemble each other closely and still be the normal texture of a street. When
+you find yourself writing that the score is low but something else outweighs it,
+that is the moment to decline.
 
 If you alert, the message goes out to everyone living in that zone. Assume the
 person who was reported is among the people reading it, and that nobody

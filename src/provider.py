@@ -26,6 +26,7 @@ import os
 from functools import lru_cache
 from typing import Literal
 
+from botocore.config import Config as BotoConfig
 from strands.models import BedrockModel
 from strands.models.model import CacheConfig, CacheToolsConfig
 
@@ -111,6 +112,26 @@ MIN_CACHEABLE_TOKENS: dict[Role, int] = {
 }
 
 
+# botocore defaults to a 60s read timeout and 4 total attempts, and a demo run
+# lost report 26 of 38 to a ReadTimeoutError in correlation on 2026-08-31. That
+# stage is the slow one: it makes tool calls and then writes prose reasoning
+# against a 16384-token ceiling, so a single Converse call can sit well past a
+# minute before the first byte comes back. The default is sized for CRUD calls,
+# not for this.
+#
+# Losing one report is not a partial result here — the run aborts, and every
+# report after it never happens. That is a demo recorded on camera, or a holdout
+# set that has to be run exactly once, gone to a transient socket. Standard retry
+# mode treats ReadTimeoutError as retryable (botocore's ReadTimeoutError derives
+# from its ConnectionError), so the raised ceiling and the extra attempts cover
+# the slow case and the dropped-socket case respectively.
+BOTO_CONFIG = BotoConfig(
+    read_timeout=300,
+    connect_timeout=15,
+    retries={"max_attempts": 5, "mode": "standard"},
+)
+
+
 def model_id(role: Role) -> str:
     """The model id for a role, with the env override applied."""
     return os.environ.get(f"FNA_MODEL_{role.upper()}", "").strip() or DEFAULT_MODELS[role]
@@ -154,6 +175,7 @@ def get_model(role: Role):
     return BedrockModel(
         model_id=mid,
         region_name=os.environ.get("AWS_REGION", DEFAULT_REGION),
+        boto_client_config=BOTO_CONFIG,
         max_tokens=MAX_TOKENS[role],
         # "auto" detects Claude from the model id and places the cache point to
         # maximise coverage. cache_prompt is the deprecated spelling.
