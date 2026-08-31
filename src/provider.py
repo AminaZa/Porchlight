@@ -35,13 +35,20 @@ DEFAULT_REGION = "us-east-1"
 # Bedrock serves Claude through inference profiles, so ids carry both a routing
 # prefix ("global." or a region like "us.") and the "anthropic." vendor prefix.
 #
-# ⚠️ VERIFY BEFORE THE FIRST RUN. These are the expected ids, not confirmed
-# ones. Run `python -m src.provider --list` (or `aws bedrock
-# list-inference-profiles --region <region>`) and override via .env with what
-# your account actually has. A wrong id fails at the first call, and model
-# access must also be granted in the Bedrock console for each of the three.
+# Verified against a live account in us-east-1 on 2026-08-31 via --list.
+# Still worth re-running `python -m src.provider --list` on a new account:
+# profile availability is per-region, and "NOT FOUND" reads like a permissions
+# problem when it is really a geography one. Override via .env if they differ.
+#
+# Bedrock no longer has a model-access page to tick — serverless foundation
+# models auto-enable on first invocation. Anthropic models may ask a first-time
+# user for use-case details, and a brand-new account returns AccessDenied with
+# "your account is currently being verified" for up to a couple of hours.
+# Note the asymmetry: Haiku 4.5 is only published as a dated, versioned profile,
+# while Sonnet 5 and Opus 5 carry bare aliases. The unversioned
+# "global.anthropic.claude-haiku-4-5" does not resolve.
 DEFAULT_MODELS: dict[Role, str] = {
-    "triage": "global.anthropic.claude-haiku-4-5",
+    "triage": "global.anthropic.claude-haiku-4-5-20251001-v1:0",
     "correlation": "global.anthropic.claude-sonnet-5",
     "escalation": "global.anthropic.claude-opus-5",
 }

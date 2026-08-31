@@ -2,7 +2,7 @@
 tags: [checklist, hackathon, porchlight]
 status: active
 created: 2026-08-14
-updated: 2026-08-21
+updated: 2026-08-31
 ---
 
 # Checklist
@@ -15,23 +15,26 @@ updated: 2026-08-21
 > "six weeks from project start" was wrong. As of 2026-08-21 that is **24 days**.
 > The AWS credits request form closes earlier, **11 September, 12pm PT**.
 
-> [!warning] Blocked on AWS **signup**, not on verification — corrected 2026-08-21
-> The account never finished registering. It is stuck at **step 4 of 5, phone
-> verification**, failing with a generic "error processing your request".
+> [!success] AWS is wired — 2026-08-31
+> Signup completed. IAM user created, `AmazonBedrockFullAccess` attached, access
+> key written to `C:\Users\RAZER\.aws\credentials`. `--list` sees 25 Anthropic
+> profiles in `us-east-1` and all three roles report **OK**.
 >
-> **Diagnosed cause: a country mismatch.** The card is Malaysian (Maybank) and
-> was accepted at step 3; the phone is Tunisian (+216) and the IP is Tunisian.
-> AWS's fraud screen compares those three and flags the disagreement. Nothing is
-> wrong with the card.
+> **The Bedrock "Model access" console page has been retired.** Serverless
+> foundation models auto-enable on first invocation, so §1's "grant model access"
+> step no longer exists as a thing you can click.
 >
-> Fix path, in order: retry on a Malaysian `+60` number (voice call, not SMS) ·
-> check the step-2 address matches the card's registered Malaysian address ·
-> **open an Account activation support case** at aws.amazon.com/contact-us,
-> naming the mismatch explicitly. Filed in parallel, not after the retries.
-> Note the step rate-limits after repeated failures — retries stop working for
-> a few hours regardless of what has been fixed.
+> **One real defect found and fixed:** `DEFAULT_MODELS["triage"]` was
+> `global.anthropic.claude-haiku-4-5`, which does not resolve. Haiku 4.5 is only
+> published as a dated profile — `global.anthropic.claude-haiku-4-5-20251001-v1:0`.
+> Sonnet 5 and Opus 5 were correct unversioned. A judge cloning the repo would
+> have hit this on report 1. Corrected in `src/provider.py` and `.env.example`.
 >
-> Everything in §1–§3 sits behind this. Nothing in §4 or §5 does.
+> **Now blocked only on AWS account verification** — a clock, not a config.
+> `ConverseStream` returns AccessDenied: *"Your account is currently being
+> verified. Verification normally takes less than 2 hours."* Listing profiles is
+> a read and already works; invocation is a spend operation and is gated. If it
+> still fails after ~2 hours, write to aws-verification@amazon.com.
 
 > [!note] Everything is pushed as of 2026-08-21
 > `main` is level with `origin/main` — the guard, the defect fixes, the video
@@ -41,21 +44,21 @@ updated: 2026-08-21
 
 ## 1 · Unblock Bedrock
 
-- [ ] **AWS signup completes** — blocked at step 4 of 5, see the callout above.
-      Support case is the reliable path; the SIM swap is the fast one
-- [ ] Create an IAM user, attach `AmazonBedrockFullAccess`, create an access key
-      (*Application running outside AWS*)
-- [ ] Write it to `C:\Users\RAZER\.aws\credentials` under `[default]` — boto3
-      reads this with no env vars and no CLI install. **Never paste keys into chat**
-- [ ] Grant Bedrock **model access** in the console, in one region, for all three.
-      Console-only — no API, no script can do it:
-    - [ ] `claude-haiku-4-5` (triage)
-    - [ ] `claude-sonnet-5` (correlation)
-    - [ ] `claude-opus-5` (escalation)
-- [ ] Check *which* region actually has all three before committing — availability
-      differs. Set `AWS_REGION` in `.env` to match (code now defaults `us-east-1`)
-- [ ] Run `python -m src.provider --list` and confirm all three report **OK**
-- [ ] Paste the real profile ids into `.env` if they differ from the defaults
+- [x] **AWS signup completes** ✅ 2026-08-31
+- [x] Create an IAM user, attach `AmazonBedrockFullAccess`, create an access key
+      (*Application running outside AWS*) ✅ 2026-08-31
+- [x] Write it to `C:\Users\RAZER\.aws\credentials` under `[default]` — boto3
+      reads this with no env vars and no CLI install ✅ 2026-08-31
+- [x] ~~Grant Bedrock **model access** in the console~~ — **the page is retired**,
+      models auto-enable on first invocation. Nothing to do
+- [x] Check *which* region actually has all three — `us-east-1` carries all three,
+      as both `global.` and `us.` profiles ✅ 2026-08-31
+- [x] Run `python -m src.provider --list` and confirm all three report **OK**
+      ✅ 2026-08-31
+- [x] Paste the real profile ids into `.env` — triage needed the versioned id;
+      all three now pinned in `.env` *and* corrected in `DEFAULT_MODELS`
+- [ ] **Wait out AWS account verification**, then re-run the §2 CLI report.
+      Nothing else in §1 is outstanding
 - [ ] Set an **AWS Budget with a zero-spend alert** — free, and the only thing
       that catches a runaway loop during tuning
 - [ ] **Request the $50 credits** — form closes 11 Sep 12pm PT. **No longer
@@ -160,11 +163,11 @@ Straight from [[PROJECT_BRIEF]] §10, cross-checked against the official rules.
           file's frontmatter. **+0.2 banked**
     - [x] Post 2 — **PUBLISHED 2026-08-22.** Why a similarity threshold can't do
           this: the ordering is inverted and the deciding evidence is metadata.
-          **+0.2 banked.** URL still needed for the Devpost form
+          **+0.2 banked.** URL recorded in the file's frontmatter
     - [x] Post 3 — **PUBLISHED 2026-08-22.** A prompt is not a control: the
           `AfterModelCallEvent` hook, why `event.retry` is the point, and the
-          `toolUse` bug that made the guard a no-op. **+0.2 banked.** URL still
-          needed for the Devpost form
+          `toolUse` bug that made the guard a no-op. **+0.2 banked.** URL recorded in
+          the file's frontmatter
 
 > [!note] The hashtag requirement was removed
 > Rules updated 2026-08-12: `#AgentsforHumans` is **no longer required**. The title

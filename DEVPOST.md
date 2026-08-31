@@ -12,7 +12,9 @@ created: 2026-08-20
 > **Track:** Good Neighbor Agents
 
 > [!warning] Three things here are not true yet
-> Marked `⟨PENDING⟩` inline. All three depend on the first real (non-offline)
+> Marked `⟨PENDING⟩` inline: the holdout result, the S3 live-demo URL, and the
+> video URL. The Builder ID was a fourth and is now resolved (`@aminaza`,
+> 2026-08-31). The remaining three depend on the first real (non-offline)
 > run — do not submit with them unresolved, and do not soften them into
 > something vaguer to avoid the wait. Either the number is real or the sentence
 > comes out.
@@ -236,7 +238,13 @@ strands-agents, amazon-bedrock, claude, python, chromadb, sqlite, numpy, scipy, 
 
 **Video** — ⟨PENDING — public YouTube or Vimeo URL⟩
 
-**AWS Builder ID** — ⟨PENDING — account created 2026-08-21; paste the ID itself here⟩
+**AWS Builder ID**
+```
+@aminaza
+```
+Display name: Amina Zaatir. Confirmed on the Builder Center profile page
+2026-08-31. This is the alias AWS issues; it is *not* the AWS account number
+(642975620912), which is a different thing and should not be pasted here.
 
 **Bonus: builder.aws.com posts** — all three published 2026-08-22, 0.2 each.
 The rules require these to be *submitted*, not merely published: "Submitting the
