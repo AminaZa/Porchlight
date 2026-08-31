@@ -1,0 +1,55 @@
+
+  Porchlight — 20 reports
+
+  [01/20]  Sycamore Row             other       ·  silent log
+  [02/20]  Elm St north             hazard      ·  silent log
+  [03/20]  Community garden         hazard      ·  silent log
+  [04/20]  Willow Ct                other       ·  silent log
+  [05/20]  Maple & 3rd              suspicious  ·  silent log
+  [06/20]  Rear alley, bldg 1       hazard      ·  silent log
+  [07/20]  Birch Ln                 hazard      ·  silent log
+  [08/20]  Elm St south             hazard      ·  silent log
+  [09/20]  Cycle rack, bldg 2       theft       ·  silent log
+
+  ▲ Pattern — Cycle rack, bldg 2
+  Over the past day, two separate thefts of removable bike components (a wheel and a saddle/seatpost) have been reported at the cycle rack near building 2, both from bikes that were otherwise locked. If you use that rack, consider securing removable parts or bringing them inside, and report anything unusual to building management.
+  cluster 2 · 2 reporters · 14h · z=2.1 · to Cycle rack, bldg 2 residents
+
+  [10/20]  Cycle rack, bldg 2       theft       ▲  ALERT
+  [11/20]  Cycle rack, bldg 2       vandalism   ·  logged (cluster already alerted)
+  [12/20]  Cycle rack, bldg 2       theft       ·  logged (cluster already alerted)
+  [13/20]  Sycamore Row             hazard      ·  silent log
+  [14/20]  Sycamore Row             vandalism   ·  silent log
+  [15/20]  Sycamore Row             hazard      ·  silent log
+  [16/20]  Sycamore Row             suspicious  ·  silent log
+  [17/20]  Willow Ct                hazard      ·  silent log
+  [18/20]  Community garden         vandalism   ·  silent log
+  [19/20]  Maple & 3rd              hazard      ·  silent log
+  [20/20]  Elm St north             suspicious  ·  silent log
+
+  ──────────────────────────────────────────────────────────
+  20 reports · 17 silent · 0 declined · 2 suppressed · 1 alert
+
+
+──────────────────────────────────────────────────────────────────────────
+  Why it decided what it decided
+──────────────────────────────────────────────────────────────────────────
+
+  Cycle rack, bldg 2  —  ALERT
+    A bicycle saddle and seatpost were removed from a bike at the cycle rack near building 2 between overnight and 07:45, while the lock remained intact.
+    evidence: 2 reports · 2 reporters · 14h · 1 zone(s) · z=2.1
+    correlation: I searched for reports matching "bicycle saddle seatpost removed stolen cycle rack overnight lock intact" and checked the full zone history for Cycle rack, bldg 2. The semantic search returned one meaningfully similar prior report — 2a108cf3b482 (similarity 0.48) — logged approximately 13.5 hours before the new report at the same location: a bicycle rear wheel was stripped from a locked bike at the same rack. The zone history confirms these are the only two reports on record for this location. Together they describe the same theft method (removing unlocked components from a secured bike rather than taking the whole bicycle) at the same rack on consecutive days (evening of 11 May and overnight into 12 May). The baseline deviation check returns a z-score of 2.12, which is worth noting, though the baseline history is very shallow (zero prior days recorded), so statistical weight is limited. Arguments against linking them: they involve different components (wheel vs. saddle/seatpost), they could be different bikes and different offenders, and a similarity score of 0.48 is only a loose match. Nevertheless, the combination of identical location, identical method, and a roughly 13-hour gap makes it more likely these are part of the same ongoing stripping activity than two unconnected incidents.
+    decision:    Two distinct reporters independently flagged component-stripping thefts at the same cycle rack roughly 13.5 hours apart — one on the evening of May 11 and one the morning of May 12. The identical method (removing unsecured parts from locked bikes) and tight time window make this more likely an ongoing situation than coincidence. The anomaly score of 2.12 is nominally elevated but built on a completely empty baseline, so it carries almost no statistical weight; I'm not relying on it. What tips this toward alerting rather than logging is the combination of two independent reporters, a single location, a consistent theft method, and a time gap short enough to suggest the rack is being actively targeted right now. Two reports is the minimum for corroboration, and the baseline is too shallow for confidence, which is why urgency is low — but residents who park bikes there can act on this information today, and waiting for a third theft to confirm would cost someone another component.
+
+  Cycle rack, bldg 2  —  SUPPRESSED
+    Bicycle found damaged at the cycle rack outside building 2 with brake cables cut.
+    evidence: 3 reports · 3 reporters · 25h · 1 zone(s) · z=3.5
+    correlation: I searched for reports matching bicycle damage and targeted component theft at cycle racks, then pulled the full zone history for "Cycle rack, bldg 2". Three reports now exist for this zone, all within roughly 25 hours (2026-05-11 18:10 through 2026-05-12 19:30): a rear wheel stripped from a locked bike, a saddle and seatpost removed overnight, and now brake cables deliberately cut. All three are in the same specific location and form a tight, escalating sequence — beginning with opportunistic parts theft and ending with deliberate damage. The baseline check reinforces this: 3 reports in 48 hours against a baseline rate of ~0.5 per window gives a z-score of 3.54 and a tail probability of ~1.4%, indicating this is a genuine departure from normal activity rather than background noise. The only argument against treating these as one ongoing situation is that the report types differ (theft vs. vandalism) and it is possible two or three unrelated people targeted different bikes. However, the tight time window, identical location, and method (targeting components of secured bikes without breaking locks) point strongly toward the same actor or group returning repeatedly to this rack.
+    decision:    Three reports from three distinct reporters, all at the same specific location (Cycle rack, bldg 2), compressed into roughly 25 hours. The zone history confirms these are the only three reports in the past 30 days — so the entire cluster is recent and there's no background noise to confuse the picture. The anomaly score of 3.54 is meaningful here because the baseline for this zone is genuinely quiet (nothing else in 30 days), so three incidents in one day-and-a-half is a real departure, not a statistical artifact inflated by a thin baseline. The incidents share a method (targeting components on bikes that remain locked) and escalate in nature from opportunistic theft to deliberate vandalism (cutting brake cables), which is a safety concern — someone could ride a bike with cut cables without noticing. Three separate reporters rules out a single person's repeated concern. This is a clear, tight, location-specific pattern that residents who use this rack should know about.
+
+  Cycle rack, bldg 2  —  SUPPRESSED
+    A bicycle was stripped for parts at the cycle rack, building 2; only the frame remains on the rail.
+    evidence: 4 reports · 4 reporters · 37h · 1 zone(s) · z=5.0
+    correlation: I searched for reports describing bicycle parts being stripped or stolen at cycle racks, and found three prior reports — all in the same zone (Cycle rack, bldg 2) — that closely match the new incident. Taken together they form a tight, escalating sequence over roughly 36 hours: a rear wheel removed on the evening of 11 May, a saddle and seatpost taken overnight into 12 May, brake cables deliberately cut on the evening of 12 May, and now a complete strip-down to the bare frame the morning of 13 May. The behaviour — parts removed while locks remain intact — is consistent with a targeted parts-harvesting operation. The baseline check supports this: the zone recorded 4 reports in 48 hours against a baseline of ~0.5 per window (z-score 4.95, tail probability 0.2%), which is a statistically sharp spike. The only caveat is that the baseline history for this zone is thin (baseline_days = 0), so the rate comparison has limited depth; however, the content and timing of the individual reports are themselves strong evidence of a single ongoing situation rather than coincidence.
+    decision:    Four reports from four separate people over 36 hours, all at the same cycle rack, describing an escalating pattern: rear wheel removed, then saddle and seatpost, then brake cables cut, then a complete strip to the frame. The zone had zero reports in the prior 30 days, so this cluster is genuinely new activity, not background noise. The anomaly score of 4.95 is high, and while the correlation stage flagged thin baseline history, the fact that the zone was completely quiet before this week actually strengthens the case — there is no ordinary rate of theft here for these reports to blend into. Four distinct reporters rules out a single person's fixation. The tight time window and escalating severity point to an ongoing situation that residents can act on by securing their property.
+

@@ -12,12 +12,11 @@ created: 2026-08-20
 > **Track:** Good Neighbor Agents
 
 > [!warning] Three things here are not true yet
-> Marked `⟨PENDING⟩` inline: the holdout result, the S3 live-demo URL, and the
-> video URL. The Builder ID was a fourth and is now resolved (`@aminaza`,
-> 2026-08-31). The remaining three depend on the first real (non-offline)
-> run — do not submit with them unresolved, and do not soften them into
-> something vaguer to avoid the wait. Either the number is real or the sentence
-> comes out.
+> Marked `⟨PENDING⟩` inline: the S3 live-demo URL and the video URL. Two others
+> are now resolved — the Builder ID (`@aminaza`) and the holdout result (20/20,
+> run 2026-08-31), both confirmed against a real run. Do not submit with the
+> remaining two unresolved, and do not soften them into something vaguer to
+> avoid the wait. Either the number is real or the sentence comes out.
 
 ---
 
@@ -214,11 +213,28 @@ fields — and if a summary still describes a person, sets the event's `retry`
 flag: the response is discarded and regenerated before the pipeline, storage, or
 the index ever sees it. A prompt is an instruction; this is a control.
 
-**A holdout set, written before any tuning.** Twenty reports we never looked at
-while tuning prompts, including two adversarial cases: a real cluster whose
-reporters share almost no vocabulary, and four same-street reports that are four
-unrelated incidents. Run once, at the end. ⟨PENDING — result goes here and in the
-README, whatever it is⟩
+**A holdout set, written before any tuning — and it passed.** Twenty reports
+authored on 2026-08-14 and never looked at while tuning prompts, run once on
+2026-08-31 against the prompts as committed: **17 silent, 2 suppressed, 1 alert,
+and all twenty match the behaviour the file specified.**
+
+It carries two adversarial cases that are mirror images, so any threshold that
+rescues one fails the other. The first is a real 4-report bike-stripping cluster
+whose reporters share almost no words — "back wheel gone", "saddle and seatpost
+off", "brake cables cut", "stripped for parts". Found, alerted once, the rest
+suppressed. The second is four reports that all contain the phrase "parked car on
+Sycamore Row" and describe four unrelated incidents — a flat tyre, a hit-and-run,
+a blocked kerb, an open window. All four stayed silent.
+
+Two honest notes. The alert fired on the second report rather than the third, at
+an anomaly score of 2.1 — because that zone had no recorded history, which the
+escalation agent said out loud and then set aside: "built on a completely empty
+baseline, so it carries almost no statistical weight; I'm not relying on it." It
+alerted on method, independence and tightness instead. And the run does not
+exercise the decline path at all: the Sycamore Row four never grouped, so
+retrieval separated them rather than judgment refusing them. The holdout shows
+the agent finds a hard cluster and resists a lexical trap. It does not show it
+declining a plausible group, and we would rather say so.
 
 ### What we learned
 

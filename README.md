@@ -159,6 +159,53 @@ The honest coda is that retrieval does not clear this bar either. On a live run 
 
 ---
 
+## The holdout run
+
+Twenty reports written on 2026-08-14, before any prompt tuning began, and never
+looked at while tuning. Run once, on 2026-08-31, against the prompts as committed.
+Reproduce it with:
+
+```bash
+python demo/run_demo.py --holdout --explain
+```
+
+**20 reports · 17 silent · 0 declined · 2 suppressed · 1 alert. All twenty match
+the behaviour the file specified.**
+
+The set exists because the obvious objection to an authored demo dataset is that
+the system was tuned until it passed its own demo. That objection is fair — it is
+exactly what the seed set records happening. So the holdout carries two
+adversarial cases that are mirror images of each other, and any threshold that
+rescues one fails the other:
+
+| | What it is | Required | Result |
+|---|---|---|---|
+| `no_shared_vocabulary` | 4 reports of one bike-stripping spree whose reporters share almost no words — *"back wheel gone"*, *"saddle and seatpost off"*, *"brake cables cut"*, *"stripped for parts"* | exactly one alert | **1 alert**, on the 2nd report; 3rd and 4th suppressed |
+| `heavy_shared_vocabulary` | 4 reports that all contain the phrase *"parked car on Sycamore Row"* and describe four unrelated incidents — a flat tyre, a hit-and-run, a blocked kerb, a window left open | no alert | **4 silent**, never correlated |
+
+Two things are worth stating plainly rather than rounding up.
+
+**The alert fired earlier than it does on the seed set** — on the second report, at
+2 reporters over 14 hours with an anomaly score of 2.1, where the seed cluster
+waits for the third at z=6.5. That is the design working rather than a threshold
+drifting: the zone had *no* recorded history, and the escalation agent said so and
+declined to lean on the number — *"the anomaly score of 2.12 is nominally elevated
+but built on a completely empty baseline, so it carries almost no statistical
+weight; I'm not relying on it."* It alerted on method, independence and tightness
+instead, and accepted low urgency in exchange. A fixed `if z > n` rule cannot make
+that trade.
+
+**The holdout does not exercise the decline path.** Zero reports were correlated
+and then declined. The four Sycamore Row reports never grouped at all — the
+heavy shared vocabulary is in the *incidental* words, and the normalized triage
+sentences that get indexed do not share it — so the right outcome came from
+retrieval separating them, not from judgment refusing them. That is a real limit
+on what this run proves: it demonstrates that the agent finds a hard cluster and
+does not fire on a lexical trap, and it says nothing about the harder skill of
+assembling a plausible group and then declining it.
+
+---
+
 ## Privacy and safety
 
 This is a system where residents report on neighbours, and where correlation *amplifies* what they report. The dominant failure mode of every product in this category is that "suspicious person" reports are the ones most prone to bias, and correlation can turn that bias into an official-looking alert. Four structural choices address it, and each makes the product better rather than merely safer.
