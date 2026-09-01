@@ -217,17 +217,25 @@ def expire_raw_text(now: datetime | None = None) -> int:
         return cur.rowcount
 
 
-def rendered_rows() -> list[dict]:
+def rendered_rows(include_raw: bool = False) -> list[dict]:
     """Every report with the decision it produced, oldest first.
 
     The renderer's only input. Reads the same rows the terminal printed, so the
     two cannot disagree about what happened — verification step 6 asserts they
     don't.
+
+    `raw_text` is the reporter's own words, and it is left out unless asked for.
+    The product promise is that those words are held briefly, never indexed, and
+    deleted on a retention timer, so the renderer having them by default is the
+    kind of quiet default that turns a guarantee into a leak. The demo asks for
+    them deliberately, on a dataset where every report is invented; a deployment
+    should not. See --show-raw in demo/run_demo.py.
     """
+    raw_col = "r.raw_text," if include_raw else ""
     with connect() as conn:
         rows = conn.execute(
-            """SELECT r.report_id, r.zone, r.timestamp, r.report_type, r.severity,
-                      r.summary,
+            f"""SELECT r.report_id, r.zone, r.timestamp, r.report_type, r.severity,
+                      r.summary, {raw_col}
                       d.action, d.urgency, d.audience, d.message, d.reasoning,
                       d.suppressed,
                       d.cluster_size, d.distinct_reporters, d.time_span_hours,
@@ -267,6 +275,9 @@ def rendered_rows() -> list[dict]:
                 "anomaly_score": r["anomaly_score"] or 0.0,
                 "related_ids": related,
                 "covered": bool(r["covered"]),
+                # Present only when the caller asked. None once the retention
+                # timer has run, which is the normal steady state.
+                **({"raw_text": r["raw_text"]} if include_raw else {}),
                 # The single bucketing rule, so the page cannot tally this
                 # run differently from the terminal. A decision of "alert"
                 # that was not suppressed is one that went out.

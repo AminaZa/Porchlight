@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import hashlib
 import html
+from datetime import datetime
 import math
 import os
 from pathlib import Path
@@ -239,6 +240,96 @@ def _card(row: dict, kind: str) -> str:
     )
 
 
+def _when(ts: str) -> str:
+    """A timestamp a reader can hold in their head, not an ISO string."""
+    try:
+        return datetime.fromisoformat(ts).strftime("%d %b · %H:%M")
+    except (TypeError, ValueError):
+        return ts or ""
+
+
+def _transcript(rows: list[dict]) -> str:
+    """The reports as neighbours wrote them, beside what Porchlight kept.
+
+    This is the page's argument, made without a paragraph of explanation. On
+    the left, four people describe one bike being stripped and share almost no
+    words — "back wheel gone", "saddle and seatpost off", "brake cables cut".
+    On the right, the normalized sentences that actually get indexed. A reader
+    sees in one glance both why keyword matching cannot work here and what the
+    redaction guarantee removes, which are the two claims this project rests on.
+
+    Short by design: the alerted cluster plus two quiet reports for contrast.
+    The full run is the map above; this is the part that goes on camera.
+    """
+    if not any("raw_text" in r for r in rows):
+        return ""
+
+    cluster = [r for r in rows if r["covered"] or r["outcome"] == "alert"]
+    if not cluster:
+        return ""
+    in_cluster = {r["report_id"] for r in cluster}
+
+    # Two silent reports from around the same time, so the contrast is between
+    # things the agent saw together rather than against some unrelated one-off.
+    #
+    # The cluster's own early reports are silent too -- they arrived before
+    # there was anything to correlate them with -- so they qualify on outcome
+    # and have to be excluded by id, or a report is drawn twice.
+    first = datetime.fromisoformat(cluster[0]["timestamp"])
+    quiet = sorted(
+        (r for r in rows
+         if r["outcome"] == "silent" and r["report_id"] not in in_cluster),
+        key=lambda r: abs(
+            (datetime.fromisoformat(r["timestamp"]) - first).total_seconds()
+        ),
+    )[:2]
+
+    turns = []
+    for row in sorted(cluster + quiet, key=lambda r: r["timestamp"]):
+        lit = row["report_id"] in in_cluster
+        raw = row.get("raw_text")
+        # None once the retention timer has run. Say so rather than drawing an
+        # empty bubble, because an empty bubble reads as a rendering bug.
+        said = (
+            html.escape(raw) if raw
+            else "<i>deleted — past the retention window</i>"
+        )
+        tag = (
+            "<span class='tag lit'>escalated cluster</span>" if lit
+            else "<span class='tag'>logged silently</span>"
+        )
+        turns.append(
+            f"<div class='turn{' lit' if lit else ''}'>"
+            f"<div class='said'><p class='msg'>{said}</p>"
+            f"<p class='meta'>{html.escape(row['zone'])} · {_when(row['timestamp'])}"
+            f" · {html.escape(row['report_id'][:6])}</p></div>"
+            f"<div class='kept'><p class='norm'>{html.escape(row['summary'])}</p>"
+            f"<p class='meta'>{tag}</p></div></div>"
+        )
+
+    head = (
+        "<div class='thead'><span>What neighbours typed</span>"
+        "<span>What Porchlight kept</span></div>"
+    )
+    lede = (
+        "The reports on the left arrived as separate messages, hours and days "
+        "apart, from people who had not spoken to each other. Read down the left "
+        "column and they share almost no words. Read down the right and the agent "
+        "has worked out which of them are the same situation."
+    )
+    note = (
+        "Only the right column is indexed or correlated. The left column is held "
+        "briefly and deleted on a retention timer — every report here is invented "
+        "fixture data, and the raw text is off by default."
+    )
+    return (
+        "\n  <section class='transcript'>"
+        "<h2>What was said, and what was stored</h2>"
+        f"<p class='lede'>{lede}</p>{head}{''.join(turns)}"
+        f"<p class='note'>{note}</p></section>\n"
+    )
+
+
 def _offline_band() -> str:
     """A band the reader cannot miss when the models were stubbed."""
     if not OFFLINE:
@@ -256,7 +347,12 @@ def _suppressed_clause(n: int) -> str:
 
 
 def build_html(rows: list[dict]) -> str:
-    """The whole page as a string."""
+    """The whole page as a string.
+
+    Rows carrying a raw_text key get the transcript section; rows without it
+    render exactly as before. That keeps the reporter's own words an explicit
+    decision at the call site rather than a property of the template.
+    """
     total = len(rows)
     alerts = [r for r in rows if r["outcome"] == "alert"]
 
@@ -321,6 +417,36 @@ def build_html(rows: list[dict]) -> str:
   .card .body {{ font-size:.92rem; margin:0 0 .75rem; }}
   .card .foot {{ font-family:ui-monospace,Consolas,monospace; font-size:.73rem;
     color:{DIM}; margin:0; }}
+  .transcript {{ margin-top:3.5rem; }}
+  .transcript h2 {{ font-family:Georgia,serif; font-weight:400; font-size:1.6rem;
+    letter-spacing:-.02em; margin:0 0 .6rem; }}
+  .transcript .lede {{ color:{DIM}; max-width:46rem; margin:0 0 1.75rem;
+    font-size:.92rem; }}
+  .thead, .turn {{ display:grid; grid-template-columns:1fr 1fr; gap:1rem; }}
+  .thead {{ font-size:.66rem; text-transform:uppercase; letter-spacing:.13em;
+    font-weight:700; color:{DIM}; padding-bottom:.6rem;
+    border-bottom:1px solid {SILL}; margin-bottom:1.1rem; }}
+  .turn {{ margin-bottom:.9rem; align-items:start; }}
+  .said {{ background:{PORCH}; border-radius:14px 14px 14px 3px;
+    padding:.85rem 1.05rem; }}
+  .turn.lit .said {{ background:{SILL}; }}
+  .said .msg {{ margin:0 0 .4rem; font-size:.93rem; }}
+  .kept {{ border-left:2px solid {SILL}; padding:.15rem 0 .15rem 1rem; }}
+  .turn.lit .kept {{ border-left-color:{LAMP}; }}
+  .kept .norm {{ margin:0 0 .4rem; font-size:.88rem; color:{HALO};
+    font-family:ui-monospace,"Cascadia Code",Consolas,monospace;
+    line-height:1.5; }}
+  .meta {{ font-family:ui-monospace,Consolas,monospace; font-size:.68rem;
+    color:{DIM}; margin:0; }}
+  .tag {{ text-transform:uppercase; letter-spacing:.1em; font-weight:700; }}
+  .tag.lit {{ color:{LAMP}; }}
+  .transcript .note {{ color:{DIM}; font-size:.8rem; max-width:46rem;
+    margin:1.5rem 0 0; padding-top:1.1rem; border-top:1px solid {SILL}; }}
+  @media (max-width:640px) {{
+    .thead {{ display:none; }}
+    .turn {{ grid-template-columns:1fr; gap:.4rem; }}
+    .kept {{ margin-left:.75rem; }}
+  }}
   footer {{ color:{DIM}; font-size:.82rem; margin-top:2.5rem; max-width:46rem; }}
   .offline {{ background:{EMBER}; color:{DUSK}; font-weight:700; text-align:center;
     padding:.7rem 1rem; margin:-3rem -1.5rem 2.5rem; font-size:.85rem;
@@ -345,6 +471,7 @@ def build_html(rows: list[dict]) -> str:
   </div>
 
   <div class="cards">{''.join(cards)}</div>
+{_transcript(rows)}
 
   <footer>Generated from a run over the demonstration dataset in
   <code>data/seed_reports.json</code>. Every node is a real report processed by
@@ -354,15 +481,21 @@ def build_html(rows: list[dict]) -> str:
 """
 
 
-def write(path: str | Path | None = None) -> Path:
-    """Render the current database to a file. Returns the path written."""
+def write(path: str | Path | None = None, show_raw: bool = False) -> Path:
+    """Render the current database to a file. Returns the path written.
+
+    show_raw pulls the reporters' own words into the transcript section. Off by
+    default: see storage.rendered_rows on why that default is the guarantee.
+    """
     out = Path(path or os.environ.get("FNA_HTML_OUT", "out/report.html"))
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(build_html(storage.rendered_rows()), encoding="utf-8")
+    out.write_text(build_html(storage.rendered_rows(include_raw=show_raw)),
+                   encoding="utf-8")
     return out
 
 
 if __name__ == "__main__":
     import sys
 
-    print(write(sys.argv[1] if len(sys.argv) > 1 else None))
+    args = [a for a in sys.argv[1:] if a != "--show-raw"]
+    print(write(args[0] if args else None, show_raw="--show-raw" in sys.argv))

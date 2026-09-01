@@ -122,6 +122,12 @@ def main(argv: list[str] | None = None) -> int:
                              "result recorded whatever it is. Isolates its own database "
                              "and vector store so a demo run's zone baselines cannot "
                              "leak into it.")
+    parser.add_argument("--show-raw", action="store_true",
+                        help="include the reporters' own words in the HTML report, "
+                             "beside the redacted sentence actually stored. Off by "
+                             "default -- the guarantee is that those words are held "
+                             "briefly and never indexed, so a deployment should not "
+                             "publish them. Every report in the demo set is invented.")
     parser.add_argument("--keep", action="store_true",
                         help="append to the existing database instead of starting fresh")
     parser.add_argument("--offline", action="store_true",
@@ -208,7 +214,7 @@ def main(argv: list[str] | None = None) -> int:
         explain(results)
 
     if args.html:
-        path = render.write(args.html)
+        path = render.write(args.html, show_raw=args.show_raw)
         print(f"  wrote {path}\n")
 
     if args.offline:

@@ -19,6 +19,7 @@ run by hand — see IMPLEMENTATION_PLAN.md §7.
 from __future__ import annotations
 
 import collections
+import re
 from datetime import datetime, timedelta, timezone
 
 import pytest
@@ -346,3 +347,60 @@ def test_page_tally_matches_outcomes(wired):
         expected.append(terminal["suppressed"])
     expected.append(terminal["alert"])
     assert numbers == expected, f"headline reads {numbers}, run was {expected}"
+
+
+def test_raw_text_is_off_by_default_everywhere(wired, tmp_path):
+    """The reporter's own words must never reach the page unasked.
+
+    The product promise is that raw text is held briefly, never indexed, and
+    deleted on a timer. A default that quietly hands it to the renderer turns
+    that guarantee into a leak, and it would leak silently -- the page renders
+    fine either way, so nothing fails and nobody notices. This asserts the
+    default at both boundaries it has to hold at: the query, and the file.
+    """
+    run_all()
+
+    default_rows = storage.rendered_rows()
+    assert all("raw_text" not in r for r in default_rows)
+
+    asked = storage.rendered_rows(include_raw=True)
+    assert any(r.get("raw_text") for r in asked), "opt-in returned nothing to show"
+
+    # The fixture's fake triage returns summary=raw.text, so raw and redacted
+    # are the same string here and finding one proves nothing about the other.
+    # Plant a sentinel that could only have come from the raw column.
+    canary = "CANARY-a-neighbour-typed-this-and-it-names-someone"
+    target = next(r["report_id"] for r in asked if r.get("raw_text"))
+    with storage.connect() as conn:
+        conn.execute("UPDATE reports SET raw_text = ? WHERE report_id = ?",
+                     (canary, target))
+
+    quiet = render.write(tmp_path / "quiet.html").read_text(encoding="utf-8")
+    loud = render.write(tmp_path / "loud.html", show_raw=True).read_text(encoding="utf-8")
+
+    assert canary not in quiet, "raw report text reached the page without --show-raw"
+    assert canary in loud, "--show-raw did not reach the transcript"
+    # The stylesheet always carries .transcript rules; the section itself is
+    # what must be absent, so match the markup rather than the word.
+    section = "<section class='transcript'>"
+    assert section not in quiet and section in loud
+
+
+def test_transcript_draws_each_report_once(wired, tmp_path):
+    """The cluster's own early reports are silent, and were drawn twice.
+
+    They arrive before there is anything to correlate them with, so they carry
+    outcome "silent" while also being covered by the alert that lands later.
+    Selecting the contrast rows on outcome alone put them in both lists, and
+    the transcript showed one message as two.
+    """
+    run_all()
+    page = render.write(tmp_path / "t.html", show_raw=True).read_text(encoding="utf-8")
+
+    msgs = re.findall(r"<p class='msg'>(.*?)</p>", page, re.S)
+    assert msgs, "transcript rendered no messages"
+    assert len(msgs) == len(set(msgs)), "a report was drawn more than once"
+
+    lit = page.count("class='turn lit'")
+    covered = sum(1 for r in storage.rendered_rows() if r["covered"] or r["outcome"] == "alert")
+    assert lit == covered, "the highlighted rows are not exactly the alerted cluster"
