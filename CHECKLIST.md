@@ -57,11 +57,16 @@ updated: 2026-08-31
       ✅ 2026-08-31
 - [x] Paste the real profile ids into `.env` — triage needed the versioned id;
       all three now pinned in `.env` *and* corrected in `DEFAULT_MODELS`
-- [ ] **Wait out AWS account verification**, then re-run the §2 CLI report.
-      Nothing else in §1 is outstanding
-- [ ] Set an **AWS Budget with a zero-spend alert** — free, and the only thing
-      that catches a runaway loop during tuning
-- [ ] **Request the $50 credits** — form closes 11 Sep 12pm PT. **No longer
+- [x] **Wait out AWS account verification** ✅ 2026-08-31 — three sequential
+      gates, each only visible once the previous cleared
+- [x] Set an **AWS Budget with a zero-spend alert** ✅ — "My Zero-Spend Budget",
+      $1 limit, `IncludeCredit: True` so it reports cost *after* credits
+- [x] **Credits confirmed to cover Bedrock** ✅ 2026-09-01 — $190 across four
+      credits, and "Amazon Bedrock" is in the applicable-services list. Spent
+      roughly $3–5. `AWSBillingReadOnlyAccess` attached to the `porchlight` IAM
+      user and Cost Explorer enabled 2026-09-01, so from **2026-09-02** the real
+      per-service figure can be read directly
+- [x] ~~**Request the $50 credits**~~ — form closes 11 Sep 12pm PT. **No longer
       load-bearing:** since Jul 2025 a new account gets **$100 on activation**
       plus up to $100 more for five onboarding tasks — one of which is testing a
       Bedrock prompt. Against a $20–50 project that is full coverage, so the
@@ -80,13 +85,16 @@ updated: 2026-08-31
   ```
   python -m src.intake.cli "someone took my package from the porch" --zone "Elm St north"
   ```
-- [ ] **Full demo** — `python demo/run_demo.py --explain`
-- [ ] Confirm all four designed behaviours actually happen:
-    - [ ] ~30 one-offs logged silently
-    - [ ] the near-miss **declined** (3 zones, 3 weeks) — the most persuasive moment in the video
-    - [ ] the single-reporter run **declined** (4 reports, 1 reporter)
-    - [ ] the parcel-locker cluster **alerts**, exactly once
-- [ ] `python -m pytest tests/` still green against real model output (52 offline)
+- [x] **Full demo** ✅ — four live runs. Runs 3 and 4 both clean
+- [x] Confirm all four designed behaviours actually happen ✅ **4 of 4, twice**
+    - [x] one-offs logged silently — 26 or 27 depending on the run
+    - [x] the near-miss produces **no alert** — but see the correction below: it
+          is never correlated into one situation, so this is not the
+          "declines on the spread" moment the video script assumed
+    - [x] the single-reporter run **declined** (4 reports, 1 reporter)
+    - [x] the parcel-locker cluster **alerts**, exactly once, on its 3rd report
+          at z=6.5, with the 4th suppressed
+- [x] `python -m pytest tests/` green ✅ **55 passing**, 13 skipped
 - [ ] **Redaction tests** — `FNA_LIVE_TESTS=1 python -m pytest tests/test_redaction.py -v`
       (13 tests, ~12 Haiku calls, a fraction of a cent)
 - [ ] Check cache reads are landing: `FNA_TRACE=1 python demo/run_demo.py` —
@@ -163,23 +171,31 @@ then watches the video should see the same thing in both.
 > Budget genuine time. It is prompt engineering, not code, and it is where the
 > demo goes from "runs" to "persuasive".
 
-- [ ] Tune until the four behaviours above are stable across repeated runs.
-      **First live run: 2 of 4 pass.** The near-miss alerted and the community
-      garden alerted; the single-reporter decline and the alert-exactly-once
-      suppression both worked. The lever is the anomaly score — false alerts sat
-      at z=0.9 and z=1.4, the true one at z=6.5, so the signal to separate them
-      is already in the evidence the escalation agent receives
+- [x] Tune until the four behaviours above are stable across repeated runs
+      ✅ 2026-09-01. First live run scored 2 of 4; runs 3 and 4 both score 4 of
+      4. Fixed by two edits to `ESCALATION` — a low anomaly score is now a
+      reason to decline rather than a neutral fact, and spread counts inside a
+      single zone as well as across zones. One caveat for anyone reading the
+      tally: a report moved between *silent* and *declined* between runs 3 and
+      4. Neither is an alert, but do not quote the split as fixed
 - [ ] Re-check verbosity — this was written for Opus 5, which writes long by
       default. Re-measure on Opus 4.6 rather than assuming it inherits the trait.
       The alert message should stay 2–3 sentences
 - [ ] Confirm alerts never contain a person description, even when the raw report
       had one — and that the new `RedactionGuard` isn't firing on ordinary reports
       (precision is asserted offline in `tests/test_guards.py`; live is the real test)
-- [ ] **Then, once, at the very end: the holdout.** 20 reports in
-      `data/holdout_reports.json`, never looked at during tuning. Record the result
-      in the README **and in [[DEVPOST]]** whatever it is
-    - [ ] the no-shared-vocabulary bike cluster is found
-    - [ ] the four same-street parked-car reports are **not** merged into one situation
+- [x] **The holdout — spent 2026-08-31. 20 of 20.** ✅ Transcript in
+      `data/holdout_result_2026-08-31.log`, written up in [[README]] § *The
+      holdout run* and [[DEVPOST]]
+    - [x] the no-shared-vocabulary bike cluster is found — alerts once, rest suppressed
+    - [x] the four same-street parked-car reports are **not** merged — all silent
+    - [x] recorded with what it does **not** prove: zero declines, so the run
+          never exercised the correlate-then-refuse path
+
+> [!danger] The holdout is spent. Do not run it again
+> Re-running it after any prompt change turns it back into tuning data and the
+> number stops meaning anything. If a prompt has to change from here, the
+> honest options are to say so beside the result or to author a second set.
 
 ---
 
@@ -299,3 +315,70 @@ Straight from [[PROJECT_BRIEF]] §10, cross-checked against the official rules.
 - [x] **52 tests passing offline** (was 20), + 13 redaction tests waiting on credentials
 - [x] Hackathon paperwork kept local and gitignored — `REQUIREMENTS.md` is Devpost's
       and AWS's own text, not ours to redistribute
+
+---
+
+## Next session — start here
+
+> [!note] State as of 2026-09-01
+> Working tree clean, `main` level with origin. 55 tests passing. The agent is
+> **done being tuned** — runs 3 and 4 both score 4 of 4, and the holdout is
+> spent at 20/20. Nothing below requires touching a prompt. **13 days left.**
+
+Everything remaining is packaging. In the order it should be done:
+
+### 1 · Put the report page online — unblocks the Devpost "Try it out" field
+
+`out/report.html` is current (run 4, with the two-column transcript). It is a
+single self-contained file: no external assets, no fonts, no scripts.
+
+- [ ] Either install the AWS CLI and run `./scripts/publish.sh <bucket> us-east-1`
+      — **pass the region explicitly.** The script reads `${2:-${AWS_REGION:-us-west-2}}`
+      and `.env` is not exported into a bash script, so the fallback bites
+- [ ] Or skip the CLI: create the bucket in the S3 console, enable static
+      website hosting, upload `out/report.html` as `index.html`, make it public.
+      Five minutes, no install
+- [ ] Paste the URL into [[DEVPOST]] (`⟨PENDING — S3 live demo URL⟩`)
+
+### 2 · Record the video — the largest remaining job
+
+§1 and §2 are already shot. Outstanding:
+
+- [ ] **§4 (architecture)** — no longer blocked; the diagram names Sonnet 4.6 /
+      Opus 4.6 and the redaction guard is on it. Trim from 1:00 to ~40s to make
+      room for the holdout result
+- [ ] **§3** and **§5**
+- [ ] **The transcript section is new and the script does not mention it.** It is
+      the strongest visual in the project — four phrasings with no shared word,
+      collapsing to one place — and it belongs on camera. Decide where before
+      recording, not during
+- [ ] Under 5:00, public on YouTube or Vimeo, URL into [[DEVPOST]]
+
+### 3 · Loose ends
+
+- [ ] **Delete `refs/`** before submission — 52MB of third-party footage,
+      gitignored but still on disk
+- [ ] Live redaction tests — `FNA_LIVE_TESTS=1 python -m pytest tests/test_redaction.py -v`
+      (13 skipped tests, ~12 Haiku calls, a fraction of a cent)
+- [ ] Cache-read check — `FNA_TRACE=1`. **Triage will stay flat; that is
+      expected**, its prefix is ~960 tokens against Haiku 4.5's 4096 minimum
+- [ ] Real cost from Cost Explorer — **readable from 2026-09-02**, permission
+      and ingestion both now in place. Replaces the list-price estimate in
+      [[IMPLEMENTATION_PLAN]] §  (the $0.90/run figure was computed for
+      Sonnet 5 / Opus 5 and the 4.6 pair costs more)
+- [ ] Clean-clone setup verification
+- [ ] Submit on Devpost — **14 Sep 2026, 5:00pm PT**
+
+### 4 · Known, deliberate, not bugs
+
+- **The near-miss never correlates.** Its three reports sit at 0.436–0.456
+  similarity to each other, lower than one of them scores against an unrelated
+  report (0.576). None of them alerts, which is the right outcome, but the agent
+  never assembles them into one situation to refuse. [[README]] and [[DEVPOST]]
+  both say so. **[[VIDEO_SCRIPT]] still describes it as the persuasive decline
+  moment — that beat needs rewriting or cutting before §3 is recorded.**
+- **The silent/declined split moves by one between runs.** Both mean no alert.
+  Do not quote it as fixed.
+- **`⟨PENDING.md` is gone.** Untracked at session start, no longer on disk,
+  never committed so git cannot recover it. Cause unknown. Recreate if it
+  mattered.

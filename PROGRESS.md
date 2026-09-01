@@ -344,3 +344,123 @@ anomaly score, and the anomaly score separates the cases cleanly:
 
 That separation is the lever for §3 tuning. Note the prompts were written
 against documented Opus 5 behaviour and have never been tuned for 4.6.
+
+---
+
+## 2026-08-31 → 09-01 — tuned, held, and made visible
+
+Four things happened: the over-alerting was fixed, the fix held across two full
+runs, the holdout was spent and passed, and the report page now shows the raw
+reports beside what was stored.
+
+### The escalation prompt was discounting the wrong direction
+
+The prompt taught the model to distrust a *high* anomaly score built on a thin
+baseline. It never said a *low* score was disqualifying. So the model wrote the
+objection down and then argued past it — *"the anomaly score of 0.87 is not
+high, but ... it doesn't carry much weight either way"* — and alerted twice on
+quiet zones. Two edits to `ESCALATION`:
+
+- the score now cuts both ways, with a sentence naming the exact move: *when you
+  find yourself writing that the score is low but something else outweighs it,
+  that is the moment to decline*
+- spread counts inside a single zone too. The old text only covered spread
+  *across* zones, which left a one-zone cluster over 29 days unaddressed.
+
+Both false alerts now decline, in the prompt's own words: *"four reports in 30
+days is about one a week, which describes what a shared community garden
+normally looks like."*
+
+### Two clean runs, and the wobble worth knowing about
+
+| | run 3 | run 4 |
+|---|---|---|
+| alerts | **1** | **1** |
+| near-miss / Birch Ln | declined | declined |
+| community garden | declined | declined |
+| single reporter (4 reports, 1 person) | declined | declined |
+| 4th cluster report | suppressed | suppressed |
+| silent / declined | 26 / 10 | 27 / 9 |
+
+The alert fires both times at 3 reports · 3 reporters · 13h · z=6.5. The last
+row is the honest caveat: one report moved between *silent* and *declined*
+across runs. Neither is an alert, so nothing claimed is affected, but the tally
+can shift by one. Do not quote 26/10 as if it were fixed.
+
+### The holdout, spent
+
+Run once on 2026-08-31 against the prompts as committed. **20 of 20.** Full
+transcript in `data/holdout_result_2026-08-31.log`; the reasoning is in
+[[README]] § *The holdout run*. Both adversarial cases landed — the
+no-shared-vocabulary bike cluster was found, the four "parked car on Sycamore
+Row" reports stayed quiet.
+
+Two things recorded rather than rounded up. The alert fired on the **second**
+report at z=2.1 rather than the third at z=6.5, because that zone had no
+history at all and the agent said so before setting the number aside. And the
+run produced **zero declines** — the Sycamore Row four never grouped, so
+retrieval separated them rather than judgment refusing them. The holdout proves
+the agent finds a hard cluster and resists a lexical trap. It does not prove it
+can decline a plausible one.
+
+### Three documented claims were wrong, and are now right
+
+The three-behaviours table in [[README]] and [[DEVPOST]] said the alert fires on
+4 reports / 4 reporters / 36 hours. It fires on the **third** report — 3
+reporters, 13 hours. The 4/4/36h state belongs to the report that was
+*suppressed*. README also carried `z = 5.0`, which matches neither the alert
+(6.5) nor the final cluster (9.0).
+
+Bigger: the near-miss row claimed the agent weighs three reports across three
+zones and declines on the spread. **It does not.** Retrieval never links the
+three to each other — 0.436–0.456 between them, against 0.576 from one of them
+to an unrelated report. Two are logged silently with nothing correlated; the
+third links to unrelated reports on its own street. None surfaces, which is the
+outcome wanted, but not for the reason claimed. The "why an agent, not a
+threshold" section overclaimed in the same way and now carries the coda.
+
+### The report page shows its work
+
+A two-column section: the message as it arrived, beside the normalized sentence
+actually indexed. It makes both central claims visible without a paragraph of
+explanation —
+
+    "a guy hanging around the mailboxes"          → parcel lockers, bldg 3
+    "loitering by the post boxes again tonight"   → parcel lockers, bldg 3
+    "messing about near where the packages get    → parcel lockers, bldg 3
+     dropped"
+    "waiting around by the delivery lockers"      → parcel lockers, bldg 3
+
+Four phrases, no shared content word. `raw_text` is opt-in at all three
+boundaries (`rendered_rows(include_raw=)`, `render.write(show_raw=)`,
+`--show-raw`), because a renderer that gets it by default is how the retention
+guarantee becomes a leak — and it would leak silently, since the page renders
+fine either way. Two tests hold the line.
+
+### Infrastructure
+
+- **Bedrock read timeouts abort a whole run.** Report 26 of 38 was lost to one.
+  botocore defaults to 60s, and correlation makes tool calls then writes prose
+  against a 16384-token ceiling. `read_timeout=300` with standard-mode retries.
+  Not something to discover while recording, or on a one-shot holdout.
+- **`--holdout` and `--seed`** added; the holdout had existed since 2026-08-14
+  with no way to run it. It takes its own database and vector store, because the
+  anomaly detector scores a zone against its own history and 38 seed reports
+  left in the store would silently redefine "unusual".
+- **Cost:** credits confirmed to cover Bedrock (checked the applicable-services
+  list). $190 available across four credits, roughly $3–5 spent. Cost Explorer
+  was enabled 2026-09-01 and had not ingested yet; `AWSBillingReadOnlyAccess` is
+  attached to the `porchlight` IAM user, so the real per-service figure can be
+  read directly from **2026-09-02** onward.
+
+### Two mistakes worth recording
+
+**The demo database was destroyed.** `--holdout` used `os.environ.setdefault`,
+and `.env` ships `FNA_DB_PATH=porchlight.db`, so the flag deferred to the
+ambient value and `fresh_state()` deleted the completed run on the way in. An
+explicit flag has to win over ambient config. Recovered by re-running; the
+rendered page and logs had survived.
+
+**`⟨PENDING.md` is gone.** It was untracked at session start and is no longer on
+disk. It was never committed, so git cannot recover it. Cause unknown — recreate
+it if it mattered.
