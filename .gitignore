@@ -42,3 +42,13 @@ refs/
 # summary of it.
 REQUIREMENTS.md
 HACKATHON.md
+
+# Frozen copy of the run-4 state — database, vector store, rendered page and
+# alert log — kept so the demo run can be restored if a later run overwrites
+# it. Local safety net, not source. The pieces inside are already ignored by
+# the patterns above; this covers the directory itself.
+.freeze/
+
+# Design-tool working state: build state, review screenshots, captured frames.
+# Scratch, regenerated on demand.
+.impeccable/
