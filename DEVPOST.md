@@ -73,10 +73,10 @@ never surface to anyone. One alert fires.**
 The problem it's built around looks like this. Four neighbors notice the same
 person near the same parcel lockers over a day and a half, and report it as:
 
-- "a person hanging around the **mailboxes**"
+- "a guy hanging around the **mailboxes**"
 - "someone loitering by the **post boxes**"
-- "somebody messing about near **where the packages get dropped**"
-- "a person waiting around by the **delivery lockers**"
+- "somebody was messing about near **where the packages get dropped**"
+- "**Person** waiting around by the **delivery lockers**"
 
 **Those four reports share no content word.** Any keyword filter sees four
 unrelated notes. A moderator reading them a day apart sees four unrelated notes.

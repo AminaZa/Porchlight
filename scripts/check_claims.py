@@ -244,6 +244,30 @@ def check_devpost(f: dict) -> None:
         fail("DEVPOST.md", "missing")
         return
 
+    # Anything the Devpost text presents in quotation marks as a neighbour's own
+    # words has to be a literal run of some real report. The description and the
+    # live-demo page are read minutes apart by the same judge, and the page shows
+    # these four verbatim -- so a paraphrase here is a visible contradiction, not
+    # a stylistic choice.
+    #
+    # Found 2026-09-09: the text said "a person hanging around the mailboxes" for
+    # a seed that reads "a guy", and "a person waiting around" for "Person
+    # waiting". "a guy" is exactly the person-description triage strips, so the
+    # paraphrase quietly sanded off the redaction claim's own payoff.
+    quoted = re.findall(r'^\s*-\s*"([^"\n]{15,})"\s*$', md, re.MULTILINE)
+    if quoted:
+        corpus = " || ".join(
+            plain(r.get("raw_text") or "").lower() for r in f["rows"]
+        )
+        stray = [q for q in quoted if plain(q).lower() not in corpus]
+        if stray:
+            fail("DEVPOST.md",
+                 f"{len(stray)} of {len(quoted)} quoted report(s) are not verbatim "
+                 f"from any report in the run. First: \"{stray[0][:58]}...\"")
+        else:
+            ok("DEVPOST.md",
+               f"all {len(quoted)} quoted reports are verbatim from the run")
+
     pend = md.count("⟨PENDING")
     if pend:
         warn("DEVPOST.md", f"{pend} unresolved ⟨PENDING⟩ placeholder(s) -- "
