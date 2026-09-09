@@ -464,3 +464,106 @@ rendered page and logs had survived.
 **`⟨PENDING.md` is gone.** It was untracked at session start and is no longer on
 disk. It was never committed, so git cannot recover it. Cause unknown — recreate
 it if it mattered.
+
+---
+
+## 2026-09-02 — the page redesigned, and a checker so the numbers stop drifting
+
+Nothing about the agent changed. This was a packaging session: the report page
+was rebuilt around a stated product direction, and the figures scattered across
+six surfaces were pulled back into agreement with the run.
+
+### Four published numbers had drifted from the run they described
+
+Found by reading the surfaces against the database rather than against each
+other:
+
+- [[VIDEO_SCRIPT]] quoted the alert as **4 reports / 4 reporters / 36 hours**.
+  It fires at **3 / 3 / 13**; the 4/4/36 state belongs to the report that is
+  *suppressed*.
+- §1 paraphrased four seed reports — *"a person hanging around the mailboxes"*
+  for the seed's *"a guy"*. Harmless until the redesigned page began showing the
+  same four reports verbatim, at which point a judge would see one report worded
+  two ways inside three minutes.
+- [[IMPLEMENTATION_PLAN]] still carried the **$0.90/run** list-price estimate.
+- The page header said *"one street, last night"* for a dataset spanning eight
+  zones and thirty-seven days.
+
+Every one of them was true when it was written, and none was caught by a person
+re-reading the file. So `scripts/check_claims.py` now derives the truth from the
+live database and checks each surface against it — the report page, [[README]],
+[[DEVPOST]], [[VIDEO_SCRIPT]], [[IMPLEMENTATION_PLAN]] and
+`assets/architecture.html`. It exits non-zero on drift, so it can gate a
+recording session or a commit. It checks figures, the verbatim quotes that go on
+camera, and the structural guarantees of the page. It does not check prose.
+
+**The rule it encodes:** a number that appears on two surfaces can disagree with
+itself, so either derive it from the run or check it against the run.
+
+### The real cost, measured
+
+**$9.39 of Bedrock spend across roughly 190 reports processed** — read from the
+AWS credits page, not calculated from list prices. That is about **5 cents a
+report, ~$1.90 per 38-report run** — roughly double the $0.90 estimate, which is
+what the two corrections recorded on 2026-08-20 predicted. $182.95 of $190 in
+credits remains; the DevPost $50 was never needed.
+
+It is declared once, as `COST` in `src/render.py`, carrying its own source
+string. Same for `HOLDOUT`, which carries its limit inline so the number cannot
+be published without it.
+
+### The page rebuilt around "what you heard / what happened"
+
+Direction locked in [[PRODUCT]], written this session and approved: the page
+splits the way the product does — one side the single message that reached a
+neighbour, the other everything that was kept from them. The canvas went from
+900×380 to 640×460, because it now sits beside the refusal rather than spanning
+the page, and `NEAR` was lightened `#3A4A6B` → `#5C7098`.
+
+One relaxation, decided deliberately: **a short inline script is now permitted.**
+The self-contained rule holds — no CDN, no network request, one file — and
+everything still degrades to a readable page with JavaScript off, because the
+file is also screen-recorded.
+
+### The video script caught up with the run
+
+- **§3b no longer describes a decline that does not happen.** The old beat
+  opened on the near-miss — *"three zones, three weeks, declined on the spread"*
+  — and the agent never does that; retrieval never links those three to each
+  other, so no cluster is ever assembled to refuse. Replaced with the
+  single-reporter decline, which is the stronger beat anyway: a real, tight,
+  plausible cluster that the agent says no to. The honest near-miss framing is
+  kept as an optional ten seconds.
+- **§3d added** — the two-column transcript, four phrasings collapsing to one
+  stored sentence. The best visual in the project and the script had no mention
+  of it. Its 25 seconds come out of §3b (one decline, not two) and §4 (trimmed
+  60s → 50s), so the running time is unchanged.
+- **The holdout moved into §5** as a fixed beat rather than an if-you-have-time
+  extra, with its caveat written down beside it.
+
+### Not done
+
+`out/report.html` is regenerated and current, but it is still only on disk —
+nothing is hosted, so [[DEVPOST]]'s live-demo field is still `⟨PENDING⟩`.
+
+---
+
+## 2026-09-09 — the backlog pushed
+
+Housekeeping at the top of the final week. `main` had been **8 commits ahead of
+`origin/main`** since 2026-09-01, and the whole 2026-09-02 session was
+uncommitted on top of that — the redesigned renderer, [[PRODUCT]], the claims
+checker and the rewritten script. The public repo is what a judge clones, and it
+predated most of that work. Now pushed.
+
+Two defects in the uncommitted script, fixed on the way past: a stray `/`
+keystroke below the frontmatter, and a callout title split across two lines,
+which Obsidian rendered as a nested blockquote rather than a title.
+
+`.freeze/` (the frozen run-4 state, kept so the demo can be restored) and
+`.impeccable/` (design-tool scratch and review screenshots) are now ignored.
+Both are local safety nets, neither is source.
+
+Verified before pushing: **55 tests passing, 13 skipped**, and
+`scripts/check_claims.py` green on every figure — one warning, the four
+unresolved `⟨PENDING⟩` placeholders in [[DEVPOST]].
