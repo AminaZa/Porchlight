@@ -299,9 +299,22 @@ for them.
 
 ## Pre-submit checks
 
-- [ ] Every `⟨PENDING⟩` above resolved or removed
-- [ ] Demo numbers re-checked against the first real run, not the offline one
+- [ ] Every `⟨PENDING⟩` above resolved or removed — **two left**, the S3 URL and
+      the video URL. Everything else on this page is real
+- [x] Demo numbers re-checked against the first real run, not the offline one
+      ✅ 2026-09-09 — and no longer checked by re-reading. `scripts/check_claims.py`
+      derives them from the database and fails on drift; run it again before
+      pasting anything into the form
 - [x] No Marvel references anywhere — see [[BRANDING]] § *Trademark scope* ✅ 2026-08-22
-- [ ] Repo public, MIT license visible in the About section
+- [x] Repo public, MIT license visible in the About section ✅ 2026-09-09 —
+      confirmed live against the GitHub API, not from memory: `private: false`,
+      `license.spdx_id: MIT`. The rules ask for the About section specifically,
+      and GitHub populates it from the detected licence
 - [ ] Video public on YouTube or Vimeo, under 5:00
 - [ ] Submitted before **Sep 14, 2026 5:00pm PT**
+
+> [!tip] Set the repo's **homepage** to the S3 URL once it exists
+> Currently empty. GitHub renders it at the top of the About sidebar, which is
+> the first thing a judge who clones the repo sees — a second placement of the
+> live-demo link for no extra work. `gh repo edit --homepage <url>`, or the
+> About gear icon.
