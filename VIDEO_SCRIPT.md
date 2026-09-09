@@ -222,6 +222,17 @@ Let thirty-odd reports scroll past. Don't narrate over all of it.
 **On screen:** scroll back to the declined cluster. Show its `--explain`
 reasoning and hold on it.
 
+> [!tip] The report page renders this decline too, and renders it better
+> `out/report.html` carries the same refusal under *"And the one it refused."* —
+> the full reasoning set in type, with the evidence line
+> `4 reports · 1 reporter · 85h · z=2.2` beneath it. Legible at 1080p in a way
+> wrapped terminal prose is not.
+>
+> Shooting the terminal here is still the stronger choice, because §3a and §3c
+> are terminal and cutting to a browser and back costs the run its continuity —
+> but if the terminal take will not read on camera, this is the pickup, and it
+> is already on disk. Do not use both; the same reasoning twice is padding.
+
 > [!danger] Rewritten 2026-09-02 — the old version described a decline that does not happen
 > This beat used to open on the near-miss: *"three people, three zones, three
 > weeks, declined on the spread."* **The agent never does that.** Retrieval
@@ -295,28 +306,45 @@ evidence line, and the escalation agent's reasoning. Then scroll on to the
 ### 3d · What it kept — 3:05–3:30
 
 **On screen:** the two-column transcript section of `out/report.html` — what
-each neighbour typed on the left, the single sentence Porchlight stored on the
-right. Four rows, all resolving to the same right-hand side.
+each neighbour typed on the left, what Porchlight stored on the right.
+
+> [!warning] It is **six** rows, and the right column is not one repeated sentence
+> Checked against the rendered page 2026-09-09. Two ordinary reports are logged
+> silently first — *a locker door that will not shut*, *recycling not collected*
+> — and then the four that became the cluster. The stored sentences are four
+> different sentences; what they share is the **place**, `Parcel lockers, bldg
+> 3`, which is the label on every row and the thing the page's own footer counts:
+> *"4 ways of saying it, not one content word in common, and one place."*
+>
+> Do not say "the same sentence" on camera. Say **the same place**.
+>
+> **The first row is the beat worth stealing.** It is in the *same zone* as the
+> cluster and it is logged silently, because a broken locker door is not four
+> neighbours describing a person. Same place, different situation, no alert —
+> that is a harder argument than the cluster itself, and it is already on screen.
 
 > [!important] Added 2026-09-02. This is the best visual in the project
-> Four phrasings with no shared content word collapsing into one identical
-> stored sentence — it proves the premise from §1 *and* the redaction claim in
-> one frame, without a word of explanation. It did not exist when this script
-> was written. Its 25 seconds come out of §3b (one decline, not two) and §4
-> (trimmed to 50s), so the running time is unchanged.
+> Four phrasings with no shared content word resolving to one place — it proves
+> the premise from §1 *and* the redaction claim in one frame, without a word of
+> explanation. It did not exist when this script was written. Its 25 seconds come
+> out of §3b (one decline, not two) and §4 (trimmed to 50s), so the running time
+> is unchanged.
 >
 > Generate the page with `--show-raw`; `raw_text` is off by default at all three
 > boundaries, which is the point of the beat and worth one sentence if asked.
 
-**Narration** *(~70 words)*
+**Narration** *(~85 words)*
 
 > And look at what it kept.
 >
-> On the left, what four neighbours actually typed. On the right, the one
-> sentence Porchlight stored for each of them.
+> On the left, what neighbours actually typed. On the right, what Porchlight
+> stored.
 >
-> Same place, four ways of saying it, no word in common. And every description
-> of a person is gone.
+> The top one is a broken locker door. Same street as the cluster — logged, and
+> nobody hears about it.
+>
+> Then these four. Four people, four ways of saying it, not one word in common —
+> and one place. And every description of a person is gone.
 >
 > That isn't a promise the prompt makes. It's enforced in code, with a retry,
 > before the text ever reaches the database. The alert names a place to watch —
