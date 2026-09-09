@@ -47,9 +47,26 @@ First-party rates — **Bedrock is priced separately, check the Bedrock pricing 
 | Sonnet 4.6 | $3 / $15 |
 | Haiku 4.5 | $1 / $5 |
 
-*(The previous table listed Sonnet 5 at $3 / $15. That is Sonnet 4.6's rate — Sonnet 5 is $2 / $10 — so the figure was wrong then and is right now, for a different reason. Replace all of this with the measured cost from AWS Cost Explorer once the first full run has settled in billing.)*
+*(The previous table listed Sonnet 5 at $3 / $15. That is Sonnet 4.6's rate — Sonnet 5 is $2 / $10 — so the figure was wrong then and is right now, for a different reason.)*
 
-Split + caching ≈ **$0.90 per full 38-report run** → roughly **55 runs inside the $50**. The all-Opus, no-caching design this replaces was ~$2.20/run (≈20 runs).
+> [!success] Superseded by a measured figure — 2026-09-02
+> The estimate below was **$0.90 per 38-report run**. The billed reality is
+> **about 5 cents a report, ~$1.90 per full run** — roughly double, which is
+> what the two corrections underneath this box predicted.
+>
+> Source: **$9.39 of Bedrock spend across ~190 reports processed**, read off the
+> AWS credits page on 2026-09-02 ($7.05 finalized, $9.39 estimated including
+> unbilled). That covers four 38-report demo runs, the 20-report holdout and a
+> handful of single-report tests. Not a list-price calculation.
+>
+> **This is the only per-run figure anywhere in the project, and `out/report.html`
+> publishes it** (`COST` in `src/render.py`, which carries its own source string).
+> If it is ever restated, restate it in both places or in neither.
+>
+> Headroom is not a concern: $182.95 of $190 in credits remains, and the DevPost
+> $50 has not been touched.
+
+Split + caching was estimated at ~$0.90 per full 38-report run. Superseded — see above. The all-Opus, no-caching design this replaces was ~$2.20/run.
 
 > [!warning] Two corrections to this estimate, found 2026-08-20
 > **Triage never caches.** The minimum cacheable prefix is per-model and is *not* monotonic: Opus 5 caches from 512 tokens, Sonnet 5 from 1024, Haiku 4.5 only from **4096**. Triage's prefix measures ~960 tokens, so it silently reports `cache_creation_input_tokens = 0` — no error, just no cache. Correlation (~1690) and escalation (~1240) both clear their thresholds. The dollar impact is ~$0.04 per run; the real cost is that [[CHECKLIST]] §2's "confirm cache reads are landing" check will show triage's input count staying flat, which reads as a bug and isn't one. Left unpadded deliberately — see the note in `src/provider.py`.
