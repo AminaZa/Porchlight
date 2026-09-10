@@ -23,7 +23,7 @@ Four neighbours notice the same person hanging around the same parcel lockers ov
 
 **Those four reports share no content word at all.** Any keyword or category filter sees four unrelated notes. A human moderator reading them a day apart sees four unrelated notes. The pattern is real and nobody is positioned to notice it.
 
-Porchlight notices it, and — more importantly — declines to notice patterns that aren't there.
+Porchlight notices it, and, more importantly, declines to notice patterns that aren't there.
 
 ---
 
@@ -42,11 +42,11 @@ report ─→ triage ──────────→ correlate ─────
                                         from storage
 ```
 
-**Triage** classifies the report and rewrites it as one neutral sentence with every person-identifying detail removed. That sentence is the only long-lived version — the reporter's original words are held briefly, never indexed, and deleted on a retention timer.
+**Triage** classifies the report and rewrites it as one neutral sentence with every person-identifying detail removed. That sentence is the only long-lived version. The reporter's original words are held briefly, never indexed, and deleted on a retention timer.
 
 **Correlation** searches for reports describing the same situation. Matching is semantic, so the four phrasings above find each other. It returns *which* reports are related and its reading of the evidence; it does not return counts.
 
-**The pipeline counts the evidence** from storage — how many reports, how many *distinct* reporters, over what time span, across how many zones, and how unusual the rate is for that particular place.
+**The pipeline counts the evidence** from storage: how many reports, how many *distinct* reporters, over what time span, across how many zones, and how unusual the rate is for that particular place.
 
 **Escalation** weighs that evidence and decides. The decision lives in the agent's reasoning under its system prompt, never in an `if count > 3` branch, and every decision carries a required `reasoning` field that is shown on screen.
 
@@ -57,18 +57,18 @@ report ─→ triage ──────────→ correlate ─────
 | | Evidence | Outcome |
 |---|---|---|
 | **The real cluster** | 3 reports · **3 different reporters** · one zone · 13 hours · z = 6.5 | **Alert** (4th report suppressed) |
-| **The near-miss** | 3 similar reports · 3 reporters · **three zones** · **21 days** | No alert — never correlated |
+| **The near-miss** | 3 similar reports · 3 reporters · **three zones** · **21 days** | No alert, never correlated |
 | **The single reporter** | 4 similar reports · one zone · 3.5 days · **1 reporter** | Declined |
 
 The second and third rows are the point. A system that only ever fires is not exercising judgment, and the declines are what make the alert worth reading.
 
-The first row fires earlier than you might expect. By the third report there are already three distinct reporters in a deliberately quiet zone inside thirteen hours, and the agent alerts there rather than waiting for a fourth. The fourth arrives and is suppressed, because the cluster it joins has already woken the neighbourhood once. Both the third and fourth reports are defensible alert points, so the test asserts what actually matters — exactly one alert, belonging to the genuine cluster — rather than pinning the model to one of them.
+The first row fires earlier than you might expect. By the third report there are already three distinct reporters in a deliberately quiet zone inside thirteen hours, and the agent alerts there rather than waiting for a fourth. The fourth arrives and is suppressed, because the cluster it joins has already woken the neighbourhood once. Both the third and fourth reports are defensible alert points, so the test asserts what actually matters, exactly one alert belonging to the genuine cluster, rather than pinning the model to one of them.
 
-The near-miss did not go how we designed it, and it is worth being precise about. We wrote three reports — *"walking slowly up the street looking at the houses"*, *"wandering about near the driveways"*, *"loitering at the end of the road"* — as three people, three zones, twenty-one days, expecting the agent to assemble them and then decline on the spread.
+The near-miss did not go how we designed it, and it is worth being precise about. We wrote three reports (*"walking slowly up the street looking at the houses"*, *"wandering about near the driveways"*, *"loitering at the end of the road"*) as three people, three zones, twenty-one days, expecting the agent to assemble them and then decline on the spread.
 
-It never assembles them. Retrieval does not link the three to each other: they sit at 0.436–0.456 cosine similarity, lower than one of them scores against an unrelated report about a car passing driveways (0.576). Two are logged silently with nothing correlated at all. The third links to two unrelated reports on its own street and is declined there, on the anomaly score. None of the three ever reaches anyone, which is the outcome we wanted — but it happens for a different reason than we intended. That is the same measurement in [Why there is an agent here and not a similarity threshold](#why-there-is-an-agent-here-and-not-a-similarity-threshold) that makes the case for an agent, pointed back at us.
+It never assembles them. Retrieval does not link the three to each other: they sit at 0.436 to 0.456 cosine similarity, lower than one of them scores against an unrelated report about a car passing driveways (0.576). Two are logged silently with nothing correlated at all. The third links to two unrelated reports on its own street and is declined there, on the anomaly score. None of the three ever reaches anyone, which is the outcome we wanted, but it happens for a different reason than we intended. That is the same measurement in [Why there is an agent here and not a similarity threshold](#why-there-is-an-agent-here-and-not-a-similarity-threshold) that makes the case for an agent, pointed back at us.
 
-The third row is also a safety control. Four reports from one person is not corroboration — it is one person's concern, and treating it as a neighbourhood pattern is how a service like this gets used against somebody.
+The third row is also a safety control. Four reports from one person is not corroboration. It is one person's concern, and treating it as a neighbourhood pattern is how a service like this gets used against somebody.
 
 ---
 
@@ -105,7 +105,7 @@ This prints the Anthropic profiles your account can actually use and flags any m
 python -m src.intake.cli "someone took my package from the porch" --zone "Elm St north"
 ```
 
-This exercises auth, all three model IDs, structured-output parsing, persistence, and indexing in one shot. Do this before the full set — it's where configuration problems surface, and much easier to read there than on report 1 of 38.
+This exercises auth, all three model IDs, structured-output parsing, persistence, and indexing in one shot. Do this before the full set. It's where configuration problems surface, and much easier to read there than on report 1 of 38.
 
 ### Then the demo
 
@@ -121,7 +121,7 @@ python demo/run_demo.py --explain --html       # + a self-contained HTML report
 python demo/run_demo.py --offline --html
 ```
 
-Stubs the three model calls so the pipeline runs on a laptop with no credentials and no spend. Storage, embedding, retrieval, the anomaly detector, evidence counting, alert suppression, and the renderer are all still real — only the judgment is replaced, by a hard-coded rule.
+Stubs the three model calls so the pipeline runs on a laptop with no credentials and no spend. Storage, embedding, retrieval, the anomaly detector, evidence counting, alert suppression, and the renderer are all still real. Only the judgment is replaced, by a hard-coded rule.
 
 It is labelled everywhere it can be: a terminal banner, a note on the summary, and a band across the top of the generated page. **It is not the agent, and its output should never be recorded as though it were.** `scripts/publish.sh` refuses to publish a page generated this way.
 
@@ -131,15 +131,15 @@ It is labelled everywhere it can be: a terminal banner, a note on the summary, a
 
 **Embeddings run locally.** ChromaDB's default function (`all-MiniLM-L6-v2` via ONNX) needs no API key, costs nothing per embedding, works offline, and returns identical output on every run. One less dependency, one less cost line, one less source of demo nondeterminism.
 
-**Retrieval indexes the normalised sentence, not the raw report.** This was measured, not assumed. Indexing raw text put the weakest cluster report *below* an unrelated one — separation −0.03 to −0.16 across every query strategy tried, because incidental narration dominates the embedding of a short text. Indexing the normalised sentence separates the same groups by +0.28 to +0.52. Redaction and accuracy turned out to want the same thing.
+**Retrieval indexes the normalised sentence, not the raw report.** This was measured, not assumed. Indexing raw text put the weakest cluster report *below* an unrelated one, a separation of -0.03 to -0.16 across every query strategy tried, because incidental narration dominates the embedding of a short text. Indexing the normalised sentence separates the same groups by +0.28 to +0.52. Redaction and accuracy turned out to want the same thing.
 
-**Anomaly detection is per-zone.** A count is compared against that zone's own history, never against other zones. Four reports in two days is unremarkable on a busy through-road and a genuine change in a quiet courtyard. Rates are Poisson, so deviation is measured in units of √rate rather than a sample standard deviation — a zone with a flat or empty history has zero sample variance, and those are exactly the quiet zones this is for.
+**Anomaly detection is per-zone.** A count is compared against that zone's own history, never against other zones. Four reports in two days is unremarkable on a busy through-road and a genuine change in a quiet courtyard. Rates are Poisson, so deviation is measured in units of √rate rather than a sample standard deviation. A zone with a flat or empty history has zero sample variance, and those are exactly the quiet zones this is for.
 
 **Persistence and dispatch are code, not tools.** An agent that skips a write leaves the report invisible to every later search, and nothing raises. An agent that calls `send_alert` with different values than the decision it just made has two sources of truth. The agents judge; the pipeline acts.
 
 **Model per stage.** Haiku 4.5 for typed extraction, Sonnet 4.6 for tool selection, Opus 4.6 for the judgment. Prompt caching runs on all three.
 
-*A note on model choice:* the pipeline was designed against Sonnet 5 and Opus 5. A new AWS account is not entitled to that tier — `--list` shows the profiles, but invoking one returns `AccessDenied` — so the demo, and every number quoted here, runs on Sonnet 4.6 and Opus 4.6. The stage-to-model mapping is unchanged and the model ids are one edit each in `.env`.
+*A note on model choice:* the pipeline was designed against Sonnet 5 and Opus 5. A new AWS account is not entitled to that tier (`--list` shows the profiles, but invoking one returns `AccessDenied`), so the demo, and every number quoted here, runs on Sonnet 4.6 and Opus 4.6. The stage-to-model mapping is unchanged and the model ids are one edit each in `.env`.
 
 ### Why there is an agent here and not a similarity threshold
 
@@ -147,15 +147,15 @@ The obvious cheaper design is: embed everything, and call it a cluster when simi
 
 | | cosine similarity |
 |---|---|
-| Within the genuine cluster | 0.708 – 0.814 |
-| **Within the near-miss** | **0.436 – 0.456** |
+| Within the genuine cluster | 0.708 to 0.814 |
+| **Within the near-miss** | **0.436 to 0.456** |
 | **Near-miss report → an unrelated report** | **0.576** |
 
-The three near-miss reports resemble each other *less* than one of them resembles a completely unrelated report about a car driving past some driveways. Sweeping the threshold doesn't rescue it — at 0.45 it picks up two correct near-miss links and **twenty incorrect ones**; at 0.50 and above it picks up none at all.
+The three near-miss reports resemble each other *less* than one of them resembles a completely unrelated report about a car driving past some driveways. Sweeping the threshold doesn't rescue it. At 0.45 it picks up two correct near-miss links and **twenty incorrect ones**; at 0.50 and above it picks up none at all.
 
 Separating *"three people described loitering in three different zones over three weeks"* from *"these two sentences both mention driveways"* requires reading them and weighing where, when, and who reported. That is the whole reason there is an agent in the middle of this and not an `if similarity > x` branch, and it is why `--offline` cannot stand in for a real run: a stub with no judgment cannot demonstrate judgment.
 
-The honest coda is that retrieval does not clear this bar either. On a live run the three near-miss reports are never linked to one another at all — the numbers above are exactly why — so the agent declines them locally instead of weighing them as one three-zone situation. The threshold fails; retrieval also fails; the outcome is still correct. Which of those three sentences we get to claim credit for is worth stating plainly rather than rounding up.
+The honest coda is that retrieval does not clear this bar either. On a live run the three near-miss reports are never linked to one another at all, and the numbers above are exactly why, so the agent declines them locally instead of weighing them as one three-zone situation. The threshold fails; retrieval also fails; the outcome is still correct. Which of those three sentences we get to claim credit for is worth stating plainly rather than rounding up.
 
 ---
 
@@ -173,32 +173,32 @@ python demo/run_demo.py --holdout --explain
 the behaviour the file specified.**
 
 The set exists because the obvious objection to an authored demo dataset is that
-the system was tuned until it passed its own demo. That objection is fair — it is
+the system was tuned until it passed its own demo. That objection is fair. It is
 exactly what the seed set records happening. So the holdout carries two
 adversarial cases that are mirror images of each other, and any threshold that
 rescues one fails the other:
 
 | | What it is | Required | Result |
 |---|---|---|---|
-| `no_shared_vocabulary` | 4 reports of one bike-stripping spree whose reporters share almost no words — *"back wheel gone"*, *"saddle and seatpost off"*, *"brake cables cut"*, *"stripped for parts"* | exactly one alert | **1 alert**, on the 2nd report; 3rd and 4th suppressed |
-| `heavy_shared_vocabulary` | 4 reports that all contain the phrase *"parked car on Sycamore Row"* and describe four unrelated incidents — a flat tyre, a hit-and-run, a blocked kerb, a window left open | no alert | **4 silent**, never correlated |
+| `no_shared_vocabulary` | 4 reports of one bike-stripping spree whose reporters share almost no words: *"back wheel gone"*, *"saddle and seatpost off"*, *"brake cables cut"*, *"stripped for parts"* | exactly one alert | **1 alert**, on the 2nd report; 3rd and 4th suppressed |
+| `heavy_shared_vocabulary` | 4 reports that all contain the phrase *"parked car on Sycamore Row"* and describe four unrelated incidents: a flat tyre, a hit-and-run, a blocked kerb, a window left open | no alert | **4 silent**, never correlated |
 
 Two things are worth stating plainly rather than rounding up.
 
-**The alert fired earlier than it does on the seed set** — on the second report, at
+**The alert fired earlier than it does on the seed set**, on the second report, at
 2 reporters over 14 hours with an anomaly score of 2.1, where the seed cluster
 waits for the third at z=6.5. That is the design working rather than a threshold
 drifting: the zone had *no* recorded history, and the escalation agent said so and
-declined to lean on the number — *"the anomaly score of 2.12 is nominally elevated
+declined to lean on the number: *"the anomaly score of 2.12 is nominally elevated
 but built on a completely empty baseline, so it carries almost no statistical
 weight; I'm not relying on it."* It alerted on method, independence and tightness
 instead, and accepted low urgency in exchange. A fixed `if z > n` rule cannot make
 that trade.
 
 **The holdout does not exercise the decline path.** Zero reports were correlated
-and then declined. The four Sycamore Row reports never grouped at all — the
+and then declined. The four Sycamore Row reports never grouped at all. The
 heavy shared vocabulary is in the *incidental* words, and the normalized triage
-sentences that get indexed do not share it — so the right outcome came from
+sentences that get indexed do not share it, so the right outcome came from
 retrieval separating them, not from judgment refusing them. That is a real limit
 on what this run proves: it demonstrates that the agent finds a hard cluster and
 does not fire on a lexical trap, and it says nothing about the harder skill of
@@ -212,7 +212,7 @@ This is a system where residents report on neighbours, and where correlation *am
 
 **Correlation runs on place and behaviour, never on person descriptions.** Names, physical descriptions, vehicle details, and street numbers are stripped at triage and never reach storage or the index. Alerts describe *a place to watch*, not *a person to look for*.
 
-**That stripping is enforced, not just requested.** The triage and escalation agents run under a `RedactionGuard` — a Strands hook on `AfterModelCallEvent` that inspects what the model actually produced, including the structured-output fields. If a summary still describes a person, the guard sets the event's `retry` flag: the response is discarded and the model is asked again, before the pipeline, storage, or the index ever see it. A model that keeps leaking fails the report rather than having it stored.
+**That stripping is enforced, not just requested.** The triage and escalation agents run under a `RedactionGuard`, a Strands hook on `AfterModelCallEvent` that inspects what the model actually produced, including the structured-output fields. If a summary still describes a person, the guard sets the event's `retry` flag: the response is discarded and the model is asked again, before the pipeline, storage, or the index ever see it. A model that keeps leaking fails the report rather than having it stored.
 
 The three layers do different jobs and none of them is redundant:
 
@@ -228,15 +228,15 @@ A prompt is an instruction. This is a control.
 
 **Alerts go to the residents of the affected zone, and the agent does not get to choose that.** `Audience` is a single-valued type. The escalation agent decides *whether* to alert and writes the message; it cannot decide who hears it, so widening the blast radius is a code change someone reviews rather than a token a model emits.
 
-Broadcasting is the higher-risk option and it is taken deliberately: the people who can actually act on "watch the parcel lockers this week" are the people who walk past them. The cost is that no individual reads the alert before the neighbourhood does, which shapes the two controls above and below it — the escalation prompt is written on the assumption that *the person who was reported is among the readers*, and it forbids any wording that reads as an instruction to confront, follow, record, or identify somebody.
+Broadcasting is the higher-risk option and it is taken deliberately: the people who can actually act on "watch the parcel lockers this week" are the people who walk past them. The cost is that no individual reads the alert before the neighbourhood does, which shapes the two controls above and below it. The escalation prompt is written on the assumption that *the person who was reported is among the readers*, and it forbids any wording that reads as an instruction to confront, follow, record, or identify somebody.
 
-**A human approves before anything is dispatched.** `FNA_REQUIRE_APPROVAL=1` makes the agent draft and a person decide. Off for the demo; on for any real use. This carries more weight under a broadcast model than it would under a single-recipient one — a named recipient is themselves a human check between the model and the neighbourhood, and broadcasting removes that check, leaving this as the only one.
+**A human approves before anything is dispatched.** `FNA_REQUIRE_APPROVAL=1` makes the agent draft and a person decide. Off for the demo; on for any real use. This carries more weight under a broadcast model than it would under a single-recipient one. A named recipient is themselves a human check between the model and the neighbourhood, and broadcasting removes that check, leaving this as the only one.
 
 **Raw report text expires.** Aggregates and the redacted sentence survive so the baselines keep working; the original words don't.
 
 > **Not legal advice.** Before real residents use this, get advice on liability if an alert precedes a confrontation, and on whether the operator becomes a data controller under the applicable privacy regime.
 
-The demonstration dataset is authored, not sampled. No public dataset contains multiple free-text descriptions of the same event by different reporters, because intake operators normalise that away at collection — and normalising it is precisely what this project automates. All zones are coarse labels; nothing resembling a real address appears anywhere.
+The demonstration dataset is authored, not sampled. No public dataset contains multiple free-text descriptions of the same event by different reporters, because intake operators normalise that away at collection, and normalising it is precisely what this project automates. All zones are coarse labels; nothing resembling a real address appears anywhere.
 
 ---
 
@@ -246,11 +246,11 @@ The demonstration dataset is authored, not sampled. No public dataset contains m
 python -m pytest tests/ -q
 ```
 
-52 tests, no AWS credentials required and no spend. Only the three model calls are stubbed — storage, retrieval, the anomaly detector, evidence computation, the redaction guard, alert suppression, and the renderer all run for real.
+52 tests, no AWS credentials required and no spend. Only the three model calls are stubbed. Storage, retrieval, the anomaly detector, evidence computation, the redaction guard, alert suppression, and the renderer all run for real.
 
 The one to read first is `tests/test_vectors.py`. It asserts that the four differently-worded cluster reports outrank everything else, that a keyword search would fail on them, and that the near-miss stays separable from the genuine cluster. If that suite goes red, the project's premise is broken and nothing downstream matters.
 
-`tests/test_guards.py` is the other half of the safety story: it checks that the guard catches the constructions a neighbour actually types, *and* that it stays silent on the output the system produces on an ordinary day. Precision matters as much as recall here — a guard that fires on normal reports is one that gets switched off.
+`tests/test_guards.py` is the other half of the safety story: it checks that the guard catches the constructions a neighbour actually types, *and* that it stays silent on the output the system produces on an ordinary day. Precision matters as much as recall here. A guard that fires on normal reports is one that gets switched off.
 
 A further 13 tests in `tests/test_redaction.py` call Bedrock and are skipped unless you ask for them:
 
@@ -264,7 +264,7 @@ FNA_LIVE_TESTS=1 python -m pytest tests/test_redaction.py -v
 FNA_TRACE=1 python demo/run_demo.py
 ```
 
-Emits OpenTelemetry spans to the console — one agent span per stage with token counts, tool spans nested under correlation. With three agents in a chain this is how you tell *which* stage produced a surprising result. Set `OTEL_EXPORTER_OTLP_ENDPOINT` to send them to a collector instead.
+Emits OpenTelemetry spans to the console: one agent span per stage with token counts, tool spans nested under correlation. With three agents in a chain this is how you tell *which* stage produced a surprising result. Set `OTEL_EXPORTER_OTLP_ENDPOINT` to send them to a collector instead.
 
 ---
 
@@ -275,7 +275,7 @@ src/
   models.py      the data contract; model-generated fields split from computed ones
   provider.py    model per role, prompt caching, `--list` to verify Bedrock ids
   prompts.py     the three system prompts, together, because they tune together
-  guards.py      the redaction control — a Strands hook, not a prompt
+  guards.py      the redaction control, a Strands hook not a prompt
   telemetry.py   OpenTelemetry, behind FNA_TRACE
   agents/        triage · correlation · escalation
   tools/         storage · vectors · anomaly · alerts
@@ -292,4 +292,4 @@ tests/           52 tests, offline
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).
