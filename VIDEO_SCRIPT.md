@@ -226,14 +226,16 @@ Let thirty-odd reports scroll past. Don't narrate over all of it.
 
 ### 3b · The decline — 1:45–2:20
 
-**On screen:** scroll back to the declined cluster. Show its `--explain`
-reasoning and hold on it.
+**On screen:** scroll back to the **Birch Ln** cluster in the `Why it decided
+what it decided` block. Show its `--explain` reasoning and hold on it. Its
+evidence line reads `4 reports · 4 reporters · 504h · 1 zone(s) · z=1.2`.
 
 > [!tip] The report page renders this decline too, and renders it better
 > `out/report.html` carries the same refusal under *"And the one it refused."* —
 > the full reasoning set in type, with the evidence line
-> `4 reports · 1 reporter · 85h · z=2.2` beneath it. Legible at 1080p in a way
-> wrapped terminal prose is not.
+> `4 reports · 4 reporters · 504h · z=1.2` beneath it. Legible at 1080p in a way
+> wrapped terminal prose is not. The page picks the largest refusal, which is why
+> it and this beat now agree.
 >
 > Shooting the terminal here is still the stronger choice, because §3a and §3c
 > are terminal and cutting to a browser and back costs the run its continuity —
@@ -253,16 +255,35 @@ reasoning and hold on it.
 > anyway: it is the one where the agent has a real, tight, plausible cluster in
 > front of it and says no.
 
-**Narration** *(~95 words)*
+> [!danger] Rewritten again 2026-09-10, against the run that was actually shot
+> The beat is now the **Birch Ln spread**, not the single-reporter cluster. In
+> the shot run a report regrouped: Birch Ln went 3 reports to 4, and the
+> one-person cluster went 4 to 3. The largest refusal — the one
+> `out/report.html` features, so the terminal and the live demo link agree — is
+> now **4 reports · 4 reporters · 21 days · z=1.2**.
+>
+> The single-reporter refusal is still in the run and still in your footage
+> (3 reports · 1 reporter · 85h · z=2.2) if you prefer it. Use one, not both.
+>
+> **This is the "declines on the spread" beat the 2026-09-02 rewrite deleted as
+> impossible** — it happens here in one zone over three weeks rather than across
+> three zones. One of the three near-miss reports, *"a person wandering about
+> near the driveways"*, is inside this very cluster.
+
+**Narration** *(~100 words)*
 
 > Now the interesting part — what it found, and still didn't send.
 >
-> Four reports here. One zone. A few days. All describing the same kind of
-> thing. The agent grouped them, checked who filed them — and found one name.
+> Four reports here. Four *different* people. One street. A van left idling.
+> Someone looking into parked cars. A car driving up and down. A person
+> wandering near the driveways.
 >
-> Four reports from one person is not four people agreeing. It's one neighbour's
-> repeated worry. And treating that as a neighbourhood pattern is exactly how a
-> service like this gets used against somebody.
+> Four separate neighbours is real corroboration. Any threshold would have
+> fired. But look at the dates — these are spread over three weeks, and the last
+> one came twelve days after the one before it.
+>
+> The agent's own words: *four people each saw one thing, weeks apart, that
+> looked a bit odd to them. That's a street, not a situation.*
 >
 > Declined. Nobody hears about it. Nobody gets talked about.
 
@@ -270,7 +291,8 @@ reasoning and hold on it.
 > This is the most persuasive twenty seconds in the video. A system that only
 > ever fires isn't exercising judgment — the decline is what makes the alert
 > worth reading. Let the reasoning text sit on screen long enough to actually be
-> read, and resist adding a second decline to pad it. There is one.
+> read, and resist adding a second decline to pad it. The run has several; the
+> video has one.
 
 > [!note] If you want the near-miss on camera, this is the honest framing
 > Optional, ~10s, only if §3 is running short: *"Three more looked similar to
