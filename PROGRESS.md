@@ -628,3 +628,80 @@ throughout. No figure moved; `check_claims.py` is green. `oldREADME.md`, a
 20KB copy left in the repo root, is deleted: every committed version is in git
 history, and a second README in a public repo is a thing that confuses a reader
 who finds it.
+
+---
+
+## 2026-09-10 (evening) — §3 is shot, and the decline moved
+
+The demo was recorded live. Run 5 is now the run of record, and everything a
+judge will read has been re-derived from it.
+
+### What held, and what did not
+
+**The alert is identical to run 4.** 38 reports in, 27 silent, 9 declined, 1
+suppressed, **1 alert**, firing on the third report at 3 reports · 3 reporters ·
+13 hours · z=6.5. Every figure §3c reads aloud survived unchanged, which is the
+third consecutive run to produce them.
+
+**The decline moved.** One report regrouped: Birch Ln went 3 reports to 4, and
+the one-person Maple & 3rd cluster went 4 to 3. So the largest refusal — the one
+the report page features — stopped being the single-reporter cluster and became
+**Birch Ln: 4 reports · 4 reporters · 21 days · z=1.2**.
+
+That is a better beat than the one it replaced, and it is the beat the
+2026-09-02 rewrite deleted as impossible. Four *different* people reported four
+different things on one street — a van idling, someone looking into parked cars,
+a car driving up and down, a person wandering near the driveways — which is real
+corroboration by any count a threshold would apply, and the agent declined on
+temporal spread anyway:
+
+> Four people each saw one thing, weeks apart, that looked a bit odd to them.
+> That's a street, not a situation.
+
+**One of the three near-miss reports is inside that cluster.** *"A person
+wandering about near the driveways"* is one of the three planted to test a
+spread-decline. [[README]] always said the third near-miss report "links to two
+unrelated reports on its own street and is declined there"; in run 5 it links to
+three, and that group is now the featured refusal. The near-miss still never
+assembles as designed — but the report we wrote for a spread-decline finally got
+one, sideways.
+
+§3b is rewritten around Birch Ln. The single-reporter refusal is still in the
+run and still in the footage if it is ever wanted; the script says use one, not
+both.
+
+### Two defects in the checker, both found by this
+
+**It assumed the largest refusal was the single-reporter one.** They were the
+same row until today. When they diverged it reported *"4 reporters"* for a row
+about a single reporter, which reads as nonsense until you know why. `facts()`
+now exposes `decline` (largest, matching the page) and `solo` (the one-person
+cluster, found by `distinct_reporters == 1`) as separate facts, checked against
+separate rows. Ties on size break on span, because run 5 had two three-report
+one-person clusters and the pick was otherwise whichever the query returned
+first.
+
+**Substring matching was lying.** `"3" in row` is satisfied by `"3.5"`, so a row
+reading *"4 similar reports · 3.5 days"* passed a check for three reports and
+reported itself green. Numbers must now match standing alone. This is the second
+time a check has been confirmed to fail on the bug it was written for before
+being trusted — worth keeping as a habit.
+
+### The behaviours table is four rows now
+
+[[README]] and [[DEVPOST]] both gained **The spread** beside **The single
+reporter**, and the heading changed from three behaviours to four. Dropping the
+single-reporter row would have lost a safety argument that [[PRODUCT]] names as
+distinctive; it is smaller now, not gone.
+
+### Housekeeping
+
+`FNA_REQUIRE_APPROVAL=1` was set for the shoot so the human-in-the-loop check
+appeared on camera — it fires once per run, at the alert, not once per report.
+**It is off again.** Left on, the suite fails 12 tests: `input()` under pytest
+raises `OSError`, and `alerts._confirm` catches only `EOFError`, so the dispatch
+stage raises instead of refusing. A piped run would give `EOFError` and behave
+correctly; only the pytest capture path is affected.
+
+Page re-rendered and re-published to S3, so the live link shows the run the video
+shows. 55 tests passing, checker green, one `⟨PENDING⟩` left: the video URL.
