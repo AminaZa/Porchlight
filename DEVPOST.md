@@ -88,13 +88,22 @@ Three behaviors are worth watching:
 |---|---|---|
 | The real cluster | 3 reports · **3 different reporters** · one zone · 13 hours · z = 6.5 | **Alert** (4th suppressed) |
 | The near-miss | 3 similar reports · 3 reporters · **three zones** · **21 days** | No alert — never correlated |
-| The single reporter | 4 similar reports · one zone · 3.5 days · **1 reporter** | Declined |
+| The spread | 4 reports · **4 different reporters** · one zone · **21 days** · z = 1.2 | Declined |
+| The single reporter | 3 similar reports · one zone · 3.5 days · **1 reporter** | Declined |
 
-The second and third rows are the point. A system that only ever fires isn't
-exercising judgment — the declines are what make the alert worth reading. The
-third is also a safety control: four reports from one person isn't corroboration,
-and treating it as a neighborhood pattern is how a service like this gets used
-against somebody.
+The bottom three rows are the point. A system that only ever fires isn't
+exercising judgment — the declines are what make the alert worth reading.
+
+**The spread is the strongest of them.** Four different people reported four
+different things on one street. That is real corroboration by any count a
+threshold would apply, and the agent declined anyway, because the reports are
+spread over twenty-one days and the newest is twelve days after the one before
+it. In its own words: *"Four people each saw one thing, weeks apart, that looked
+a bit odd to them. That's a street, not a situation."*
+
+The last row is also a safety control: three reports from one person isn't
+corroboration, and treating it as a neighborhood pattern is how a service like
+this gets used against somebody.
 
 The near-miss is the row that didn't go how we designed it, and it's worth being
 precise about. We wrote those three reports — "walking slowly up the street
@@ -105,8 +114,9 @@ that the agent would assemble them and then decline on the spread.
 It never assembles them. Retrieval doesn't link the three to each other: they sit
 at 0.436–0.456 cosine similarity, lower than one of them scores against an
 unrelated report about a car passing driveways (0.576). Two are logged silently
-with nothing correlated at all. The third links to two unrelated reports on its
-own street and is declined there, on the anomaly score.
+with nothing correlated at all. The third links to three unrelated reports on
+its own street — a van idling, someone looking into parked cars, a car driving up
+and down — and is declined there, as the spread row above.
 
 None of the three ever reaches anyone, which is the outcome we wanted — but it
 happens for a different reason than we intended. That is the same measurement

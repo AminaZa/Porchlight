@@ -52,23 +52,26 @@ report ─→ triage ──────────→ correlate ─────
 
 ---
 
-## The three behaviours worth watching
+## The four behaviours worth watching
 
 | | Evidence | Outcome |
 |---|---|---|
 | **The real cluster** | 3 reports · **3 different reporters** · one zone · 13 hours · z = 6.5 | **Alert** (4th report suppressed) |
 | **The near-miss** | 3 similar reports · 3 reporters · **three zones** · **21 days** | No alert, never correlated |
-| **The single reporter** | 4 similar reports · one zone · 3.5 days · **1 reporter** | Declined |
+| **The spread** | 4 reports · **4 different reporters** · one zone · **21 days** · z = 1.2 | Declined |
+| **The single reporter** | 3 similar reports · one zone · 3.5 days · **1 reporter** | Declined |
 
-The second and third rows are the point. A system that only ever fires is not exercising judgment, and the declines are what make the alert worth reading.
+The bottom three rows are the point. A system that only ever fires is not exercising judgment, and the declines are what make the alert worth reading.
+
+**The spread is the strongest of them.** Four different people reported four different things on one street, which is real corroboration by any count a threshold would apply, and the agent still declined — because the four reports are spread across twenty-one days, and the newest is twelve days after the one before it. Its own words: *"Four people each saw one thing, weeks apart, that looked a bit odd to them. That's a street, not a situation."* Four separate reporters agreeing and still no alert is a harder thing to get right than a single reporter filing repeatedly.
 
 The first row fires earlier than you might expect. By the third report there are already three distinct reporters in a deliberately quiet zone inside thirteen hours, and the agent alerts there rather than waiting for a fourth. The fourth arrives and is suppressed, because the cluster it joins has already woken the neighbourhood once. Both the third and fourth reports are defensible alert points, so the test asserts what actually matters, exactly one alert belonging to the genuine cluster, rather than pinning the model to one of them.
 
 The near-miss did not go how we designed it, and it is worth being precise about. We wrote three reports (*"walking slowly up the street looking at the houses"*, *"wandering about near the driveways"*, *"loitering at the end of the road"*) as three people, three zones, twenty-one days, expecting the agent to assemble them and then decline on the spread.
 
-It never assembles them. Retrieval does not link the three to each other: they sit at 0.436 to 0.456 cosine similarity, lower than one of them scores against an unrelated report about a car passing driveways (0.576). Two are logged silently with nothing correlated at all. The third links to two unrelated reports on its own street and is declined there, on the anomaly score. None of the three ever reaches anyone, which is the outcome we wanted, but it happens for a different reason than we intended. That is the same measurement in [Why there is an agent here and not a similarity threshold](#why-there-is-an-agent-here-and-not-a-similarity-threshold) that makes the case for an agent, pointed back at us.
+It never assembles them. Retrieval does not link the three to each other: they sit at 0.436 to 0.456 cosine similarity, lower than one of them scores against an unrelated report about a car passing driveways (0.576). Two are logged silently with nothing correlated at all. The third links to three unrelated reports on its own street — a van idling, someone looking into parked cars, a car driving up and down — and is declined there, as part of the spread row above. None of the three ever reaches anyone, which is the outcome we wanted, but it happens for a different reason than we intended. That is the same measurement in [Why there is an agent here and not a similarity threshold](#why-there-is-an-agent-here-and-not-a-similarity-threshold) that makes the case for an agent, pointed back at us.
 
-The third row is also a safety control. Four reports from one person is not corroboration. It is one person's concern, and treating it as a neighbourhood pattern is how a service like this gets used against somebody.
+The last row is also a safety control. Three reports from one person is not corroboration. It is one person's concern, and treating it as a neighbourhood pattern is how a service like this gets used against somebody.
 
 ---
 
