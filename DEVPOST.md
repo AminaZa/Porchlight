@@ -11,12 +11,13 @@ created: 2026-08-20
 >
 > **Track:** Good Neighbor Agents
 
-> [!warning] Three things here are not true yet
-> Marked `⟨PENDING⟩` inline: the S3 live-demo URL and the video URL. Two others
-> are now resolved — the Builder ID (`@aminaza`) and the holdout result (20/20,
-> run 2026-08-31), both confirmed against a real run. Do not submit with the
-> remaining two unresolved, and do not soften them into something vaguer to
-> avoid the wait. Either the number is real or the sentence comes out.
+> [!warning] One thing here is not true yet
+> **The video URL**, marked `⟨PENDING⟩` inline. Everything else is resolved and
+> checked against a real run: the Builder ID (`@aminaza`), the holdout result
+> (20/20, run 2026-08-31), and the live demo link, published 2026-09-10 and
+> confirmed reachable without credentials. Do not submit with the video
+> unresolved, and do not soften it into something vaguer to avoid the wait.
+> Either the number is real or the sentence comes out.
 
 ---
 
@@ -267,8 +268,13 @@ footnote we want to discover after launch.
 **Try it out links**
 ```
 https://github.com/AminaZa/Porchlight
+https://porchlight-report.s3.us-east-1.amazonaws.com/index.html
 ```
-⟨PENDING — S3 live demo URL, after a real run + ./scripts/publish.sh⟩
+
+Both go in the "Try it out" field. The second is the run report — real pipeline
+output from the live run of 2026-09-01, published 2026-09-10. Say plainly
+wherever it is introduced that **the reports behind it are authored fixture
+data, not reports from real residents.** The page says so itself.
 
 **Built with** *(tag list)*
 ```
@@ -299,8 +305,9 @@ for them.
 
 ## Pre-submit checks
 
-- [ ] Every `⟨PENDING⟩` above resolved or removed — **two left**, the S3 URL and
-      the video URL. Everything else on this page is real
+- [ ] Every `⟨PENDING⟩` above resolved or removed — **one left, the video URL**.
+      Everything else on this page is real. The live demo link went up
+      2026-09-10 and was confirmed reachable with no credentials
 - [x] Demo numbers re-checked against the first real run, not the offline one
       ✅ 2026-09-09 — and no longer checked by re-reading. `scripts/check_claims.py`
       derives them from the database and fails on drift; run it again before

@@ -327,18 +327,29 @@ Straight from [[PROJECT_BRIEF]] §10, cross-checked against the official rules.
 
 Everything remaining is packaging. In the order it should be done:
 
-### 1 · Put the report page online — unblocks the Devpost "Try it out" field
+### 1 · ~~Put the report page online~~ ✅ 2026-09-10
 
-`out/report.html` is current (run 4, with the two-column transcript). It is a
-single self-contained file: no external assets, no fonts, no scripts.
+**https://porchlight-report.s3.us-east-1.amazonaws.com/index.html**
 
-- [ ] Either install the AWS CLI and run `./scripts/publish.sh <bucket> us-east-1`
-      — **pass the region explicitly.** The script reads `${2:-${AWS_REGION:-us-west-2}}`
-      and `.env` is not exported into a bash script, so the fallback bites
-- [ ] Or skip the CLI: create the bucket in the S3 console, enable static
-      website hosting, upload `out/report.html` as `index.html`, make it public.
-      Five minutes, no install
-- [ ] Paste the URL into [[DEVPOST]] (`⟨PENDING — S3 live demo URL⟩`)
+Run 4, with the two-column transcript. Confirmed reachable with no credentials
+(HTTP 200, `text/html; charset=utf-8`, no offline band). Also set as the repo's
+**homepage**, so it shows at the top of the GitHub About sidebar.
+
+- [x] Published — **not** by either route planned here. The AWS CLI was never
+      installed, and `porchlight` had no S3 permissions at all;
+      `AmazonS3FullAccess` was attached 2026-09-10. `scripts/publish.py` does the
+      same job through boto3, which is already a dependency, so nothing extra
+      needs installing. `publish.sh` is kept for anyone who prefers the CLI
+- [x] URL pasted into [[DEVPOST]]
+- [ ] **Detach `AmazonS3FullAccess` after the hackathon.** Nothing needs it once
+      the page is up, and it is broader than one bucket warrants
+- [ ] If `out/report.html` is ever re-rendered, re-publish it:
+      `python scripts/publish.py porchlight-report us-east-1`. The page and the
+      video must not disagree
+
+> [!note] `porchlight-demo` was taken
+> Bucket names are globally unique across all of AWS, and that one belongs to
+> another account. `porchlight-report` was the fallback.
 
 ### 2 · Record the video — the largest remaining job
 
