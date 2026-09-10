@@ -1,92 +1,85 @@
 ---
-tags: [video, edit, capcut, seedance, hackathon, porchlight]
+tags: [video, edit, capcut, hackathon, porchlight]
 status: active
 created: 2026-09-10
+updated: 2026-09-11
 ---
 
-# Edit plan, timings and generation prompts
+# Edit plan and timings
 
-> The cutting order for CapCut, the exact length of every clip, the Seedance
-> prompts for the generated shots, and the narration trimmed to fit five
-> minutes. Story and intent are [[VIDEO_SCRIPT_STORY]]; commands are
-> [[SHOOT_RUNBOOK]].
+> The cutting order for CapCut, the exact length of every clip, and the
+> narration trimmed to fit five minutes. Story and intent are
+> [[VIDEO_SCRIPT_STORY]]; commands for the demo are [[SHOOT_RUNBOOK]].
 >
-> Every clip below was checked for speaking rate. No clip asks for more than
-> **135 words per minute**, which is an unhurried talking pace with room to
-> breathe. If a line still feels rushed on the day, cut words rather than
-> speeding up.
+> **Nothing here is generated video.** Every non-terminal shot is a motion
+> graphic drawn from the project's own data, so the text stays legible and the
+> numbers stay true. Two files produce all of it:
+>
+> ```
+> .venv\Scripts\python.exe scripts/make_opening.py --open   # the four reports
+> .venv\Scripts\python.exe scripts/make_scenes.py --open    # everything else
+> ```
 
 ---
 
-## Two things that decide the whole edit
-
-### The narration was 1038 words. It is 561 here.
+## The narration was 1038 words. It is 558 here.
 
 Counted from [[VIDEO_SCRIPT_STORY]] on 2026-09-10: **1038 words**, which is
-**6:40 at 155 wpm and 7:40 at 135 wpm**. Against a hard five minute limit. The
-header in that file claimed about 660 words and was wrong.
+**6:40 at 155 wpm and 7:40 at 135**. Against a hard five minute limit. The note
+in that file claiming about 660 words was wrong.
 
-This plan uses **561 words across 4:52 of picture**: about 4:09 of speech and
-**43 seconds of deliberate silence**, most of it while the four reports are on
-screen and while the terminal scrolls. Record from the lines in this file, not
-from the long version.
-
-### Seedance cannot render text, so it cannot be the demo
-
-Every generative video model turns text into convincing-looking gibberish.
-Everything this project is about lives in text that has to be readable: the four
-reports word for word, the evidence lines, the reasoning the model wrote, the
-terminal. Generated footage of a terminal would also be footage of something
-that is not the project, and the rules ask for a working demonstration.
-
-| | Source |
-|---|---|
-| Anything where the words matter | Real screen recording, or `assets/opening.html` |
-| The world around it | Seedance |
-
-**Every prompt below ends by forbidding text in frame.** If a clip comes back
-with signage, a legible screen or a readable noticeboard, generate it again.
-Garbled text is the fastest way to make a submission look cheap.
+This plan is **558 words across 4:51**: about 4:18 of speech and **33 seconds of
+deliberate silence**, most of it while the four reports are on screen and while
+the terminal scrolls. Every clip has been checked for speaking rate and none
+asks for more than **126 words per minute**, which is unhurried. Record from the
+lines here, not from the long version.
 
 ---
 
 ## The timeline
 
-**4:52 total.** Trim each clip to exactly these lengths in CapCut.
+**4:51 total.** Trim each clip to exactly these lengths.
 
 | # | Source | Length | In | Out | Words |
 |---|---|---|---|---|---|
-| 1 | Seedance A, the street | 7s | 0:00 | 0:07 | 10 |
-| 2 | `assets/opening.html` | 51s | 0:07 | 0:58 | 85 |
-| 3 | Seedance B, the volunteer | 14s | 0:58 | 1:12 | 29 |
-| 4 | Seedance C, the noticeboard | 10s | 1:12 | 1:22 | 21 |
-| 5 | Terminal, reports scrolling | 20s | 1:22 | 1:42 | 30 |
-| 6 | Terminal, the refusal | 40s | 1:42 | 2:22 | 80 |
-| 7 | Terminal, the alert | 36s | 2:22 | 2:58 | 76 |
-| 8 | `out/report.html`, transcript | 30s | 2:58 | 3:28 | 64 |
-| 9 | `assets/architecture.html` | 30s | 3:28 | 3:58 | 56 |
-| 10 | `out/report.html`, the graph | 32s | 3:58 | 4:30 | 69 |
-| 11 | Seedance D, the porch light | 14s | 4:30 | 4:44 | 24 |
-| 12 | End card | 8s | 4:44 | 4:52 | 17 |
+| 1 | `scenes.html` 1, the street | 7s | 0:00 | 0:07 | 10 |
+| 2 | `opening.html` | 47s | 0:07 | 0:54 | 85 |
+| 3 | `scenes.html` 2, the burden | 24s | 0:54 | 1:18 | 50 |
+| 4 | Terminal, reports scrolling | 18s | 1:18 | 1:36 | 30 |
+| 5 | Terminal, the refusal | 38s | 1:36 | 2:14 | 80 |
+| 6 | Terminal, the alert | 38s | 2:14 | 2:52 | 76 |
+| 7 | `report.html`, transcript | 31s | 2:52 | 3:23 | 64 |
+| 8 | `architecture.html` | 28s | 3:23 | 3:51 | 56 |
+| 9 | `report.html`, the graph | 20s | 3:51 | 4:11 | 34 |
+| 10 | `scenes.html` 3, the tally | 17s | 4:11 | 4:28 | 32 |
+| 11 | `scenes.html` 4, the lamp | 14s | 4:28 | 4:42 | 24 |
+| 12 | `scenes.html` 5, end card | 9s | 4:42 | 4:51 | 17 |
 
-Generated footage is 45 seconds of 292. That is the right proportion. More of it
-means less demonstration, and demonstration is what is being judged.
+Four clips are motion graphics, one is the opening animation, six are real
+screen recordings, and the last is a card. Nothing is filmed and nothing is
+generated.
 
 ---
 
-## Clip 1 · Seedance A, the street
+## Recording the graphics
 
-**7 seconds.** Trim from whatever comes back, keeping the calmest middle.
+`scenes.html` holds five scenes in one page. **Keys 1 to 5 pick a scene, space
+plays or replays it, h hides the hint.** Record each separately, browser full
+screen at 1920x1080, then trim to the length in the table.
 
-```
-A slow dolly push forward down a quiet residential street in late afternoon.
-Low golden sun rakes across parked cars, hedges and a row of front doors, throwing
-long soft shadows onto the pavement. Nobody in frame. Shallow depth of field,
-35mm lens, very gentle handheld float, no fast movement. Warm cream and dusty blue
-palette, muted saturation, soft natural film grain, 24fps cinematic.
-Calm, ordinary, slightly empty.
-No text anywhere, no signage, no house numbers, no screens, no logos.
-```
+`opening.html` is its own file: space plays, h hides.
+
+Both scale a fixed 1920x1080 stage to the window, so what you record is what was
+composed rather than whatever the browser reflowed.
+
+---
+
+## Clip 1 · The street
+
+**7 seconds.** `scenes.html`, scene 1.
+
+A line of houses draws itself across the frame and a few messages lift off it as
+small blue dots and drift away unread. Warm paper, no amber.
 
 **Narration** *(10 words, 86 wpm)*
 
@@ -94,20 +87,17 @@ No text anywhere, no signage, no house numbers, no screens, no logos.
 
 ---
 
-## Clip 2 · The opening animation
+## Clip 2 · The four reports
 
-**51 seconds.** Not generated. Run and screen-record it:
+**47 seconds.** `opening.html`. Trim about four seconds off the head, since
+clip 1 has already established the street.
 
-```
-.venv\Scripts\python.exe scripts/make_opening.py --open
-```
+The chat fills up, everything hushes when it is muted, the four that matter rise
+in front of the blurred noise, each place name is ringed and then struck
+through, and the four names collapse into one place. Ends by turning to dusk,
+which is the cut into everything after it.
 
-Space plays, h hides the hint. Record the browser full screen at 1920x1080.
-
-This beat carries the four reports, so the text has to be real. It also ends by
-turning to dusk, which is the cut into the rest of the video.
-
-**Narration** *(85 words, 100 wpm)*
+**Narration** *(85 words, 109 wpm)*
 
 Speak over the pile-up, then **stop while the four reports are on screen**. Let
 them be read. Come back for the last two lines over the rings and the strike.
@@ -120,7 +110,7 @@ them be read. Come back for the last two lines over the rings and the strike.
 >
 > Four messages. Four different people. About a day and a half.
 
-*(silence, roughly 21 seconds, while the four land)*
+*(silence, roughly 20 seconds, while the four land)*
 
 > Mailboxes. Post boxes. Where the packages get dropped. Delivery lockers. Same
 > place four times, and not one word in common.
@@ -129,54 +119,30 @@ them be read. Come back for the last two lines over the rings and the strike.
 
 ---
 
-## Clip 3 · Seedance B, the volunteer
+## Clip 3 · The burden
 
-**14 seconds.**
+**24 seconds.** `scenes.html`, scene 2.
 
-```
-Medium close shot of a person sitting at a kitchen table late in the evening, lit
-only by one warm table lamp and the cool glow of a laptop. They are scrolling
-slowly with one hand, chin resting on the other, tired. Face turned away from
-camera or cropped above the eyeline, not identifiable. Slow push in, 50mm lens,
-shallow depth of field, laptop screen thrown completely out of focus.
-Deep blue evening window behind, low warm practical light in front.
-Muted filmic palette, soft grain, 24fps cinematic, very slow.
-No readable text, no readable screen, no logos, no brand marks.
-```
+Thirty four messages stream in from every edge of the frame and converge on a
+single circle in the middle, which is the one person meant to read all of it.
+The circle takes on a load ring as they arrive. Caption underneath: *one person,
+reading all of it*.
 
-**Narration** *(29 words, 124 wpm)*
+**Narration** *(50 words, 125 wpm)*
 
 > The person who is meant to catch this is a volunteer. A block captain, someone
 > who moderates a local server, whoever ended up with the job.
-
----
-
-## Clip 4 · Seedance C, the noticeboard
-
-**10 seconds.**
-
-```
-Static locked-off shot of a weathered wooden community noticeboard on a
-residential street at blue hour. A few curled paper notices are pinned to it, one
-corner lifting in a light breeze. Deep blue evening light, a single warm
-streetlight far out of focus behind. 85mm lens, shallow depth of field, no camera
-movement at all. Muted palette, soft grain, 24fps cinematic.
-The notices are blank and completely illegible, blurred paper only.
-No text, no writing, no signage, no logos.
-```
-
-**Narration** *(21 words, 126 wpm)*
-
+>
 > They are not paid and they already have too much on. The alternative to
 > somebody reading everything is that nobody does.
 
 ---
 
-## Clip 5 · Terminal, the reports scrolling
+## Clip 4 · Terminal, the reports scrolling
 
-**20 seconds.** Real recording. Speed-ramp the middle of the run to fit.
+**18 seconds.** Real recording. Speed-ramp the middle of the run to fit.
 
-**Narration** *(30 words, 90 wpm)*
+**Narration** *(30 words, 100 wpm)*
 
 > Thirty eight reports go in. Watch what mostly happens.
 >
@@ -185,11 +151,11 @@ No text, no writing, no signage, no logos.
 
 ---
 
-## Clip 6 · Terminal, the refusal
+## Clip 5 · Terminal, the refusal
 
-**40 seconds.** The Birch Ln block in the reasoning section. Hold still on it.
+**38 seconds.** The Birch Ln block in the reasoning section. Hold still on it.
 
-**Narration** *(80 words, 120 wpm)*
+**Narration** *(80 words, 126 wpm)*
 
 > This is the part I care about. Something it found, and did not send.
 >
@@ -210,12 +176,12 @@ No text, no writing, no signage, no logos.
 
 ---
 
-## Clip 7 · Terminal, the alert
+## Clip 6 · Terminal, the alert
 
-**36 seconds.** The pattern block, the approval prompt, then the fourth report
+**38 seconds.** The pattern block, the approval prompt, then the fourth report
 being held back.
 
-**Narration** *(76 words, 127 wpm)*
+**Narration** *(76 words, 120 wpm)*
 
 > And then this one.
 >
@@ -236,12 +202,12 @@ being held back.
 
 ---
 
-## Clip 8 · The transcript
+## Clip 7 · The transcript
 
-**30 seconds.** `out/report.html`, the two column section. The Replay button
+**31 seconds.** `out/report.html`, the two column section. The Replay button
 re-runs the reveal, so take it as often as you like.
 
-**Narration** *(64 words, 128 wpm)*
+**Narration** *(64 words, 124 wpm)*
 
 > Now look at what it kept. On the left, what people typed. On the right, what
 > Porchlight stored.
@@ -255,11 +221,11 @@ re-runs the reveal, so take it as often as you like.
 
 ---
 
-## Clip 9 · Architecture
+## Clip 8 · Architecture
 
-**30 seconds.** `assets/architecture.html`, held.
+**28 seconds.** `assets/architecture.html`, held.
 
-**Narration** *(56 words, 112 wpm)*
+**Narration** *(56 words, 120 wpm)*
 
 > Three agents, in order, on the Strands SDK and Bedrock.
 >
@@ -273,37 +239,46 @@ re-runs the reveal, so take it as often as you like.
 
 ---
 
-## Clip 10 · The graph
+## Clip 9 · The graph
 
-**32 seconds.** `out/report.html`, the map of the run, held.
+**20 seconds.** `out/report.html`, the map of the run, held.
 
-**Narration** *(69 words, 129 wpm)*
+**Narration** *(34 words, 102 wpm)*
 
 > I checked whether a similarity score could do this instead. It cannot. The
 > reports I wrote to look alike score lower against each other than against
 > unrelated ones.
 >
 > Telling them apart means reading them.
->
-> And I tested it honestly. Twenty reports, written before I tuned anything, run
-> once at the end. Twenty out of twenty. It refused nothing in that run, so it
-> does not prove it can turn one down.
 
 ---
 
-## Clip 11 · Seedance D, the porch light
+## Clip 10 · The tally
 
-**14 seconds.** The closing shot, and the one the name is built on.
+**17 seconds.** `scenes.html`, scene 3.
 
-```
-Slow push in on a suburban front porch at dusk, the house soft and out of focus
-behind. Partway through the shot a porch light switches on, warm amber pooling
-across the step, the door frame and a few feet of path. Everything else stays deep
-blue evening. Nobody in frame. 50mm lens, shallow depth of field, very slow
-deliberate push, no lens flare, no sparkle. Muted filmic palette, soft grain,
-24fps cinematic, quiet and warm.
-No text, no signage, no house numbers, no logos.
-```
+Thirty eight marks appear one at a time, all of them go quiet, and one lights
+amber with a halo. The numbers are counted from `porchlight.db`, so this cannot
+drift from the terminal or the report page.
+
+**Narration** *(32 words, 113 wpm)*
+
+> And I tested it honestly. Twenty reports, written before I tuned anything, run
+> once at the end. Twenty out of twenty.
+>
+> It refused nothing in that run, so it does not prove it can turn one down.
+
+---
+
+## Clip 11 · The lamp
+
+**14 seconds.** `scenes.html`, scene 4.
+
+The project's own porch light mark, drawn in outline on dusk, and then lit. The
+glow blooms out behind it. Caption: *most weeks, nothing at all*.
+
+This is the only place amber arrives in full, and it comes after the alert, so
+the restraint has already earned it.
 
 **Narration** *(24 words, 103 wpm)*
 
@@ -316,59 +291,34 @@ No text, no signage, no house numbers, no logos.
 
 ## Clip 12 · End card
 
-**8 seconds.** Make it in CapCut: Georgia, Chalk `#E9EEF7` on Dusk `#0B1120`, the
-repo URL and the live link. No motion.
+**9 seconds.** `scenes.html`, scene 5. Wordmark, tagline, repo and live link.
 
-**Narration** *(17 words, 128 wpm)*
+**Narration** *(17 words, 113 wpm)*
 
 > It is on GitHub, MIT licensed, and that report is live. Every report in it is
 > invented.
 
 ---
 
-## Two spare shots
-
-Generate these only if a beat drags and needs a cutaway. Do not force them in.
-
-```
-Close overhead shot of a phone lying face down on a wooden kitchen table beside a
-mug, its screen glowing faintly through the gap, then a hand slides it further
-away. Warm late afternoon window light, 85mm macro, shallow depth of field.
-Muted warm palette, soft grain, 24fps cinematic.
-No readable text, no icons, no logos.
-```
-
-```
-Wide static shot of an empty residential street at night. One warm streetlight,
-parked cars, no people, nothing moving except leaves. Deep blue with a single warm
-accent. 35mm, locked off, no camera movement. Muted, filmic grain, 24fps.
-No text, no signage, no logos.
-```
-
----
-
 ## CapCut assembly
 
-**Project at 1920x1080, 30fps.** Generated clips usually arrive at 24fps and
-screen recordings at 30 or 60. Set the project once and let CapCut conform
-everything. Do not change it between sessions.
+**Project at 1920x1080, 30fps.** All the graphics are screen recordings, so
+everything is already the same frame rate and colour space. Set it once.
 
-**Cut picture first, record narration against it.** The timings above assume the
-cut exists. Recording voice to a stopwatch and building picture around it is how
+**Cut picture first, record narration against it.** The timings assume the cut
+exists. Recording voice to a stopwatch and building picture around it is how
 videos end up forty seconds long.
 
-**Colour.** Generated clips and screen recordings will not match out of the box.
-Pull the generated shots toward the paper and dusk palette: lift the blacks
-slightly, drop saturation, warm the highlights. **Do not grade the screen
-recordings.** They are evidence.
+**Do not grade anything.** Every shot is either a screen recording of the real
+tool or a graphic already built in the brand palette. There is nothing to match
+and nothing to fix.
 
 **Sound.** Room tone or a very quiet pad underneath so the silences do not read
-as dropouts. Nothing with a beat. The argument here is calm and music that pushes
-will fight it.
+as dropouts. Nothing with a beat. The argument here is calm and music that
+pushes will fight it.
 
 **Transitions.** Hard cuts throughout. The one exception is clip 2 into clip 3,
 where the animation has already gone to dusk, so a short dissolve reads as one
 move rather than two.
 
-**Before export.** Total under 5:00 with the end card included, and no generated
-clip containing legible text.
+**Before export.** Total under 5:00 with the end card included.

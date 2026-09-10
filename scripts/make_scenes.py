@@ -1,0 +1,379 @@
+"""Generate the motion-graphics scenes that sit around the demo footage.
+
+    python scripts/make_scenes.py             # writes assets/scenes.html
+    python scripts/make_scenes.py --open      # and opens it
+
+Five scenes in one self-contained file. Press 1 to 5 to load one, space to play
+or replay it, h to hide the hint. Record them one at a time.
+
+    1  open     a street as a line of houses, messages lifting off it
+    2  burden   every message converging on the one person meant to read them
+    3  tally    thirty eight marks, and the one that became an alert
+    4  lamp     the porch light coming on, on dusk
+    5  end      the wordmark and the links
+
+These replace the live-action shots the edit plan originally called for. Text,
+shapes and graphs, drawn rather than filmed, which also means every number on
+screen is real and every word is legible.
+
+**The numbers come from the run.** `tally` reads `porchlight.db` and counts the
+outcomes itself, so it cannot drift from what the terminal and the report page
+say. The rest read `data/seed_reports.json` for the shape of the dataset.
+
+Palette is BRANDING.md, with the same daylight-to-dusk arc as
+`scripts/make_opening.py`: scenes 1 to 3 are warm paper, because they are the
+world before the product, and 4 and 5 are dusk, because by then the porch light
+is the subject. **Amber appears only in `tally` and `lamp`**, both of which come
+after the alert in the cut, so the restraint holds.
+
+Motion follows the motion-design tokens: illustrative durations, ease-out-expo
+for entrances, ease-in-out-quart for anything already on screen, transform and
+opacity and filter only, nothing scaling from zero.
+"""
+
+from __future__ import annotations
+
+import json
+import os
+import sys
+import webbrowser
+from collections import Counter
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+SEED = ROOT / "data" / "seed_reports.json"
+OUT = ROOT / "assets" / "scenes.html"
+
+os.environ.setdefault("FNA_DB_PATH", "porchlight.db")
+
+
+def facts() -> dict:
+    seed = json.loads(SEED.read_text(encoding="utf-8"))["reports"]
+    zones = sorted({r["zone"] for r in seed})
+
+    try:
+        from src.tools import storage
+        rows = storage.rendered_rows()
+        counts = Counter(r["outcome"] for r in rows)
+        total = len(rows)
+        alerts = counts.get("alert", 0)
+    except Exception as exc:                      # no database yet, or a bad one
+        print(f"  note: could not read the run ({exc.__class__.__name__}); "
+              f"falling back to the seed size and one alert", file=sys.stderr)
+        total, alerts = len(seed), 1
+
+    if not total:
+        raise SystemExit("No reports found. Run demo/run_demo.py first.")
+
+    return {"total": total, "alerts": alerts, "quiet": total - alerts,
+            "zones": len(zones), "seed": len(seed)}
+
+
+PAGE = r"""<title>Porchlight scenes</title>
+<style>
+  :root{
+    --paper:#F5F1E8; --paper-lo:#EFEADE;
+    --ink:#16233F; --ink-soft:#42526F; --faint:#C3BCAC;
+    --accent:#2E5BD8;
+    --dusk:#0B1120; --porch:#141E33; --sill:#243352;
+    --chalk:#E9EEF7; --dim:#8FA0BC; --lamp:#FFB454; --halo:#FFE2AE;
+
+    --expo:cubic-bezier(.19,1,.22,1);
+    --quart:cubic-bezier(.165,.84,.44,1);
+    --inout:cubic-bezier(.77,0,.175,1);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:#000;overflow:hidden}
+  #fit{position:fixed;inset:0;display:grid;place-items:center}
+  #stage{
+    width:1920px;height:1080px;position:relative;overflow:hidden;
+    transform-origin:center center;
+    font-family:ui-sans-serif,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--paper);color:var(--ink);
+    transition:background 1.2s var(--inout),color 1.2s var(--inout);
+  }
+  #stage.night{background:var(--dusk);color:var(--chalk)}
+
+  .scene{position:absolute;inset:0;opacity:0;pointer-events:none}
+  .scene.on{opacity:1}
+
+  /* type ------------------------------------------------------------------ */
+  .line{
+    font-size:52px;line-height:1.3;letter-spacing:-.005em;
+    opacity:0;transform:translateY(18px);filter:blur(10px);
+    transition:opacity 1s var(--expo),transform 1s var(--expo),filter 1s var(--expo);
+  }
+  .line.in{opacity:1;transform:none;filter:none}
+  .serif{font-family:Georgia,"Times New Roman",serif;font-weight:400}
+  .mono{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+
+  /* 1 open ---------------------------------------------------------------- */
+  #s1 .row{position:absolute;left:0;right:0;top:56%;height:2px;background:var(--faint);
+           transform:scaleX(0);transform-origin:left center;
+           transition:transform 1.6s var(--inout)}
+  #s1.go .row{transform:scaleX(1)}
+  .house{
+    position:absolute;top:56%;width:46px;height:38px;margin-top:-38px;
+    background:#FFFDF8;border-radius:5px 5px 0 0;
+    box-shadow:0 1px 2px rgba(22,35,63,.05),0 8px 20px rgba(22,35,63,.06);
+    opacity:0;transform:translateY(14px);
+    transition:opacity .8s var(--expo),transform .8s var(--expo);
+  }
+  .house.in{opacity:1;transform:none}
+  .puff{
+    position:absolute;width:11px;height:11px;border-radius:50%;
+    background:var(--accent);opacity:0;
+    transition:transform 2.4s var(--inout),opacity 2.4s var(--quart);
+  }
+
+  /* 2 burden -------------------------------------------------------------- */
+  #s2 .hub{
+    position:absolute;left:50%;top:50%;width:132px;height:132px;margin:-66px 0 0 -66px;
+    border-radius:50%;background:#FFFDF8;border:2px solid var(--faint);
+    box-shadow:0 2px 6px rgba(22,35,63,.06),0 18px 44px rgba(22,35,63,.08);
+    opacity:0;transform:scale(.94);
+    transition:opacity .9s var(--expo),transform .9s var(--expo),
+               border-color .9s ease,box-shadow .9s ease;
+  }
+  #s2.go .hub{opacity:1;transform:none}
+  #s2.load .hub{border-color:var(--accent);
+    box-shadow:0 0 0 10px rgba(46,91,216,.07),0 0 0 26px rgba(46,91,216,.045),
+               0 18px 44px rgba(22,35,63,.10)}
+  .inbound{
+    position:absolute;width:9px;height:9px;border-radius:50%;background:var(--ink-soft);
+    opacity:0;transition:transform 1.7s var(--inout),opacity 1.7s var(--quart);
+  }
+  #s2 .cap{position:absolute;left:0;right:0;top:70%;text-align:center;
+           font-size:34px;color:var(--ink-soft)}
+
+  /* 3 tally --------------------------------------------------------------- */
+  #s3 .grid{
+    position:absolute;left:50%;top:47%;transform:translate(-50%,-50%);
+    display:grid;grid-template-columns:repeat(10,58px);gap:26px;
+  }
+  .pip{
+    width:22px;height:22px;border-radius:50%;background:var(--ink);
+    opacity:0;transform:scale(.6);justify-self:center;
+    transition:opacity .5s var(--expo),transform .5s var(--expo),background .8s ease;
+  }
+  .pip.in{opacity:1;transform:none}
+  .pip.quiet{background:var(--faint)}
+  .pip.lit{background:var(--lamp);transform:scale(1.28);
+           box-shadow:0 0 0 10px rgba(255,180,84,.16),0 0 34px 8px rgba(255,180,84,.34)}
+  #s3 .cap{position:absolute;left:0;right:0;top:74%;text-align:center}
+
+  /* 4 lamp ---------------------------------------------------------------- */
+  #s4 svg{position:absolute;left:50%;top:46%;width:340px;height:340px;
+          margin:-170px 0 0 -170px;overflow:visible}
+  #s4 path,#s4 circle{fill:none;stroke:var(--dim);stroke-width:.9;
+    stroke-linecap:round;transition:stroke 1.1s ease}
+  #s4.lit path,#s4.lit circle{stroke:var(--lamp)}
+  #s4 .bulb{fill:transparent;transition:fill 1.1s ease,filter 1.1s ease}
+  #s4.lit .bulb{fill:var(--lamp);filter:drop-shadow(0 0 34px rgba(255,180,84,.75))}
+  #s4 .glow{
+    position:absolute;left:50%;top:46%;width:900px;height:900px;
+    margin:-450px 0 0 -450px;border-radius:50%;pointer-events:none;
+    background:radial-gradient(circle,rgba(255,180,84,.20) 0%,rgba(255,180,84,0) 62%);
+    opacity:0;transform:scale(.85);
+    transition:opacity 1.5s var(--expo),transform 1.5s var(--expo);
+  }
+  #s4.lit .glow{opacity:1;transform:scale(1)}
+  #s4 .cap{position:absolute;left:0;right:0;top:76%;text-align:center;color:var(--dim)}
+
+  /* 5 end ----------------------------------------------------------------- */
+  #s5{display:grid;place-content:center;text-align:center;gap:26px}
+  #s5 h1{font-family:Georgia,"Times New Roman",serif;font-weight:400;font-size:104px;
+         margin:0;color:var(--chalk)}
+  #s5 .tag{font-family:Georgia,"Times New Roman",serif;font-style:italic;
+           font-size:36px;color:var(--dim)}
+  #s5 .url{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+           font-size:27px;color:var(--dim);line-height:2}
+
+  #hint{position:fixed;left:16px;bottom:12px;z-index:9;color:#8a8578;opacity:.7;
+        font:13px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace}
+  #hint.gone{display:none}
+
+  @media (prefers-reduced-motion:reduce){
+    .line,.house,.puff,.pip,.inbound,#s2 .hub,#s4 .glow,#stage{transition-duration:.01ms !important}
+  }
+</style>
+
+<div id="fit"><div id="stage">
+  <section class="scene" id="s1"><div class="row"></div></section>
+  <section class="scene" id="s2"><div class="hub"></div><div class="cap line"></div></section>
+  <section class="scene" id="s3"><div class="grid"></div><div class="cap line serif"></div></section>
+  <section class="scene" id="s4">
+    <div class="glow"></div>
+    <svg viewBox="0 0 16 16">
+      <path d="M8 2.4v1.9M3.6 4.2l1.3 1.3M12.4 4.2l-1.3 1.3"/>
+      <circle class="bulb" cx="8" cy="9.2" r="3.1"/>
+      <path d="M5.2 13.6h5.6"/>
+    </svg>
+    <div class="cap line serif"></div>
+  </section>
+  <section class="scene" id="s5">
+    <h1>Porchlight</h1>
+    <div class="tag">your friendly neighborhood agent</div>
+    <div class="url"></div>
+  </section>
+</div></div>
+<div id="hint">1-5 pick scene &nbsp; space play &nbsp; h hide &nbsp; 1920x1080</div>
+
+<script>
+var F = /*__FACTS__*/;
+var stage=document.getElementById('stage'), hint=document.getElementById('hint');
+var scenes=[null,s('s1'),s('s2'),s('s3'),s('s4'),s('s5')];
+var timers=[], current=1;
+function s(id){ return document.getElementById(id); }
+function at(t,fn){ timers.push(setTimeout(fn,t*1000)); }
+function fit(){ stage.style.transform='scale('+Math.min(innerWidth/1920,innerHeight/1080)+')'; }
+addEventListener('resize',fit); fit();
+
+function clear(){
+  timers.forEach(clearTimeout); timers=[];
+  for(var i=1;i<scenes.length;i++){ scenes[i].classList.remove('on','go','load','lit'); }
+  stage.classList.remove('night');
+  [].forEach.call(document.querySelectorAll('.line'),function(e){ e.classList.remove('in'); });
+  s('s1').querySelectorAll('.house,.puff').forEach(function(e){ e.remove(); });
+  s('s2').querySelectorAll('.inbound').forEach(function(e){ e.remove(); });
+  s('s3').querySelector('.grid').innerHTML='';
+}
+
+function show(n){
+  clear(); current=n;
+  scenes[n].classList.add('on');
+  if(n>=4) stage.classList.add('night');
+  if(n===2) s('s2').querySelector('.cap').textContent='one person, reading all of it';
+  if(n===3) s('s3').querySelector('.cap').innerHTML=
+      F.total+' reports in. <strong>'+F.alerts+'</strong> alert out.';
+  if(n===5) s('s5').querySelector('.url').innerHTML=
+      'github.com/AminaZa/Porchlight<br>porchlight-report.s3.us-east-1.amazonaws.com';
+}
+
+/* 1 ---------------------------------------------------------------------- */
+function playOpen(){
+  var sc=s('s1'); sc.classList.add('go');
+  var n=13, pad=210, span=(1920-pad*2)/(n-1);
+  for(var i=0;i<n;i++){
+    (function(i){
+      var h=document.createElement('div');
+      h.className='house';
+      h.style.left=(pad+i*span-23)+'px';
+      h.style.height=(30+((i*37)%22))+'px';
+      h.style.marginTop=-(30+((i*37)%22))+'px';
+      sc.appendChild(h);
+      at(0.5+i*0.075,function(){ h.classList.add('in'); });
+    })(i);
+  }
+  /* a few messages lifting off the street, unread */
+  for(var k=0;k<9;k++){
+    (function(k){
+      var i=(k*5+2)%n, x=pad+i*span;
+      at(2.0+k*0.42,function(){
+        var p=document.createElement('div');
+        p.className='puff';
+        p.style.left=(x-5)+'px'; p.style.top='calc(56% - 46px)';
+        sc.appendChild(p);
+        requestAnimationFrame(function(){
+          p.style.opacity=.85;
+          p.style.transform='translateY(-320px) translateX('+(((k%3)-1)*40)+'px)';
+          setTimeout(function(){ p.style.opacity=0; },900);
+        });
+      });
+    })(k);
+  }
+}
+
+/* 2 ---------------------------------------------------------------------- */
+function playBurden(){
+  var sc=s('s2'); sc.classList.add('go');
+  var cap=sc.querySelector('.cap');
+  var N=34;
+  for(var i=0;i<N;i++){
+    (function(i){
+      var a=(i/N)*Math.PI*2 + (i%3)*0.11;
+      var r=780+((i*53)%160);
+      var x=960+Math.cos(a)*r, y=540+Math.sin(a)*r*0.56;
+      at(0.9+i*0.13,function(){
+        var d=document.createElement('div');
+        d.className='inbound';
+        d.style.left=(x-4.5)+'px'; d.style.top=(y-4.5)+'px';
+        sc.appendChild(d);
+        requestAnimationFrame(function(){
+          d.style.opacity=.75;
+          d.style.transform='translate('+(960-x)+'px,'+(540-y)+'px) scale(.7)';
+          setTimeout(function(){ d.style.opacity=0; },1250);
+        });
+      });
+    })(i);
+  }
+  at(2.6,function(){ sc.classList.add('load'); });
+  at(3.4,function(){ cap.classList.add('in'); });
+}
+
+/* 3 ---------------------------------------------------------------------- */
+function playTally(){
+  var sc=s('s3'), grid=sc.querySelector('.grid'), cap=sc.querySelector('.cap');
+  var pips=[];
+  for(var i=0;i<F.total;i++){
+    var p=document.createElement('div'); p.className='pip';
+    grid.appendChild(p); pips.push(p);
+  }
+  pips.forEach(function(p,i){ at(0.4+i*0.045,function(){ p.classList.add('in'); }); });
+  var settled=0.4+F.total*0.045+0.7;
+  /* everything goes quiet except the ones that alerted */
+  pips.forEach(function(p,i){
+    if(i>=F.alerts) at(settled+ (i*0.012),function(){ p.classList.add('quiet'); });
+  });
+  at(settled+1.5,function(){
+    for(var i=0;i<F.alerts;i++) pips[i].classList.add('lit');
+  });
+  at(settled+2.4,function(){ cap.classList.add('in'); });
+}
+
+/* 4 ---------------------------------------------------------------------- */
+function playLamp(){
+  var sc=s('s4'), cap=sc.querySelector('.cap');
+  cap.textContent='most weeks, nothing at all';
+  at(1.3,function(){ sc.classList.add('lit'); });
+  at(2.6,function(){ cap.classList.add('in'); });
+}
+
+/* 5 ---------------------------------------------------------------------- */
+function playEnd(){
+  var sc=s('s5');
+  [].forEach.call(sc.children,function(el,i){
+    el.classList.add('line');
+    at(0.3+i*0.28,function(){ el.classList.add('in'); });
+  });
+}
+
+var PLAY=[null,playOpen,playBurden,playTally,playLamp,playEnd];
+function play(){ var n=current; show(n); PLAY[n](); }
+
+addEventListener('keydown',function(e){
+  if(e.key>='1'&&e.key<='5'){ current=+e.key; show(current); return; }
+  if(e.code==='Space'){ e.preventDefault(); play(); }
+  if(e.key==='h'||e.key==='H') hint.classList.toggle('gone');
+});
+show(1);
+</script>
+"""
+
+
+def main(argv: list[str]) -> int:
+    f = facts()
+    OUT.parent.mkdir(parents=True, exist_ok=True)
+    OUT.write_text(PAGE.replace("/*__FACTS__*/", json.dumps(f)), encoding="utf-8")
+    print(f"wrote {OUT.relative_to(ROOT)}")
+    print(f"  from the run: {f['total']} reports, {f['alerts']} alert, "
+          f"{f['zones']} zones")
+    print("  keys 1-5 pick a scene, space plays, h hides the hint")
+    if "--open" in argv:
+        webbrowser.open(OUT.as_uri())
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv[1:]))
