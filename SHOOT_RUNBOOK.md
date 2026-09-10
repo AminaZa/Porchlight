@@ -74,6 +74,56 @@ do not switch mid-shoot.
       approval prompt does not surprise you mid-take
 - [ ] Notifications off, second monitor clear, clock hidden if it is in frame
 
+### OBS
+
+- **Window Capture on the terminal**, not Display Capture. No taskbar, no
+  notifications, no second monitor creeping into frame
+- **Record to MKV, not MP4.** If OBS crashes or the machine drops power
+  mid-run, an MP4 is unrecoverable and an MKV is fine. Remux afterwards with
+  File → Remux Recordings. This matters here more than usual: the run is long,
+  single-take, and happens over a database you have just deleted
+- 1920×1080, 30fps is plenty for a terminal. Push the bitrate up — text
+  compresses badly and thin glyphs are the first thing to smear
+- **No microphone.** Record the screen silent and do the voiceover separately.
+  Narrating live means a fluffed line costs another full run: $1.90 and
+  twenty-odd minutes. Silent footage can carry as many narration takes as you
+  like
+- **One take.** Start before you press enter, keep rolling through the whole
+  run and through scrolling back up into the reasoning block. Cut it up in the
+  edit — you cannot re-enter phase 3 later without re-running
+
+### The approval prompt — turn it on
+
+`.env` currently has `FNA_REQUIRE_APPROVAL=` (empty, so off). **Set it to `1`
+for the shoot.**
+
+`send_alert` is only reached in the alert branch — suppressed reports skip it —
+so this fires **exactly once** in a 38-report run, at the alert:
+
+```
+  An alert is ready to send:
+    ▲ Pattern — Parcel lockers, bldg 3
+    <the message>
+    cluster 3 · 3 reporters · 13h · z=6.5 · to Parcel lockers, bldg 3 residents
+
+  Send it? [y/N]
+```
+
+That is the human-in-the-loop control [[PRODUCT]] calls the only check left now
+that alerts broadcast zone-wide, and the hackathon theme is *"surfaces only when
+a human decision is genuinely needed"*. It is that moment, on camera, for no
+cost in scroll noise.
+
+> [!danger] Answer `y`
+> `src/pipeline.py` marks the cluster as alerted **only `if sent`**. Answer `N`
+> and the fourth report is never marked covered, so the suppression beat in §3c
+> does not happen and the tally changes. Answering `y` behaves identically to
+> having the flag off.
+
+> [!note] The code comment explaining why it is off is wrong
+> `alerts.requires_approval()` says it is off "so a 38-report run isn't 38
+> prompts". It would be one prompt, not 38 — dispatch is only called for alerts.
+
 ---
 
 ## 3 · The commands
@@ -103,10 +153,32 @@ One command does all three jobs:
 
 ### What the run costs, and how long to allow
 
-About **$1.90** in Bedrock spend (5 cents a report, measured). Three model calls
-per report plus correlation's tool calls, so **allow real time** — this is not a
-thirty-second run. `read_timeout` is 300s with retries, so a long pause on one
-report is the system working, not a hang.
+About **$1.90** in Bedrock spend (5 cents a report, measured).
+
+**Allow 10–25 minutes.** Measured 2026-09-10: one report cold, through
+`src.intake.cli`, took **35 seconds** — and that includes the one-off cost of
+importing, starting Chroma and loading the ONNX embedding model. Steady-state
+per report is well under that, but correlation gets slower as the corpus grows,
+because there is more to search and more to weigh. Do not plan around a
+thirty-second run.
+
+`read_timeout` is 300s with retries, so a long pause on one report is the system
+working, not a hang.
+
+> [!tip] Smoke-test first, on a throwaway database
+> Verifies credentials, all three model ids, structured-output parsing,
+> persistence and indexing for about five cents, without touching run 4. If
+> something is misconfigured you find out here rather than on report 1 of 38
+> with the camera rolling and the database already deleted.
+>
+> ```
+> set FNA_DB_PATH=%TEMP%\smoke.db
+> set FNA_CHROMA_PATH=%TEMP%\chroma-smoke
+> .venv\Scripts\python.exe -m src.intake.cli "someone took my package from the porch" --zone "Elm St north"
+> ```
+>
+> Then **open a new terminal** for the real run, so those variables are gone.
+> Passed 2026-09-10: declined correctly, with reasoning.
 
 Record the whole thing. Speed it up in the edit; §3a only needs thirty seconds of
 screen time out of it.
