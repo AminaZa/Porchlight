@@ -16,6 +16,13 @@ created: 2026-08-20
 
 ## Before you record
 
+> [!important] Commands, terminal setup and the shot order live in [[SHOOT_RUNBOOK]]
+> This file is what to say. That one is what to type, where, and in what
+> order — including the two things that surprise you on the day: the run
+> **deletes the database and becomes the new run of record**, and the
+> reasoning for 3b and 3c is **not printed inline**, it lands in a block at
+> the very end. Read it before the first take.
+
 > [!danger] Never record `--offline`
 > The escalation judgment in offline mode is a hard-coded rule. Every decline in
 > §3b — the seconds this whole video rests on — is a real model reading real

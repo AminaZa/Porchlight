@@ -353,6 +353,9 @@ Run 4, with the two-column transcript. Confirmed reachable with no credentials
 
 ### 2 · Record the video — the largest remaining job
 
+> [!important] [[SHOOT_RUNBOOK]] has the commands and the shot order
+> Written 2026-09-10 and checked against the code, not from memory.
+
 §1 and §2 are already shot. Outstanding:
 
 - [ ] **§4 (architecture)** — no longer blocked; the diagram names Sonnet 4.6 /
