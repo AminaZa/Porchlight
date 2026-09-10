@@ -1,9 +1,11 @@
 <title>Porchlight scenes</title>
 <style>
   :root{
-    --paper:#F5F1E8; --paper-lo:#EFEADE;
-    --ink:#16233F; --ink-soft:#42526F; --faint:#C3BCAC;
+    --paper:#D8CAB7; --paper-lo:#D0C1AC;
+    --ink:#16233F; --ink-soft:#3B5170; --faint:#B4A48D;
     --accent:#2E5BD8;
+    --line-w:#FFFFFF;        /* the houses, as in the reference */
+    --msg:#2F4A6D;           /* a message. Blue, but not notification blue */
     --dusk:#0B1120; --porch:#141E33; --sill:#243352;
     --chalk:#E9EEF7; --dim:#8FA0BC; --lamp:#FFB454; --halo:#FFE2AE;
 
@@ -13,9 +15,9 @@
   }
   *{box-sizing:border-box}
   html,body{margin:0;height:100%;background:#000;overflow:hidden}
-  #fit{position:fixed;inset:0;display:grid;place-items:center}
+  #fit{position:fixed;inset:0;overflow:hidden}
   #stage{
-    width:1920px;height:1080px;position:relative;overflow:hidden;
+    width:1920px;height:1080px;position:absolute;left:50%;top:50%;overflow:hidden;
     transform-origin:center center;
     font-family:ui-sans-serif,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     background:var(--paper);color:var(--ink);
@@ -37,23 +39,21 @@
   .mono{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
 
   /* 1 open ---------------------------------------------------------------- */
-  #s1 .row{position:absolute;left:0;right:0;top:56%;height:2px;background:var(--faint);
-           transform:scaleX(0);transform-origin:left center;
-           transition:transform 1.6s var(--inout)}
-  #s1.go .row{transform:scaleX(1)}
-  .house{
-    position:absolute;top:56%;width:46px;height:38px;margin-top:-38px;
-    background:#FFFDF8;border-radius:5px 5px 0 0;
-    box-shadow:0 1px 2px rgba(22,35,63,.05),0 8px 20px rgba(22,35,63,.06);
-    opacity:0;transform:translateY(14px);
-    transition:opacity .8s var(--expo),transform .8s var(--expo);
+  /* Line-drawn houses on grained paper. Each outline draws itself rather than
+     appearing, which is the whole character of the reference. */
+  #s1 svg.street{position:absolute;inset:0;width:100%;height:100%}
+  #s1 .stroke{
+    fill:none;stroke:var(--line-w);stroke-width:2.6;
+    stroke-linecap:round;stroke-linejoin:round;
   }
-  .house.in{opacity:1;transform:none}
-  .puff{
-    position:absolute;width:11px;height:11px;border-radius:50%;
-    background:var(--accent);opacity:0;
-    transition:transform 2.4s var(--inout),opacity 2.4s var(--quart);
+  /* A message leaving a house. A bubble, not a dot, so it reads as a message
+     without anyone having to be told. */
+  .bub{
+    position:absolute;opacity:0;
+    transition:transform 2.9s var(--inout),opacity 2.9s var(--quart);
   }
+  .bub svg{display:block;overflow:visible}
+  .bub .body{fill:var(--msg);stroke:none}
 
   /* 2 burden -------------------------------------------------------------- */
   #s2 .hub{
@@ -118,17 +118,30 @@
   #s5 .url{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
            font-size:27px;color:var(--dim);line-height:2}
 
+  /* Paper grain. The reference has it and the flat fill looks dead without it. */
+  #grain{position:absolute;inset:0;pointer-events:none;opacity:.5;
+         mix-blend-mode:multiply}
+  #stage.night #grain{opacity:0;transition:opacity .8s ease}
+
   #hint{position:fixed;left:16px;bottom:12px;z-index:9;color:#8a8578;opacity:.7;
         font:13px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace}
   #hint.gone{display:none}
 
   @media (prefers-reduced-motion:reduce){
-    .line,.house,.puff,.pip,.inbound,#s2 .hub,#s4 .glow,#stage{transition-duration:.01ms !important}
+    *,*::before,*::after{
+      animation-duration:.01ms !important;animation-iteration-count:1 !important;
+      transition-duration:.01ms !important;
+    }
   }
 </style>
 
 <div id="fit"><div id="stage">
-  <section class="scene" id="s1"><div class="row"></div></section>
+  <svg id="grain" viewBox="0 0 1920 1080" preserveAspectRatio="none">
+    <filter id="gr"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="3"/>
+      <feColorMatrix type="saturate" values="0"/></filter>
+    <rect width="1920" height="1080" filter="url(#gr)" opacity=".22"/>
+  </svg>
+  <section class="scene" id="s1"><svg class="street" viewBox="0 0 1920 1080" preserveAspectRatio="none"></svg></section>
   <section class="scene" id="s2"><div class="hub"></div><div class="cap line"></div></section>
   <section class="scene" id="s3"><div class="grid"></div><div class="cap line serif"></div></section>
   <section class="scene" id="s4">
@@ -155,7 +168,7 @@ var scenes=[null,s('s1'),s('s2'),s('s3'),s('s4'),s('s5')];
 var timers=[], current=1;
 function s(id){ return document.getElementById(id); }
 function at(t,fn){ timers.push(setTimeout(fn,t*1000)); }
-function fit(){ stage.style.transform='scale('+Math.min(innerWidth/1920,innerHeight/1080)+')'; }
+function fit(){ stage.style.transform='translate(-50%,-50%) scale('+Math.min(innerWidth/1920,innerHeight/1080)+')'; }
 addEventListener('resize',fit); fit();
 
 function clear(){
@@ -163,7 +176,8 @@ function clear(){
   for(var i=1;i<scenes.length;i++){ scenes[i].classList.remove('on','go','load','lit'); }
   stage.classList.remove('night');
   [].forEach.call(document.querySelectorAll('.line'),function(e){ e.classList.remove('in'); });
-  s('s1').querySelectorAll('.house,.puff').forEach(function(e){ e.remove(); });
+  s('s1').querySelectorAll('.bub').forEach(function(e){ e.remove(); });
+  s('s1').querySelector('svg.street').innerHTML='';
   s('s2').querySelectorAll('.inbound').forEach(function(e){ e.remove(); });
   s('s3').querySelector('.grid').innerHTML='';
 }
@@ -180,33 +194,62 @@ function show(n){
 }
 
 /* 1 ---------------------------------------------------------------------- */
-function playOpen(){
-  var sc=s('s1'); sc.classList.add('go');
-  var n=13, pad=210, span=(1920-pad*2)/(n-1);
+/* Houses are laid out deterministically, so every take is identical, and each
+   outline draws itself instead of appearing. Widths and heights vary because a
+   row of identical houses reads as a chart, not a street. */
+function street(){
+  var svg=s('s1').querySelector('svg.street');
+  svg.innerHTML='';
+  var base=604, left=360, right=1560, n=11, gap=(right-left)/n;
+  var houses=[];
   for(var i=0;i<n;i++){
-    (function(i){
-      var h=document.createElement('div');
-      h.className='house';
-      h.style.left=(pad+i*span-23)+'px';
-      h.style.height=(30+((i*37)%22))+'px';
-      h.style.marginTop=-(30+((i*37)%22))+'px';
-      sc.appendChild(h);
-      at(0.5+i*0.075,function(){ h.classList.add('in'); });
-    })(i);
+    var w=gap*0.78+((i*29)%11), h=86+((i*47)%42), roof=40+((i*23)%20);
+    var x=left+i*gap+(gap-w)/2;
+    var d='M'+x+' '+base+' L'+x+' '+(base-h)+' L'+(x+w/2)+' '+(base-h-roof)+
+          ' L'+(x+w)+' '+(base-h)+' L'+(x+w)+' '+base;
+    houses.push({d:d, peakX:x+w/2, peakY:base-h-roof});
   }
-  /* a few messages lifting off the street, unread */
-  for(var k=0;k<9;k++){
+  var ground=document.createElementNS('http://www.w3.org/2000/svg','path');
+  ground.setAttribute('class','stroke');
+  ground.setAttribute('d','M'+(left-70)+' '+base+' L'+(right+70)+' '+base);
+  svg.appendChild(ground);
+  draw(ground,1.5,0);
+  houses.forEach(function(hh,i){
+    var el=document.createElementNS('http://www.w3.org/2000/svg','path');
+    el.setAttribute('class','stroke'); el.setAttribute('d',hh.d);
+    svg.appendChild(el);
+    draw(el,0.85,0.45+i*0.11);
+  });
+  return houses;
+}
+
+function draw(node,dur,delay){
+  var len=node.getTotalLength();
+  node.style.strokeDasharray=len; node.style.strokeDashoffset=len;
+  node.style.transition='stroke-dashoffset '+dur+'s var(--quart) '+delay+'s';
+  requestAnimationFrame(function(){ node.style.strokeDashoffset=0; });
+}
+
+function playOpen(){
+  var sc=s('s1'), houses=street();
+  /* Messages leave the houses and drift off unread. */
+  for(var k=0;k<8;k++){
     (function(k){
-      var i=(k*5+2)%n, x=pad+i*span;
-      at(2.0+k*0.42,function(){
-        var p=document.createElement('div');
-        p.className='puff';
-        p.style.left=(x-5)+'px'; p.style.top='calc(56% - 46px)';
-        sc.appendChild(p);
+      var hh=houses[(k*3+2)%houses.length];
+      var rise=250+((k*67)%170), drift=((k%3)-1)*54;
+      at(2.4+k*0.44,function(){
+        var b=document.createElement('div');
+        b.className='bub';
+        b.style.left=(hh.peakX-23)+'px';
+        b.style.top=(hh.peakY-58)+'px';
+        b.innerHTML="<svg width='46' height='38' viewBox='0 0 34 28'>"+
+          "<path class='body' d='M6 0h22a6 6 0 0 1 6 6v10a6 6 0 0 1-6 6H14l-7 6v-6H6a6 6 0 0 1-6-6V6a6 6 0 0 1 6-6z'/>"+
+          "</svg>";
+        sc.appendChild(b);
         requestAnimationFrame(function(){
-          p.style.opacity=.85;
-          p.style.transform='translateY(-320px) translateX('+(((k%3)-1)*40)+'px)';
-          setTimeout(function(){ p.style.opacity=0; },900);
+          b.style.opacity=.88;
+          b.style.transform='translate('+drift+'px,'+(-rise)+'px) scale(.7)';
+          setTimeout(function(){ b.style.opacity=0; },1000+((k*53)%400));
         });
       });
     })(k);
@@ -285,5 +328,10 @@ addEventListener('keydown',function(e){
   if(e.code==='Space'){ e.preventDefault(); play(); }
   if(e.key==='h'||e.key==='H') hint.classList.toggle('gone');
 });
-show(1);
+/* ?s=3&play cues a scene and runs it, which is how these get screenshotted and
+   is convenient for cueing a take. */
+var q=new URLSearchParams(location.search);
+var want=parseInt(q.get('s')||'1',10);
+show(want>=1&&want<=5?want:1);
+if(q.has('play')) play();
 </script>

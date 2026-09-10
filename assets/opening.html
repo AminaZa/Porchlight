@@ -23,9 +23,9 @@
 
   /* Fixed 1920x1080 stage scaled to the window, so what you record is what was
      composed rather than whatever the browser reflowed it into. */
-  #fit { position:fixed; inset:0; display:grid; place-items:center; }
+  #fit { position:fixed; inset:0; overflow:hidden; }
   #stage {
-    width:1920px; height:1080px; position:relative; overflow:hidden;
+    width:1920px; height:1080px; position:absolute; left:50%; top:50%; overflow:hidden;
     transform-origin:center center;
     font-family:ui-sans-serif,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     color:var(--ink); background:var(--paper);
@@ -222,7 +222,7 @@ var timers=[], flies=[];
    into a colour chart. Fixed order, so every take is identical. */
 var DOTS=['#B9C4D6','#C7BFAE','#AEC0B4','#D2BEB2','#B6B4CB','#C4CBB6','#CBBBC4','#B2C2CB'];
 
-function fit(){ stage.style.transform='scale('+Math.min(innerWidth/1920,innerHeight/1080)+')'; }
+function fit(){ stage.style.transform='translate(-50%,-50%) scale('+Math.min(innerWidth/1920,innerHeight/1080)+')'; }
 addEventListener('resize',fit); fit();
 
 function at(s,fn){ timers.push(setTimeout(fn,s*1000)); }
