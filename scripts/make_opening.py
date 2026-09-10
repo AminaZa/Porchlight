@@ -1,0 +1,332 @@
+"""Generate the opening animation for the video's first beat.
+
+    python scripts/make_opening.py            # writes assets/opening.html
+    python scripts/make_opening.py --open      # and opens it
+
+Screen-record the result. It is one self-contained HTML file with inline CSS,
+inline SVG and one inline script, exactly like `out/report.html`: no CDN, no
+webfonts, no network request, nothing to install.
+
+**The text is read from `data/seed_reports.json`, never typed in here.** The
+whole argument of the beat is that four real reports share no content word, and
+a hand-written approximation of them would be a claim rather than a
+demonstration. The four are located by the place each one names; if the seed set
+changes so that any of them cannot be found, this fails loudly instead of
+quietly animating the wrong thing.
+
+The beat, in five phases:
+
+    chat      the group chat filling up with ordinary neighbourhood traffic
+    mute      all of it going quiet at once, which is what everyone does
+    reports   the four that matter arriving into that silence, one at a time
+    circle    the differing noun in each one, ringed in Chalk ink
+    strike    all four struck through, so the point lands without narration
+
+Motion direction is [[MOTION_REFS]]; palette and the amber rule are BRANDING.md.
+**No amber anywhere in this file.** Nothing here is an escalation, and if amber
+appears before the one alert later in the video the restraint stops reading as
+restraint.
+"""
+
+from __future__ import annotations
+
+import json
+import sys
+import webbrowser
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+SEED = ROOT / "data" / "seed_reports.json"
+OUT = ROOT / "assets" / "opening.html"
+
+# The place each cluster report names, in the order they were filed. These are
+# the words that get ringed and then struck through, and the fact that no two of
+# them share a content word is the entire premise of the video's first minute.
+PLACES = ["mailboxes", "post boxes", "where the packages get dropped",
+          "delivery lockers"]
+
+# Ordinary traffic for the opening pile-up. Chosen for being unmistakably the
+# stuff of a real neighbourhood chat rather than for any property of the run.
+CHATTER_HINTS = ["pothole", "street light", "Bins have been left",
+                 "branch came down", "Fireworks", "flattened boxes",
+                 "graffiti", "hose reel"]
+
+# Seconds. Tuned against roughly 150 words of narration.
+TIMING = {"chat_start": 0.6, "chat_gap": 1.6, "decay": 0.92, "mute": 11.0,
+          "quiet": 3.0, "report_gap": 5.6, "circle_gap": 1.15,
+          "strike": 2.2, "card": 3.4}
+
+
+def load() -> tuple[list[dict], list[str]]:
+    rows = json.loads(SEED.read_text(encoding="utf-8"))["reports"]
+    rows = sorted(rows, key=lambda r: r["timestamp"])
+
+    cluster = []
+    for place in PLACES:
+        hit = next((r for r in rows if place in r["text"]), None)
+        if hit is None:
+            raise SystemExit(
+                f"No seed report mentions {place!r}. The opening beat is built "
+                f"from the four reports that name one place four ways; if the "
+                f"seed set changed, update PLACES in this file to match it."
+            )
+        cluster.append({"text": hit["text"], "place": place})
+
+    chatter = []
+    for hint in CHATTER_HINTS:
+        hit = next((r for r in rows if hint in r["text"]), None)
+        if hit and hit["text"] not in [c["text"] for c in cluster]:
+            chatter.append(hit["text"])
+    if len(chatter) < 5:
+        raise SystemExit("Not enough ordinary reports found for the pile-up.")
+    return cluster, chatter
+
+
+PAGE = r"""<title>Porchlight opening</title>
+<style>
+  :root {
+    --dusk:#0B1120; --porch:#141E33; --sill:#243352;
+    --chalk:#E9EEF7; --dim:#8FA0BC;
+    --sans: ui-sans-serif, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing:border-box; }
+  html, body { margin:0; height:100%; background:#000; overflow:hidden; }
+
+  /* A fixed 1920x1080 stage scaled to whatever the window is, so what you
+     record is exactly what was composed rather than whatever the browser
+     reflowed it into. */
+  #fit { position:fixed; inset:0; display:grid; place-items:center; }
+  #stage {
+    width:1920px; height:1080px; position:relative; overflow:hidden;
+    background:var(--dusk); color:var(--chalk); font-family:var(--sans);
+    transform-origin:center center;
+  }
+
+  #feed {
+    position:absolute; left:190px; right:190px; top:96px; bottom:150px;
+    display:flex; flex-direction:column; justify-content:flex-end; gap:18px;
+  }
+
+  .msg {
+    background:var(--porch); border:1px solid var(--sill); border-radius:14px;
+    padding:22px 30px; font-size:31px; line-height:1.45; color:var(--chalk);
+    opacity:0; transform:translateY(26px);
+    transition:opacity .42s ease, transform .42s cubic-bezier(.2,.9,.3,1.2),
+               color .7s ease, border-color .7s ease, background .7s ease;
+  }
+  .msg.in { opacity:1; transform:translateY(0); }
+  /* Read and banked. Part 2 of the video must not reuse this to mean
+     something else. */
+  .msg.banked { color:var(--dim); background:transparent; border-color:var(--sill); }
+  .msg.hushed { color:var(--sill); border-color:#1b2740; background:transparent; }
+
+  .msg .place { position:relative; white-space:nowrap; }
+
+  #muted {
+    position:absolute; left:0; right:0; top:44%; text-align:center;
+    font-family:Georgia,"Times New Roman",serif; font-size:58px; color:var(--dim);
+    opacity:0; transition:opacity .8s ease; letter-spacing:.01em;
+  }
+  #muted.in { opacity:1; }
+
+  #ink { position:absolute; inset:0; pointer-events:none; overflow:visible; }
+  #ink path, #ink line {
+    fill:none; stroke:var(--chalk); stroke-width:3.4; stroke-linecap:round;
+  }
+
+  #card {
+    position:absolute; inset:0; background:var(--dusk); display:grid;
+    place-content:center; text-align:center; gap:20px;
+    opacity:0; pointer-events:none; transition:opacity .75s ease;
+  }
+  #card.in { opacity:1; }
+  #card h1 { font-family:Georgia,"Times New Roman",serif; font-weight:400;
+             font-size:96px; margin:0; color:var(--chalk); letter-spacing:.005em; }
+  #card p  { font-family:Georgia,"Times New Roman",serif; font-size:38px;
+             margin:0; color:var(--dim); font-style:italic; }
+
+  #hint {
+    position:fixed; left:16px; bottom:12px; z-index:9; color:var(--dim);
+    font:13px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace; opacity:.65;
+  }
+  #hint.gone { display:none; }
+
+  @media (prefers-reduced-motion:reduce) {
+    .msg { transition:none; }
+  }
+</style>
+
+<div id="fit"><div id="stage">
+  <div id="feed"></div>
+  <div id="muted">muted</div>
+  <svg id="ink"></svg>
+  <div id="card">
+    <h1>Porchlight</h1>
+    <p>your friendly neighborhood agent</p>
+  </div>
+</div></div>
+<div id="hint">space play / replay &nbsp; h hide this &nbsp; (1920x1080)</div>
+
+<script>
+var DATA = /*__DATA__*/;
+var T = /*__TIMING__*/;
+
+var stage = document.getElementById('stage');
+var feed  = document.getElementById('feed');
+var ink   = document.getElementById('ink');
+var muted = document.getElementById('muted');
+var card  = document.getElementById('card');
+var hint  = document.getElementById('hint');
+var timers = [];
+
+function fit() {
+  var s = Math.min(innerWidth / 1920, innerHeight / 1080);
+  stage.style.transform = 'scale(' + s + ')';
+}
+addEventListener('resize', fit); fit();
+
+function at(sec, fn) { timers.push(setTimeout(fn, sec * 1000)); }
+
+function esc(s) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+/* Wraps the place name so it can be measured and drawn over later. */
+function withPlace(text, place) {
+  var i = text.indexOf(place);
+  if (i < 0) return esc(text);
+  return esc(text.slice(0, i)) + "<span class='place'>" + esc(place) +
+         "</span>" + esc(text.slice(i + place.length));
+}
+
+function addMsg(html, cls) {
+  var el = document.createElement('div');
+  el.className = 'msg' + (cls ? ' ' + cls : '');
+  el.innerHTML = html;
+  feed.appendChild(el);
+  requestAnimationFrame(function () { el.classList.add('in'); });
+  /* The feed is bottom-anchored, so old messages ride up and out on their own
+     once there are more than fit. Nothing needs to scroll. */
+  while (feed.children.length > 9) feed.removeChild(feed.firstChild);
+  return el;
+}
+
+/* A ring drawn the way a person would: not a true ellipse, and not closed. */
+function ringPath(r, pad) {
+  var x = r.x - pad, y = r.y - pad,
+      w = r.width + pad * 2, h = r.height + pad * 2;
+  var cx = x + w / 2, cy = y + h / 2, rx = w / 2, ry = h / 2;
+  var p = [];
+  for (var i = 0; i <= 30; i++) {
+    var a = (-0.35 + (i / 30) * (Math.PI * 2 + 0.5));
+    var wob = 1 + Math.sin(i * 1.7 + rx) * 0.022;
+    p.push((cx + Math.cos(a) * rx * wob).toFixed(1) + ' ' +
+           (cy + Math.sin(a) * ry * wob * 1.04).toFixed(1));
+  }
+  return 'M' + p.join(' L');
+}
+
+function draw(el, kind) {
+  var span = el.querySelector('.place');
+  if (!span) return;
+  var s = stage.getBoundingClientRect(), b = span.getBoundingClientRect();
+  var sc = s.width / 1920;
+  var r = { x: (b.left - s.left) / sc, y: (b.top - s.top) / sc,
+            width: b.width / sc, height: b.height / sc };
+
+  var node;
+  if (kind === 'ring') {
+    node = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    node.setAttribute('d', ringPath(r, 11));
+  } else {
+    node = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    node.setAttribute('x1', r.x - 6);  node.setAttribute('x2', r.x + r.width + 6);
+    node.setAttribute('y1', r.y + r.height * 0.58);
+    node.setAttribute('y2', r.y + r.height * 0.52);
+  }
+  ink.appendChild(node);
+
+  var len = node.getTotalLength ? node.getTotalLength() : 400;
+  node.style.strokeDasharray = len;
+  node.style.strokeDashoffset = len;
+  node.style.transition = 'stroke-dashoffset ' + (kind === 'ring' ? .58 : .34) + 's ease-out';
+  requestAnimationFrame(function () { node.style.strokeDashoffset = 0; });
+}
+
+function reset() {
+  timers.forEach(clearTimeout); timers = [];
+  feed.innerHTML = ''; ink.innerHTML = '';
+  muted.classList.remove('in'); card.classList.remove('in');
+}
+
+function play() {
+  reset();
+  var t = T.chat_start;
+
+  /* The chat, filling up. Each one lands a little sooner than the last. */
+  DATA.chatter.forEach(function (text, i) {
+    at(t, function () { addMsg(esc(text)); });
+    t += T.chat_gap * Math.pow(T.decay, i);
+  });
+
+  /* Muted. Everything at once, and then nothing for a beat. */
+  at(T.mute, function () {
+    [].forEach.call(feed.children, function (el) { el.classList.add('hushed'); });
+    muted.classList.add('in');
+  });
+  at(T.mute + 1.9, function () { muted.classList.remove('in'); });
+
+  /* The four that matter, arriving into the quiet. */
+  var base = T.mute + T.quiet;
+  var els = [];
+  DATA.cluster.forEach(function (r, i) {
+    at(base + i * T.report_gap, function () {
+      els.forEach(function (e) { e.classList.add('banked'); });
+      els.push(addMsg(withPlace(r.text, r.place)));
+    });
+  });
+
+  /* Ring each place, in the order they were filed. */
+  var ringAt = base + DATA.cluster.length * T.report_gap;
+  DATA.cluster.forEach(function (_, i) {
+    at(ringAt + i * T.circle_gap, function () { draw(els[i], 'ring'); });
+  });
+
+  /* Strike all four, close together, so it reads as one gesture. */
+  var strikeAt = ringAt + DATA.cluster.length * T.circle_gap + 0.7;
+  DATA.cluster.forEach(function (_, i) {
+    at(strikeAt + i * 0.24, function () { draw(els[i], 'strike'); });
+  });
+
+  at(strikeAt + T.strike + 1.1, function () { card.classList.add('in'); });
+}
+
+addEventListener('keydown', function (e) {
+  if (e.code === 'Space') { e.preventDefault(); play(); }
+  if (e.key === 'h' || e.key === 'H') { hint.classList.toggle('gone'); }
+});
+</script>
+"""
+
+
+def build() -> str:
+    cluster, chatter = load()
+    data = json.dumps({"cluster": cluster, "chatter": chatter},
+                      ensure_ascii=False, indent=2)
+    return (PAGE.replace("/*__DATA__*/", data)
+                .replace("/*__TIMING__*/", json.dumps(TIMING)))
+
+
+def main(argv: list[str]) -> int:
+    OUT.parent.mkdir(parents=True, exist_ok=True)
+    OUT.write_text(build(), encoding="utf-8")
+    print(f"wrote {OUT.relative_to(ROOT)}")
+    print("  open it, press space to play, h to hide the hint")
+    print("  window it at 1920x1080 (or record the browser full screen)")
+    if "--open" in argv:
+        webbrowser.open(OUT.as_uri())
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv[1:]))

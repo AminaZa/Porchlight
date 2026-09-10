@@ -48,10 +48,10 @@ amber anywhere in this beat.
 
 > My street has a group chat. Yours probably does too.
 >
-> Someone's cat is out. There's a van parked badly. The bins didn't get
-> collected again. It goes all day.
+> A pothole. The street light is out again. Someone has left the bins blocking
+> the alley. Fireworks last night, waking the baby. It goes all day.
 >
-> So I muted it. Everyone I know has muted it. And that's the problem, because
+> So I muted it. Everyone I know has muted  it. And that's the problem, because
 > that chat is also where you would find out if something was actually going on.
 >
 > Here are four messages. Four different people, over about a day and a half.
