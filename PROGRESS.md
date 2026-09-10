@@ -567,3 +567,64 @@ Both are local safety nets, neither is source.
 Verified before pushing: **55 tests passing, 13 skipped**, and
 `scripts/check_claims.py` green on every figure — one warning, the four
 unresolved `⟨PENDING⟩` placeholders in [[DEVPOST]].
+
+---
+
+## 2026-09-10 — the page is online
+
+The live demo link exists. `out/report.html` — run 4, with the transcript
+section — is at
+**https://porchlight-report.s3.us-east-1.amazonaws.com/index.html**, confirmed
+reachable with no credentials: HTTP 200, `text/html; charset=utf-8`, no offline
+band. Also set as the repo's GitHub **homepage**, which puts it at the top of
+the About sidebar for anyone who arrives at the source first.
+
+That closes the cheapest Technical Implementation point available, and the
+Devpost "Try it out" field. **One `⟨PENDING⟩` is left: the video URL.**
+
+### Neither planned route worked, and the reason is worth keeping
+
+[[CHECKLIST]] offered two ways to do this — install the AWS CLI and run
+`publish.sh`, or click through the S3 console. Both assumed a permission that
+was not there. The `porchlight` IAM user had `AmazonBedrockFullAccess` and
+`AWSBillingReadOnlyAccess` and **no S3 access at all**; `list_buckets` returned
+`AccessDenied`. It cannot grant itself, so this needed a console visit as the
+account owner regardless. `AmazonS3FullAccess` was attached 2026-09-10.
+
+The AWS CLI is still not installed, and does not need to be. `scripts/publish.py`
+does what `publish.sh` does — bucket, public-access block, read policy, website
+config, upload — through **boto3, which is already a dependency of the
+pipeline**. `publish.sh` silently required a separate installation this project
+otherwise never asks for, which is the kind of dependency a judge discovers only
+when the publish step fails on them. Both scripts now exist; the shell one is
+for anyone who prefers the CLI.
+
+Two details that cost a retry each and are written into the script:
+
+- **Clearing the public-access block is not instant.** A bucket policy applied
+  immediately afterwards is refused, and the error reads as though the *policy*
+  were wrong. Six attempts, three seconds apart.
+- **`porchlight-demo` was taken.** Bucket names are globally unique across all
+  of AWS, not per-account. `porchlight-report` was the fallback.
+
+**The submission link is the HTTPS one.** S3's website endpoint is HTTP-only, and
+a judge following an `http://` link can meet a browser warning before they meet
+the project. The website endpoint works and is recorded, but nothing should be
+submitted with it.
+
+> [!warning] Re-publish if the page is ever re-rendered
+> `python scripts/publish.py porchlight-report us-east-1`. The published page,
+> the terminal footage and the video must not disagree — that is the whole
+> premise of `scripts/check_claims.py`, and a stale upload defeats it silently.
+
+> [!note] Detach `AmazonS3FullAccess` when the hackathon is over
+> Nothing needs it once the page is up, and it is broader than one bucket
+> warrants.
+
+### Housekeeping
+
+README got a prose pass — em dashes traded for commas, colons and parentheses
+throughout. No figure moved; `check_claims.py` is green. `oldREADME.md`, a
+20KB copy left in the repo root, is deleted: every committed version is in git
+history, and a second README in a public repo is a thing that confuses a reader
+who finds it.
