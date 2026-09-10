@@ -78,6 +78,16 @@ def read(name: str) -> str:
     return p.read_text(encoding="utf-8") if p.exists() else ""
 
 
+def _has_number(text: str, value: str) -> str | None:
+    """Whether `value` appears in `text` as a number in its own right.
+
+    Guards against the substring trap: "3" is inside "3.5", so a behaviours row
+    reading "4 reports ... 3.5 days" once satisfied a check for three reports
+    and reported itself green. Found 2026-09-10.
+    """
+    return re.search(rf"(?<![\d.]){re.escape(value)}(?![\d.])", text)
+
+
 def plain(text: str) -> str:
     """Markdown emphasis removed and whitespace flattened.
 
@@ -111,6 +121,21 @@ def facts() -> dict:
     decline = (max(genuine, key=lambda r: (r["cluster_size"], r["distinct_reporters"]))
                if genuine else None)
 
+    # The single-reporter refusal is a *different* behaviour from whichever
+    # refusal happens to be largest, and it has to be found by what it is rather
+    # than by size. On 2026-09-10 those were the same row for the last time: a
+    # report regrouped, Birch Ln went 3 -> 4, and the largest decline stopped
+    # being the one-person cluster the README row was describing. The check
+    # failed loudly, which is the system working -- but it failed by reporting
+    # "4 reporters" for a row about a single reporter, which reads as nonsense
+    # until you know why.
+    solo = [r for r in genuine if r["distinct_reporters"] == 1]
+    # Ties on size are real -- run 5 had two three-report one-person clusters.
+    # Break on span so the row is deterministic rather than whichever the
+    # query happened to return first.
+    solo = (max(solo, key=lambda r: (r["cluster_size"], r["time_span_hours"]))
+            if solo else None)
+
     stamps = sorted(r["timestamp"] for r in rows)
     span = (datetime.fromisoformat(stamps[-1])
             - datetime.fromisoformat(stamps[0])).total_seconds() / 86400
@@ -122,6 +147,7 @@ def facts() -> dict:
         "alert": alerts[0] if alerts else None,
         "alerts": alerts,
         "decline": decline,
+        "solo": solo,
         "zones": len({r["zone"] for r in rows}),
         "span_days": round(span),
         "never_surfaced": len(rows) - len(alerts),
@@ -213,24 +239,37 @@ def check_readme(f: dict) -> None:
                                 f"reports, {want['distinct reporters']} reporters, "
                                 f"{want['hours']}h, z={want['anomaly score']})")
 
-    d = f["decline"]
-    if d:
-        row = _row(md, "The single reporter")
+    # Two refusals, two rows, checked against the fact each one is about.
+    for label, key, note in (("The spread", "decline", "the featured refusal, "
+                              "the same one the report page shows"),
+                             ("The single reporter", "solo", "the one-person cluster")):
+        d = f[key]
+        if not d:
+            warn("README.md", f"the run has no refusal for the '{label}' row ({note})")
+            continue
+        row = _row(md, label)
         days = f"{d['time_span_hours'] / 24:.1f}"
-        want = {"cluster size": str(d["cluster_size"]),
-                "reporters": str(d["distinct_reporters"]),
-                "days": days}
+        # A whole number of days should be allowed to read as "21 days" in prose
+        # rather than "21.0 days". Both are the same fact.
+        day_forms = (days, days[:-2]) if days.endswith(".0") else (days,)
+        want = {"cluster size": (str(d["cluster_size"]),),
+                "reporters": (str(d["distinct_reporters"]),),
+                "days": day_forms}
         if not row:
-            fail("README.md", "no 'The single reporter' row found")
+            fail("README.md", f"no '{label}' row found -- {note}")
+            continue
+        # Plain substring matching lies here: "3" is inside "3.5", so a row
+        # reading "4 reports ... 3.5 days" satisfied a check for 3 reports.
+        # Require the number to stand alone, not sit inside another one.
+        missing = [k for k, vs in want.items()
+                   if not any(_has_number(row, v) for v in vs)]
+        if missing:
+            shown = {k: vs[0] for k, vs in want.items()}
+            fail("README.md",
+                 f"'{label}' row is missing {', '.join(missing)} -- run is {shown}")
         else:
-            missing = [k for k, v in want.items() if v not in row]
-            if missing:
-                fail("README.md",
-                     f"'The single reporter' row is missing {', '.join(missing)} "
-                     f"-- run is {want}")
-            else:
-                ok("README.md", f"single-reporter row matches the run ({want['cluster size']} "
-                                f"reports, {want['reporters']} reporter, {days} days)")
+            ok("README.md", f"'{label}' row matches the run ({d['cluster_size']} "
+                            f"reports, {d['distinct_reporters']} reporter(s), {days} days)")
 
     if str(f["total"]) in md:
         ok("README.md", f"quotes the run size ({f['total']} reports)")
