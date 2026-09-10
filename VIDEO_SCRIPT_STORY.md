@@ -34,8 +34,15 @@ Situation, complication, action, resolution. One person talking.
 | 4 | How it works | 3:30 to 4:20 |
 | 5 | Whether I believe it | 4:20 to 5:00 |
 
-About 660 words. At a normal speaking pace that leaves room to stop talking and
-let the screen carry a few seconds, which this needs.
+> [!danger] This full version is 1038 words and will not fit
+> Counted 2026-09-10: **1038 words is 6:40 at 155 wpm and 7:40 at 135 wpm**,
+> against a hard five minute limit. An earlier line here claimed about 660 words
+> and was simply wrong.
+>
+> **Record from [[VIDEO_EDIT_PLAN]], not from this file.** It carries the same
+> beats trimmed to **561 words across 4:52**, with each clip checked so that no
+> line needs more than 135 words per minute. Keep this file for the argument and
+> the order; take the words to say from the edit plan.
 
 ---
 
