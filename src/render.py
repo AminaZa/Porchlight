@@ -39,15 +39,15 @@ from pathlib import Path
 from src.tools import storage
 
 # BRANDING.md § Palette
-DUSK = "#0B1120"
-PORCH = "#141E33"
-SILL = "#243352"
-NEAR = "#5C7098"
+DUSK = "#14161A"
+PORCH = "#1D2026"
+SILL = "#2E3138"
+NEAR = "#6E6A62"
 LAMP = "#FFB454"
 HALO = "#FFE2AE"
 EMBER = "#E08A34"
-CHALK = "#E9EEF7"
-DIM = "#8FA0BC"
+CHALK = "#EFEAE0"
+DIM = "#9A958D"
 
 # Set by demo/run_demo.py --offline. When true the page carries a band saying
 # the judgment was stubbed, so a screenshot of it can never be mistaken for the

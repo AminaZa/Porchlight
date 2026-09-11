@@ -299,7 +299,7 @@ Feeds the seed set in timestamp order, one line per report, then a summary tally
 One **self-contained** HTML file: inline `<style>`, inline `<svg>`, no scripts, no CDN, no build step. Double-click to open.
 
 - **Layout seeded from `report_id`** so it's byte-identical across runs — you can re-shoot a take in week six without the picture moving.
-- `--sill` `#243352` for silently-logged reports (the ~30 that make the argument by staying dark).
+- `--sill` `#2E3138` for silently-logged reports (the ~30 that make the argument by staying dark).
 - Mid-tone, **visibly unlinked** nodes for the declines. This is the money shot.
 - `--lamp` `#FFB454` with edges and a radial glow for the escalated cluster.
 - The escalation agent's own `reasoning` beneath, in the card layout from [[BRANDING]].

@@ -37,14 +37,14 @@ comic/rhythmic timing.
 
 ## Adapted brief — paste into Claude Design
 
-> Background stays #0B1120 (dusk) throughout — no color-block cuts. The
+> Background stays #14161A (dusk) throughout — no color-block cuts. The
 > "cut-between-solid-colors" trick becomes a cut between dusk and a barely-lighter
-> "porch" (#141E33) card, not a hue change.
+> "porch" (#1D2026) card, not a hue change.
 >
 > No amber (#FFB454) anywhere in this beat. Nothing here is an escalation — amber
 > is reserved for the one alert later in the video, so it must stay completely
-> dormant now, or the restraint stops reading as restraint. Use Chalk (#E9EEF7) for
-> the live report and Dim (#8FA0BC) for the other three once they're "read."
+> dormant now, or the restraint stops reading as restraint. Use Chalk (#EFEAE0) for
+> the live report and Dim (#9A958D) for the other three once they're "read."
 >
 > Reports enter one at a time: each full report drops in as one line (not
 > word-by-word — these are already-written texts, not a title card), lands with a
@@ -90,18 +90,18 @@ Same restraint rules as Part 1: dusk background, **no amber**, hard cuts only.
 
 > **CANVAS**
 > 1920×1080, 30fps, 30 seconds (0:45–1:15 of a 5:00 video). The background is a
-> flat fill `#0B1120` on every frame of this beat — it never changes hue, never
+> flat fill `#14161A` on every frame of this beat — it never changes hue, never
 > gradients, never vignettes.
 >
 > **PALETTE — these five values only**
 >
 > | token | hex | use |
 > |---|---|---|
-> | dusk | `#0B1120` | the background, always |
-> | porch | `#141E33` | card/panel fill, the only lighter surface |
-> | chalk | `#E9EEF7` | live/primary text |
-> | dim | `#8FA0BC` | secondary text — never a *transition target* in this beat |
-> | line | `#243352` | hairlines and borders, 1px |
+> | dusk | `#14161A` | the background, always |
+> | porch | `#1D2026` | card/panel fill, the only lighter surface |
+> | chalk | `#EFEAE0` | live/primary text |
+> | dim | `#9A958D` | secondary text — never a *transition target* in this beat |
+> | line | `#2E3138` | hairlines and borders, 1px |
 >
 > **`#FFB454` amber is FORBIDDEN in this beat.** Not in text, not in a border,
 > not in a glow, not at 5% opacity. It is reserved for a single alert at 2:35,
@@ -146,7 +146,7 @@ Same restraint rules as Part 1: dusk background, **no amber**, hard cuts only.
 > - easing: `cubic-bezier(0.34, 1.56, 0.64, 1)` — a small settle/overshoot, the
 >   same one Part 1 uses for its report drop, so both beats feel like one hand
 >   made them
-> - **all six stay at full chalk `#E9EEF7`.** No dimming, ever. They are not being
+> - **all six stay at full chalk `#EFEAE0`.** No dimming, ever. They are not being
 >   read and banked; they are piling up.
 >
 > **0:53.6 → 0:56.0 — the flood.** After message 6, more messages keep arriving,
@@ -171,7 +171,7 @@ Same restraint rules as Part 1: dusk background, **no amber**, hard cuts only.
 >
 > **M U T E D**
 >
-> `#E9EEF7`, weight 600, 96px, letter-spacing `0.32em`. It is **already on screen
+> `#EFEAE0`, weight 600, 96px, letter-spacing `0.32em`. It is **already on screen
 > at the cut** — it does not animate in. The cut is the animation.
 >
 > Then hold, completely still, for the full six seconds. No pulse, no drift, no
@@ -179,7 +179,7 @@ Same restraint rules as Part 1: dusk background, **no amber**, hard cuts only.
 > entire point of the beat, and any motion here spends it.
 >
 > Optional, only if six seconds of stillness tests as too long: at 0:59.0 draw a
-> single 1px `#243352` hairline left-to-right beneath the word over 600ms, 420px
+> single 1px `#2E3138` hairline left-to-right beneath the word over 600ms, 420px
 > wide, centred. Nothing else.
 >
 > **HARD CUT at 1:02.0.**
@@ -192,7 +192,7 @@ Same restraint rules as Part 1: dusk background, **no amber**, hard cuts only.
 > dusk frame — before anything appears. That empty beat states the product thesis
 > visually, and it is the most important 1.2 seconds in the section.
 >
-> At 1:03.2 one line appears, centred, Georgia 46px `#E9EEF7`:
+> At 1:03.2 one line appears, centred, Georgia 46px `#EFEAE0`:
 >
 > > most days it says nothing
 >
@@ -211,8 +211,8 @@ Same restraint rules as Part 1: dusk background, **no amber**, hard cuts only.
 > > The agent drafts.
 > > A person sends.
 >
-> - `The agent drafts.` is on screen at the cut, in dim `#8FA0BC`.
-> - At 1:13.4, `A person sends.` appears in full chalk `#E9EEF7`: opacity 0 → 1
+> - `The agent drafts.` is on screen at the cut, in dim `#9A958D`.
+> - At 1:13.4, `A person sends.` appears in full chalk `#EFEAE0`: opacity 0 → 1
 >   over 320ms, no movement.
 >
 > This is the one place dim-vs-chalk carries emphasis rather than state, and it

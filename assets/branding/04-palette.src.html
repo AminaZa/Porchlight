@@ -1,0 +1,52 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+  :root{
+    --dusk:#14161A; --porch:#1D2026; --sill:#2E3138;
+    --lamp:#FFB454; --halo:#FFE2AE; --ember:#E08A34;
+    --chalk:#EFEAE0; --dim:#9A958D;
+    --serif: Georgia, "Times New Roman", serif;
+    --sans: "Segoe UI", -apple-system, Roboto, Helvetica, Arial, sans-serif;
+    --mono: "Cascadia Code", Consolas, ui-monospace, monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--dusk)}
+  body{font-family:var(--sans); color:var(--chalk); padding:30px 24px 34px;
+       width:2033px; -webkit-font-smoothing:antialiased}
+  .kicker{font-size:15px; letter-spacing:.22em; text-transform:uppercase;
+          color:var(--dim); margin:0 0 26px}
+  h1{font-family:var(--serif); font-weight:400; font-size:58px; margin:0 0 22px;
+     letter-spacing:-.015em}
+  .lede{font-size:29px; line-height:1.45; color:var(--chalk); max-width:1400px;
+        margin:0 0 44px; font-weight:300}
+  .grid{display:flex; flex-wrap:wrap; gap:26px}
+  .sw{width:312px; border:1px solid var(--sill); border-radius:6px;
+      overflow:hidden; background:var(--porch)}
+  .chip{height:152px; border-bottom:1px solid var(--sill)}
+  .body{padding:18px 20px 22px}
+  .name{font-weight:600; font-size:22px; margin:0 0 8px}
+  .hex{font-family:var(--mono); font-size:19px; color:var(--dim); margin:0 0 12px}
+  .role{font-size:19px; line-height:1.42; color:var(--dim); margin:0}
+  .role em{color:var(--chalk); font-style:italic}
+</style></head><body>
+  <p class="kicker">Palette</p>
+  <h1>Amber on dusk</h1>
+  <p class="lede">A porch light at nightfall. The ground is a near-neutral black and the text
+  neutrals lean warm, so amber belongs to the same family as the surface it falls on
+  instead of sitting opposite it.</p>
+  <div class="grid" id="g"></div>
+<script>
+var sw = [
+ ["Dusk","#14161A","Primary ground. Terminal, hero, video."],
+ ["Porch","#1D2026","Raised surfaces: cards, panels."],
+ ["Sill","#2E3138","Borders, dividers, dim graph nodes."],
+ ["Lamp","#FFB454","The accent. Means <em>attention</em>, never decoration."],
+ ["Halo","#FFE2AE","Lit nodes, highlights inside the glow."],
+ ["Ember","#E08A34","Secondary warm. Metadata, gradients."],
+ ["Chalk","#EFEAE0","Primary text on dark. 15.1:1 contrast."],
+ ["Dim","#9A958D","Secondary text. 6.1:1, passes AA."]
+];
+document.getElementById('g').innerHTML = sw.map(function(s){
+  return "<div class='sw'><div class='chip' style='background:"+s[1]+"'></div>"+
+         "<div class='body'><p class='name'>"+s[0]+"</p>"+
+         "<p class='hex'>"+s[1]+"</p><p class='role'>"+s[2]+"</p></div></div>";
+}).join('');
+</script></body></html>

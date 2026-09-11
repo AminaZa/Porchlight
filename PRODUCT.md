@@ -96,9 +96,9 @@ Judging deadline **14 September 2026, 5:00pm PT** (Devpost).
 
 `BRANDING.md` is binding and approved. Summarised, not superseded:
 
-- **Palette — amber on dusk.** Dusk `#0B1120` · Porch `#141E33` · Sill `#243352`
-  · Lamp `#FFB454` · Halo `#FFE2AE` · Ember `#E08A34` · Chalk `#E9EEF7` ·
-  Dim `#8FA0BC`.
+- **Palette — amber on dusk.** Dusk `#14161A` · Porch `#1D2026` · Sill `#2E3138`
+  · Lamp `#FFB454` · Halo `#FFE2AE` · Ember `#E08A34` · Chalk `#EFEAE0` ·
+  Dim `#9A958D`.
 - **The one rule that matters: Lamp never appears on anything that is not an
   escalation.** Not buttons, not links, not headers, not decorative underlines.
   The moment amber becomes decoration the restraint argument collapses.

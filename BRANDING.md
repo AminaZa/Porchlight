@@ -46,20 +46,20 @@ This one image is the README hero, the architecture diagram motif, and the video
 
 ## Palette — amber on dusk
 
-A porch light at nightfall. Every neutral carries a blue bias toward the ground, so nothing reads as generic grey.
+A porch light at nightfall. The ground is a near-neutral black and the text neutrals lean warm, so amber belongs to the same family as the surface it falls on instead of sitting opposite it.
 
 ![Eight-swatch palette with hex values and roles](assets/branding/04-palette.png)
 
 | Token | Hex | Role |
 |---|---|---|
-| Dusk | `#0B1120` | Primary ground. Terminal, hero, video. |
-| Porch | `#141E33` | Raised surfaces — cards, panels. |
-| Sill | `#243352` | Borders, dividers, dim graph nodes. |
-| Lamp | `#FFB454` | **The accent. Means *attention* — never decorative.** |
+| Dusk | `#14161A` | Primary ground. Terminal, hero, video. |
+| Porch | `#1D2026` | Raised surfaces: cards, panels. |
+| Sill | `#2E3138` | Borders, dividers, dim graph nodes. |
+| Lamp | `#FFB454` | **The accent. Means *attention*, never decoration.** |
 | Halo | `#FFE2AE` | Lit nodes, highlights inside the glow. |
-| Ember | `#E08A34` | Secondary warm — metadata, gradients. |
-| Chalk | `#E9EEF7` | Primary text on dark. 16:1 contrast. |
-| Dim | `#8FA0BC` | Secondary text. 6.9:1 — passes AA. |
+| Ember | `#E08A34` | Secondary warm. Metadata, gradients. |
+| Chalk | `#EFEAE0` | Primary text on dark. 15.1:1 contrast. |
+| Dim | `#9A958D` | Secondary text. 6.1:1, passes AA. |
 
 > [!important] The one rule that matters
 > **Lamp never appears on anything that isn't an escalation.** Not on buttons, not on links, not on section headers, not as a decorative underline. The moment amber becomes decoration, the alert stops reading as an alert and the entire "restraint is the feature" argument collapses. If something needs emphasis and isn't an alert, use Chalk or Ember.
@@ -68,16 +68,46 @@ CSS custom properties, ready to paste:
 
 ```css
 :root {
-  --dusk:  #0B1120;
-  --porch: #141E33;
-  --sill:  #243352;
+  --dusk:  #14161A;
+  --porch: #1D2026;
+  --sill:  #2E3138;
   --lamp:  #FFB454;
   --halo:  #FFE2AE;
   --ember: #E08A34;
-  --chalk: #E9EEF7;
-  --dim:   #8FA0BC;
+  --chalk: #EFEAE0;
+  --dim:   #9A958D;
 }
 ```
+
+> [!note] Why the ground stopped being navy
+> Changed 11 September 2026. Navy and amber sit close to complementary, so the
+> lamp read as a badge stuck onto a default dark dashboard. Pulling the ground to
+> a near-neutral black takes that opposition away, and the same swatch reads as
+> light falling across a surface. Chalk and Dim went warm with it: cool
+> blue-tinted text over a neutral black looks like an oversight.
+>
+> To be exact about it, the three ground tones are not warm. Dusk, Porch and Sill
+> still have blue as their highest channel, by 6, 9 and 10 points. They are much
+> closer to neutral than the navy was (Dusk was 21 points blue) and that is what
+> does the work. The warmth is in Near, Chalk and Dim, which lead on red by 12 to
+> 15 points.
+>
+> Contrast on the new ground is slightly lower than on the old one, not higher.
+> Chalk 15.1:1 (was 16.2), Dim 6.1:1 (was 7.1), Lamp 10.3:1 (was 10.7). All three
+> still clear AA for their sizes, and Dim clears it for body text.
+
+> [!important] The escalation rule did not change with the palette
+> Lamp still appears only on an alert state. The single exception is the
+> Porchlight wordmark, where the "light" half is set in Lamp. The report masthead
+> already does this (`.word .lit` in `src/render.py`) and it is the only
+> decorative amber anywhere in the project.
+
+> [!warning] The other specimen PNGs in `assets/branding/` still show the old navy
+> They were rendered on 14 August 2026 and no generator was kept for them. The
+> palette board above was redrawn on the new ground, and its source is beside it
+> as `04-palette.src.html`, so it can be regenerated. The masthead, graph motif,
+> applied and amber-versus-red boards were not redrawn. Read those four for
+> layout and for the amber rule, not for the ground colour.
 
 ---
 

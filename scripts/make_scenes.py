@@ -78,8 +78,8 @@ PAGE = r"""<title>Porchlight scenes</title>
     --accent:#2E5BD8;
     --line-w:#FFFFFF;        /* the houses, as in the reference */
     --msg:#2F4A6D;           /* a message. Blue, but not notification blue */
-    --dusk:#0B1120; --porch:#141E33; --sill:#243352;
-    --chalk:#E9EEF7; --dim:#8FA0BC; --lamp:#FFB454; --halo:#FFE2AE;
+    --dusk:#14161A; --porch:#1D2026; --sill:#2E3138;
+    --chalk:#EFEAE0; --dim:#9A958D; --lamp:#FFB454; --halo:#FFE2AE;
 
     --expo:cubic-bezier(.19,1,.22,1);
     --quart:cubic-bezier(.165,.84,.44,1);
