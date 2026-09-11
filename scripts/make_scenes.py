@@ -58,16 +58,21 @@ def facts() -> dict:
         counts = Counter(r["outcome"] for r in rows)
         total = len(rows)
         alerts = counts.get("alert", 0)
+        # Rows come back in report order, so this is where in the run the alert
+        # actually fired. Scene 3 lights these marks rather than the first N,
+        # which put the one alert in the top-left corner by accident.
+        alert_at = [i for i, r in enumerate(rows) if r["outcome"] == "alert"]
     except Exception as exc:                      # no database yet, or a bad one
         print(f"  note: could not read the run ({exc.__class__.__name__}); "
               f"falling back to the seed size and one alert", file=sys.stderr)
         total, alerts = len(seed), 1
+        alert_at = [total - 2]        # the run alerts on the second to last
 
     if not total:
         raise SystemExit("No reports found. Run demo/run_demo.py first.")
 
     return {"total": total, "alerts": alerts, "quiet": total - alerts,
-            "zones": len(zones), "seed": len(seed)}
+            "zones": len(zones), "seed": len(seed), "alert_at": alert_at}
 
 
 PAGE = r"""<title>Porchlight scenes</title>
@@ -185,6 +190,9 @@ PAGE = r"""<title>Porchlight scenes</title>
   #s5{display:grid;place-content:center;text-align:center;gap:26px}
   #s5 h1{font-family:Georgia,"Times New Roman",serif;font-weight:400;font-size:104px;
          margin:0;color:var(--chalk)}
+  /* The one place amber is allowed without an alert behind it: the wordmark.
+     The report masthead already sets it this way. See BRANDING.md. */
+  #s5 h1 .lit{color:var(--lamp)}
   #s5 .tag{font-family:Georgia,"Times New Roman",serif;font-style:italic;
            font-size:36px;color:var(--dim)}
   #s5 .url{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
@@ -226,7 +234,7 @@ PAGE = r"""<title>Porchlight scenes</title>
     <div class="cap line serif"></div>
   </section>
   <section class="scene" id="s5">
-    <h1>Porchlight</h1>
+    <h1>Porch<span class="lit">light</span></h1>
     <div class="tag">your friendly neighborhood agent</div>
     <div class="url"></div>
   </section>
@@ -262,7 +270,10 @@ function show(n){
   if(n===3) s('s3').querySelector('.cap').innerHTML=
       F.total+' reports in. <strong>'+F.alerts+'</strong> alert out.';
   if(n===5) s('s5').querySelector('.url').innerHTML=
-      'github.com/AminaZa/Porchlight<br>porchlight-report.s3.us-east-1.amazonaws.com';
+      'github.com/AminaZa/Porchlight<br>' +
+      /* The bare bucket host 403s. This is the path DEVPOST publishes,
+         and the one that actually returns the page. */
+      'porchlight-report.s3.us-east-1.amazonaws.com/index.html';
 }
 
 /* 1 ---------------------------------------------------------------------- */
@@ -333,12 +344,25 @@ function playBurden(){
   var sc=s('s2'); sc.classList.add('go');
   var cap=sc.querySelector('.cap');
   var N=34;
+  /* 34 is the reports nobody heard about, so it is not a number to pad.
+     The gap between them is what sets the length of the shot. At 0.13 the
+     whole stream was over by about eight seconds, and VIDEO_EDIT_PLAN gives
+     this clip twenty four, which left sixteen seconds of still frame under
+     narration still making the point.
+
+     34 dots that each live L seconds, spread over a window W, average 34*L/W
+     on screen at once, so duration and density trade directly against each
+     other. At 0.50 apart and 3.7s of life the last one lands at 17.4s, is gone
+     by 21.1s, and there are about seven in flight throughout. A steady stream
+     that does not stop, rather than a burst that is over before the narration
+     has finished making the point. */
+  var STREAM=0.50, LIVE=2000;
   for(var i=0;i<N;i++){
     (function(i){
       var a=(i/N)*Math.PI*2 + (i%3)*0.11;
       var r=780+((i*53)%160);
       var x=960+Math.cos(a)*r, y=540+Math.sin(a)*r*0.56;
-      at(0.9+i*0.13,function(){
+      at(0.9+i*STREAM,function(){
         var d=document.createElement('div');
         d.className='inbound';
         d.style.left=(x-4.5)+'px'; d.style.top=(y-4.5)+'px';
@@ -346,7 +370,7 @@ function playBurden(){
         requestAnimationFrame(function(){
           d.style.opacity=.75;
           d.style.transform='translate('+(960-x)+'px,'+(540-y)+'px) scale(.7)';
-          setTimeout(function(){ d.style.opacity=0; },1250);
+          setTimeout(function(){ d.style.opacity=0; },LIVE);
         });
       });
     })(i);
@@ -365,12 +389,13 @@ function playTally(){
   }
   pips.forEach(function(p,i){ at(0.4+i*0.045,function(){ p.classList.add('in'); }); });
   var settled=0.4+F.total*0.045+0.7;
+  var lit=F.alert_at;
   /* everything goes quiet except the ones that alerted */
   pips.forEach(function(p,i){
-    if(i>=F.alerts) at(settled+ (i*0.012),function(){ p.classList.add('quiet'); });
+    if(lit.indexOf(i)<0) at(settled+ (i*0.012),function(){ p.classList.add('quiet'); });
   });
   at(settled+1.5,function(){
-    for(var i=0;i<F.alerts;i++) pips[i].classList.add('lit');
+    lit.forEach(function(i){ pips[i].classList.add('lit'); });
   });
   at(settled+2.4,function(){ cap.classList.add('in'); });
 }

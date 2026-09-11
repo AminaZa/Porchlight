@@ -372,4 +372,8 @@ addEventListener('keydown',function(e){
   if(e.code==='Space'){ e.preventDefault(); play(); }
   if(e.key==='h'||e.key==='H') hint.classList.toggle('gone');
 });
+
+/* ?play starts it without a keypress, the same as scenes.html. Recording a
+   take should not need a hand on the keyboard while the camera is rolling. */
+if(new URLSearchParams(location.search).has('play')) play();
 </script>
