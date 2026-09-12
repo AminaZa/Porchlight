@@ -11,13 +11,12 @@ created: 2026-08-20
 >
 > **Track:** Good Neighbor Agents
 
-> [!warning] One thing here is not true yet
-> **The video URL**, marked `⟨PENDING⟩` inline. Everything else is resolved and
-> checked against a real run: the Builder ID (`@aminaza`), the holdout result
-> (20/20, run 2026-08-31), and the live demo link, published 2026-09-10 and
-> confirmed reachable without credentials. Do not submit with the video
-> unresolved, and do not soften it into something vaguer to avoid the wait.
-> Either the number is real or the sentence comes out.
+> [!success] Nothing on this page is pending
+> Every field is resolved and checked against a real run: the video (public on
+> YouTube, 4:56, confirmed 2026-09-12), the Builder ID (`@aminaza`), the holdout
+> result (20/20, run 2026-08-31), and the live demo link, published 2026-09-10
+> and confirmed reachable without credentials. Run `scripts/check_claims.py`
+> once more before pasting anything into the form.
 
 ---
 
@@ -291,7 +290,13 @@ data, not reports from real residents.** The page says so itself.
 strands-agents, amazon-bedrock, claude, python, chromadb, sqlite, numpy, scipy, pydantic, opentelemetry
 ```
 
-**Video** — ⟨PENDING — public YouTube or Vimeo URL⟩
+**Video**
+```
+https://youtu.be/Bp9Z6QDWia0
+```
+Public on YouTube, 4:56, titled *"Porchlight, your friendly neighborhood agent.
+Agents for Humans."* Visibility and length confirmed from the watch page
+2026-09-12, not assumed from the upload screen.
 
 **AWS Builder ID**
 ```
@@ -315,9 +320,9 @@ for them.
 
 ## Pre-submit checks
 
-- [ ] Every `⟨PENDING⟩` above resolved or removed — **one left, the video URL**.
-      Everything else on this page is real. The live demo link went up
-      2026-09-10 and was confirmed reachable with no credentials
+- [x] Every placeholder above resolved or removed ✅ 2026-09-12. The last one
+      was the video URL. The live demo link went up 2026-09-10 and was
+      confirmed reachable with no credentials
 - [x] Demo numbers re-checked against the first real run, not the offline one
       ✅ 2026-09-09 — and no longer checked by re-reading. `scripts/check_claims.py`
       derives them from the database and fails on drift; run it again before
@@ -327,7 +332,8 @@ for them.
       confirmed live against the GitHub API, not from memory: `private: false`,
       `license.spdx_id: MIT`. The rules ask for the About section specifically,
       and GitHub populates it from the detected licence
-- [ ] Video public on YouTube or Vimeo, under 5:00
+- [x] Video public on YouTube or Vimeo, under 5:00 ✅ 2026-09-12 —
+      https://youtu.be/Bp9Z6QDWia0, 4:56, `isUnlisted: false`
 - [ ] Submitted before **Sep 14, 2026 5:00pm PT**
 
 > [!tip] Set the repo's **homepage** to the S3 URL once it exists

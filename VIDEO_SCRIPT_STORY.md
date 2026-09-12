@@ -132,6 +132,8 @@ Evidence line reads `4 reports · 4 reporters · 504h · 1 zone(s) · z=1.2`.
 
 > This is the part I actually care about. Something it found, and didn't send.
 >
+> Let's see Porchlight's explanation.
+>
 > Four reports. Four different people. One street. A van left running for
 > twenty minutes. Someone looking into parked cars. A car going up and down the
 > road near the driveways. A person wandering around near those same driveways.

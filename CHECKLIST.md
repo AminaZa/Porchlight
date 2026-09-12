@@ -2,7 +2,7 @@
 tags: [checklist, hackathon, porchlight]
 status: active
 created: 2026-08-14
-updated: 2026-08-31
+updated: 2026-09-12
 ---
 
 # Checklist
@@ -220,9 +220,9 @@ Straight from [[PROJECT_BRIEF]] §10, cross-checked against the official rules.
 
 - [x] **AWS Builder ID** — created 2026-08-21. The Devpost field still needs the
       actual ID pasted in; see the `⟨PENDING⟩` in [[DEVPOST]]
-- [ ] Record [[VIDEO_SCRIPT]] §4 — **§1 and §2 are shot as of 2026-08-21**, about
-      1:15 of the 5:00 in the can. Only the architecture walkthrough is left of the
-      no-live-run material; it can work from `assets/architecture.html`
+- [x] ~~Record [[VIDEO_SCRIPT]] §4~~ — superseded. The finished video was cut
+      from [[VIDEO_SCRIPT_STORY]] and [[VIDEO_EDIT_PLAN]], architecture included
+      ✅ 2026-09-12
 - [x] **Bonus: builder.aws.com posts** — up to **+0.6** on a 5-point scale, 0.2 each,
       max three, published *before* the deadline. Use "Agents for Humans" in the title.
       **The platform caps a post at 3000 characters.** All three drafts were cut to
@@ -250,11 +250,11 @@ Straight from [[PROJECT_BRIEF]] §10, cross-checked against the official rules.
       fresh venv, `pip install -r requirements.txt`, run the demo. Written but never
       tested from scratch. *(`.env` loading was broken until 2026-08-20 — this check
       would have caught it)*
-- [ ] **Demo video, max 5 minutes**, public on YouTube or Vimeo — [[VIDEO_SCRIPT]] §3
-      needs live footage. Motion direction for §1 and §2 is in [[MOTION_REFS]]
-- [ ] **Live demo link** — optional but scores higher: `./scripts/publish.sh <bucket>`
-      after a real (non-offline) run
-- [ ] Resolve the three `⟨PENDING⟩` items in [[DEVPOST]]
+- [x] **Demo video, max 5 minutes**, public on YouTube ✅ 2026-09-12 —
+      https://youtu.be/Bp9Z6QDWia0, 4:56, confirmed public from the watch page
+- [x] **Live demo link** ✅ 2026-09-10 —
+      https://porchlight-report.s3.us-east-1.amazonaws.com/index.html
+- [x] Resolve every placeholder in [[DEVPOST]] ✅ 2026-09-12, the video URL was the last
 - [ ] Submit on Devpost
 
 > [!important] Two things that will bite during recording
@@ -320,6 +320,13 @@ Straight from [[PROJECT_BRIEF]] §10, cross-checked against the official rules.
 
 ## Next session — start here
 
+> [!important] State as of 2026-09-12 — everything is built. Only the form is left
+> The video is public (https://youtu.be/Bp9Z6QDWia0, 4:56), the report page is
+> live, [[DEVPOST]] has no placeholders, 55 tests pass and
+> `scripts/check_claims.py` is green with no warnings. **What remains is pasting
+> [[DEVPOST]] into the Devpost form and pressing submit, before Monday 14
+> September, 5:00pm PT.** After the deadline nothing can be changed.
+
 > [!note] State as of 2026-09-01
 > Working tree clean, `main` level with origin. 55 tests passing. The agent is
 > **done being tuned** — runs 3 and 4 both score 4 of 4, and the holdout is
@@ -341,8 +348,10 @@ Run 4, with the two-column transcript. Confirmed reachable with no credentials
       same job through boto3, which is already a dependency, so nothing extra
       needs installing. `publish.sh` is kept for anyone who prefers the CLI
 - [x] URL pasted into [[DEVPOST]]
-- [ ] **Detach `AmazonS3FullAccess` after the hackathon.** Nothing needs it once
-      the page is up, and it is broader than one bucket warrants
+- [ ] **Detach `AmazonS3FullAccess` after judging ends, 8 October 2026 — not
+      before.** Detaching the permission does not take the page down, but do not
+      touch the bucket or its public policy until then: the rules require judges
+      to reach a working project until judging closes
 - [ ] If `out/report.html` is ever re-rendered, re-publish it:
       `python scripts/publish.py porchlight-report us-east-1`. The page and the
       video must not disagree
@@ -358,15 +367,11 @@ Run 4, with the two-column transcript. Confirmed reachable with no credentials
 
 §1 and §2 are already shot. Outstanding:
 
-- [ ] **§4 (architecture)** — no longer blocked; the diagram names Sonnet 4.6 /
-      Opus 4.6 and the redaction guard is on it. Trim from 1:00 to ~40s to make
-      room for the holdout result
-- [ ] **§3** and **§5**
-- [ ] **The transcript section is new and the script does not mention it.** It is
-      the strongest visual in the project — four phrasings with no shared word,
-      collapsing to one place — and it belongs on camera. Decide where before
-      recording, not during
-- [ ] Under 5:00, public on YouTube or Vimeo, URL into [[DEVPOST]]
+- [x] **§4 (architecture)** — in the cut, clip 8 of [[VIDEO_EDIT_PLAN]]
+- [x] **§3** and **§5** — §3 shot live 2026-09-10 (run 5), §5 is the closing scenes
+- [x] **The transcript section** — on camera as clip 7
+- [x] Under 5:00, public on YouTube, URL into [[DEVPOST]] ✅ 2026-09-12 —
+      https://youtu.be/Bp9Z6QDWia0, 4:56
 
 ### 3 · Loose ends
 

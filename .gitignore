@@ -30,6 +30,14 @@ Thumbs.db
 
 # Personal scratch notes, kept local
 Notes.md
+promtpot.md
+terminal color.md
+
+# Video production material: recorded narration, sound effects pulled from
+# elsewhere, and the rendered YouTube thumbnail. None of it is source, and
+# the sound effects are not ours to redistribute.
+voices/
+porchlight-thumbnail.png
 
 # Video reference clips and scratch frame exports. Reference material only —
 # 52MB of third-party footage that must never enter the repo, and MOTION_REFS.md

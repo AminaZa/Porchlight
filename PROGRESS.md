@@ -705,3 +705,43 @@ correctly; only the pytest capture path is affected.
 
 Page re-rendered and re-published to S3, so the live link shows the run the video
 shows. 55 tests passing, checker green, one `⟨PENDING⟩` left: the video URL.
+
+---
+
+## 2026-09-12 — the video is public, and nothing is pending
+
+**https://youtu.be/Bp9Z6QDWia0** — *"Porchlight, your friendly neighborhood
+agent. Agents for Humans."* Cut from [[VIDEO_SCRIPT_STORY]] and
+[[VIDEO_EDIT_PLAN]]. The plan timed it at 4:51 and the final cut is **4:56**,
+four seconds inside the limit, so nothing more goes in.
+
+Checked from the outside rather than taken from the upload screen: the watch
+page reports `isUnlisted: false`, `isPrivate: false`, playability `OK`, 296
+seconds. The rules say public, and unlisted is the easy mistake.
+
+The video URL was the last placeholder in [[DEVPOST]]. Before writing it in,
+the rest of the submission was re-verified against the live surfaces, not the
+notes:
+
+- **Report page** — HTTP 200 without credentials, byte-identical to
+  `out/report.html` once line endings are normalised, warm palette, no offline
+  band. The page, the terminal footage and the video show the same run.
+- **Repo** — public, MIT detected, homepage set to the report page, `main`
+  level with origin.
+- **Tests** — 55 passing, 13 skipped (the live redaction tests).
+- **Claims** — `scripts/check_claims.py` green on every figure.
+
+### Housekeeping
+
+`voices/` is now ignored. It holds the recorded narration and sound effects
+downloaded for the edit, which are not ours to redistribute, and nothing
+stopped a `git add -A` from publishing all 6.7MB of it. The YouTube thumbnail
+and two loose scratch notes are ignored with it.
+
+A line added to [[VIDEO_SCRIPT_STORY]] during recording, *"Let's see
+Porchlight's explanation"*, had landed outside the blockquote and split the
+narration in two. Moved back inside it.
+
+**Left:** paste [[DEVPOST]] into the form and submit, before 14 September
+5:00pm PT. Loose ends in [[CHECKLIST]] (clean-clone check, live redaction
+tests, `refs/`) are optional and should not delay the submission.
